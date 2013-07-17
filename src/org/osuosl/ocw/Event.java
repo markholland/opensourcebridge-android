@@ -1,8 +1,8 @@
-package org.opensourcebridge.android2012;
+package org.osuosl.ocw;
 import java.util.Date;
 
 import org.json.JSONArray;
-import org.opensourcebridge.android2012.R;
+
 
 public class Event {
 	// TODO Fetch tracks from OCW.
@@ -21,6 +21,7 @@ public class Event {
 	public String brief;
 	public String id;
 	public int track;
+	public String track_title;
 	public String speakers;
 	public JSONArray speaker_ids;
 	
@@ -32,11 +33,12 @@ public class Event {
 		url = null;
 		location = null;
 		track = -1;
+		track_title = null;
 		speakers = null;
 		speaker_ids = null;
 	}
 	
-	public String getTrackName() {
+	/*public String getTrackName() {
 		// TODO Fetch tracks from OCW.
 		switch(track) {
 		case TRACK_BUSINESS:
@@ -54,7 +56,7 @@ public class Event {
 		default:
 			return "";
 		}
-	}
+	}*/
 	
 	/**
 	 * @return the resource id for the track color

@@ -1,4 +1,4 @@
-package org.opensourcebridge.android2012;
+package org.osuosl.ocw;
 
 public class Speaker {
 	String name = null;

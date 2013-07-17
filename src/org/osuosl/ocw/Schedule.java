@@ -1,6 +1,6 @@
-package org.opensourcebridge.android2012;
+package org.osuosl.ocw;
 
-import org.opensourcebridge.android2012.R;
+import org.osuosl.ocw.R;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -615,6 +615,12 @@ public class Schedule extends Activity {
 				} else {
 					event.track = -1;
 				}
+				if(json.has("track_title")){
+					event.track_title = json.getString("track_title");
+				} else {
+					event.track_title = "";
+				}
+				
 				if (json.has("user_titles")){
 					StringBuilder speakers = new StringBuilder();
 					JSONArray speakers_json = json.getJSONArray("user_titles");
@@ -764,7 +770,7 @@ public class Schedule extends Activity {
 						Context context = getApplicationContext();
 						TextView track = (TextView) v.findViewById(R.id.track);
 						track.setTextColor(context.getResources().getColor(e.getTrackColor()));
-						track.setText(e.getTrackName());
+						track.setText(e.track_title);
 					}
 				}
 			}

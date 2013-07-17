@@ -1,6 +1,6 @@
-package org.opensourcebridge.android2012;
+package org.osuosl.ocw;
 
-import org.opensourcebridge.android2012.R;
+import org.osuosl.ocw.R;
 
 import android.app.Activity;
 import android.content.Intent;

@@ -33,10 +33,11 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 	
 	 // Update single value
  	public int updateValue(DataHandler dh){
+ 		SQLiteDatabase db = null;
  		int i = 0;
  		
  		try {
-			SQLiteDatabase db = this.getWritableDatabase();
+			db = this.getWritableDatabase();
 			
 			ContentValues values = new ContentValues();
 			values.put(KEY_NAME, dh.getName());
@@ -50,14 +51,19 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			e.printStackTrace();
 		}
  		
+ 		finally{
+        	db.close();
+        }
+ 		
  		return i;
  	}
  
     // Getting single contact
     DataHandler getValue(String value) {
     	DataHandler dh = null;
+    	SQLiteDatabase db = null;
         try {
-			SQLiteDatabase db = this.getReadableDatabase();
+			db = this.getReadableDatabase();
 			
  
 			Cursor cursor = db.query(TABLE_NAME, new String[] { KEY_ID,
@@ -75,6 +81,11 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+        
+        finally{
+        	db.close();
+        }
+        
         return dh;
     }
 }

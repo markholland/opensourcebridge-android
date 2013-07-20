@@ -53,6 +53,9 @@ import android.widget.ViewFlipper;
 
 public class Schedule extends Activity {
 
+	static DataBaseHandler db;
+	
+	
 	// Cache files for 2 hours (in milliseconds)
 	private static final long CACHE_TIMEOUT = 7200000;
 	
@@ -510,6 +513,9 @@ public class Schedule extends Activity {
 		File file = new File(dir+"/"+path);
 		String line;
 		StringBuilder sb = new StringBuilder();
+		
+		// Retrieve database instead of raw file
+		
 		try {
 			// determine whether to open local file or remote file
 			if (file.exists() && file.lastModified()+CACHE_TIMEOUT > System.currentTimeMillis() && !force){
@@ -616,7 +622,8 @@ public class Schedule extends Activity {
 					event.track = -1;
 				}
 				if(json.has("track_title")){
-					event.track_title = json.getString("track_title");
+					//event.track_title = json.getString("track_title");
+					event.track_title = getValue(this, "track_title");
 				} else {
 					event.track_title = "";
 				}
@@ -809,4 +816,36 @@ public class Schedule extends Activity {
                 cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
                 cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR));
     }
+	
+	
+	
+	/////////////////////////////////////////////////////////////
+	
+	
+	
+	//Updates a given row "name" with a "value"
+  	public static void updateValue(Context context, String name, String value){
+  		db = new DataBaseHandler(context);
+  		//Retrieve id of row to update
+  		int id = getDataHandler(context, name).getId();
+  		
+  		DataHandler dh = new DataHandler(id, name, value);
+  		
+  		db.updateValue(dh);
+  	}
+  	
+  	//Returns the DataHandler object of the given row "name"
+  	public static DataHandler getDataHandler(Context context, String name){
+  		db = new DataBaseHandler(context);
+  		
+  		return db.getValue(name);
+  	}
+  	
+  	//Returns the value of the given row "name"
+  	public static String getValue(Context context, String name){
+  		db = new DataBaseHandler(context);
+  		
+  		return db.getValue(name).getValue();
+  		
+  	}
 }

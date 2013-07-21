@@ -596,7 +596,7 @@ public class Schedule extends Activity {
 				JSONObject json = json_events.getJSONObject(i);
 				Event event = new Event();
 				
-				event.id = json.getString("event_id");
+				event.id = json.getInt("event_id");
 				event.title = json.getString("title");
 				event.description = json.getString("description")
 							.replace("\r","")
@@ -617,9 +617,9 @@ public class Schedule extends Activity {
 					event.location = "";
 				}
 				if (json.has("track_id")){
-					event.track = json.getInt("track_id");
+					event.track_id = json.getInt("track_id");
 				} else {
-					event.track = -1;
+					event.track_id = -1;
 				}
 				if(json.has("track_title")){
 					//event.track_title = json.getString("track_title");
@@ -627,7 +627,7 @@ public class Schedule extends Activity {
 				} else {
 					event.track_title = "";
 				}
-				
+				/*
 				if (json.has("user_titles")){
 					StringBuilder speakers = new StringBuilder();
 					JSONArray speakers_json = json.getJSONArray("user_titles");
@@ -643,6 +643,7 @@ public class Schedule extends Activity {
 				if (json.has("user_ids")){
 					event.speaker_ids = json.getJSONArray("user_ids");
 				}
+				*/
 				events.add(event);
 			}
 		} catch (JSONException e) {
@@ -773,7 +774,7 @@ public class Schedule extends Activity {
 						DateFormat formatter = new SimpleDateFormat("h:mm");
 						time.setText(formatter.format(e.start) + "-" + formatter.format(e.end));
 					}
-					if (e.track != -1) {
+					if (e.track_id != -1) {
 						Context context = getApplicationContext();
 						TextView track = (TextView) v.findViewById(R.id.track);
 						track.setTextColor(context.getResources().getColor(e.getTrackColor()));
@@ -822,16 +823,42 @@ public class Schedule extends Activity {
 	/////////////////////////////////////////////////////////////
 	
 	
-	
-	//Updates a given row "name" with a "value"
-  	public static void updateValue(Context context, String name, String value){
+//	
+//	//Updates a given row "name" with a "value"
+//  	public static void updateValue(Context context, String name, String value){
+//  		db = new DataBaseHandler(context);
+//  		//Retrieve id of row to update
+//  		int id = getDataHandler(context, name).getId();
+//  		
+//  		DataHandler dh = new DataHandler(id, name, value);
+//  		
+//  		db.updateValue(dh);
+//  	}
+  	
+    //Updates a given row "name" with a "value"
+  	public static void updateScheduleRow(Context context, int event_id, String title, String description, Date start_time,
+  			Date end_time, String room_title, int track_id, String track_title){
+  		
   		db = new DataBaseHandler(context);
   		//Retrieve id of row to update
-  		int id = getDataHandler(context, name).getId();
+  		int id = getDataHandler(context, title).getId();
   		
-  		DataHandler dh = new DataHandler(id, name, value);
+  		Event ev = new Event(id, event_id, title, description, start_time, end_time, room_title, track_id, track_title);
   		
-  		db.updateValue(dh);
+  		db.updateScheduleRow(ev);
+  	}
+  	
+  	//Updates a given row "name" with a "value"
+  	public static void updateSpeakersRow(Context context, String fullname, String biography, String twitter,
+  			String identica, String website, String blog_url, String affiliation){
+  		
+  		db = new DataBaseHandler(context);
+  		//Retrieve id of row to update
+  		int id = getDataHandler(context, fullname).getId();
+  		
+  		Speaker sp = new Speaker(id, fullname, biography, twitter, identica, website, blog_url, affiliation);
+  		
+  		db.updateSpeakerRow(sp);
   	}
   	
   	//Returns the DataHandler object of the given row "name"

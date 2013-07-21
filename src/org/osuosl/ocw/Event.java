@@ -13,29 +13,45 @@ public class Event {
 	private static final int TRACK_HACKS = 24;
     private static final int TRACK_BOF = 25;
 	
+    public int id;
 	public Date start, end;
 	public String description;
 	public String title;
 	public String url;
 	public String location;
 	public String brief;
-	public String id;
-	public int track;
+	public int event_id;
+	public int track_id;
 	public String track_title;
 	public String speakers;
 	public JSONArray speaker_ids;
 	
 	public Event(){
+		id = -1;
 		start = null;
 		end = null;
 		description = null;
 		title = null;
 		url = null;
 		location = null;
-		track = -1;
+		track_id = -1;
 		track_title = null;
 		speakers = null;
 		speaker_ids = null;
+	}
+	
+	public Event(int id, int event_id, String title, String description, Date start_time,
+  			Date end_time, String room_title, int track_id, String track_title){
+		
+		this.id = id;
+		this.event_id = event_id;
+		this.title = title;
+		this.description = description;
+		this.start = start_time;
+		this.end = end_time;
+		this.location = room_title;
+		this.track_id = track_id;
+		this.track_title = track_title;
 	}
 	
 	/*public String getTrackName() {
@@ -63,7 +79,7 @@ public class Event {
 	 */
 	public int getTrackColor() {
 		// TODO Fetch tracks from OCW.
-		switch(track) {
+		switch(track_id) {
 		case TRACK_BUSINESS:
 			return R.color.track_business;
 		case TRACK_CHEMISTRY:
@@ -86,7 +102,7 @@ public class Event {
     */
     public int getTrackColorDark() {
        // TODO Fetch tracks from OCW.
-	   switch(track) {
+	   switch(track_id) {
 	   case TRACK_BUSINESS:
 	           return R.color.track_business_dark;
 	   case TRACK_CHEMISTRY:
@@ -103,4 +119,78 @@ public class Event {
 	           return R.color.track_other_dark;
 	   }
     }
+    
+    public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public Date getStart() {
+		return start;
+	}
+
+	public void setStart(Date start) {
+		this.start = start;
+	}
+
+	public Date getEnd() {
+		return end;
+	}
+
+	public void setEnd(Date end) {
+		this.end = end;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
+	}
+
+	public int getEventId() {
+		return event_id;
+	}
+
+	public void setEventId(int EventId) {
+		this.event_id = EventId;
+	}
+
+	public int getTrackId() {
+		return track_id;
+	}
+
+	public void setTrackId(int trackId) {
+		this.track_id = trackId;
+	}
+
+	public String getTrack_title() {
+		return track_title;
+	}
+
+	public void setTrack_title(String track_title) {
+		this.track_title = track_title;
+	}
+
+	
 }

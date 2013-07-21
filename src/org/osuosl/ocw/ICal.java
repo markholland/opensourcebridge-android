@@ -72,7 +72,7 @@ public class ICal {
 				
 				} else if(line.startsWith("URL:"))  {
 					event.url = line.substring(4);
-					event.id = event.url.substring(37);
+					event.id = Integer.parseInt(event.url.substring(37));
 					
 				} else if(line.startsWith("LOCATION:"))  {
 					event.location = line.substring(9);

@@ -36,6 +36,19 @@ public class Speaker {
 		this.blog = blog;
 		
 	}
+	
+	public Speaker(String id, String name, String biography, String twitter, String affiliation, 
+			String identica, String website, String blog){
+		this.id = Integer.parseInt(id);
+		this.name = name;
+		this.biography = biography;
+		this.twitter = twitter;
+		this.affiliation = affiliation;
+		this.identica = identica;
+		this.website = website;
+		this.blog = blog;
+		
+	}
 
 	public int getId() {
 		return id;

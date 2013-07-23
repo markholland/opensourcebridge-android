@@ -1,7 +1,5 @@
 package org.osuosl.ocw;
 
-import org.osuosl.ocw.R;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,14 +30,15 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
@@ -622,11 +621,18 @@ public class Schedule extends Activity {
 					event.track_id = -1;
 				}
 				if(json.has("track_title")){
-					//event.track_title = json.getString("track_title");
-					event.track_title = getValue(this, "track_title");
+					event.track_title = json.getString("track_title");
 				} else {
 					event.track_title = "";
 				}
+				
+				updateScheduleRow(this, event.id, event.title, event.description, event.start,
+						event.end, event.location, event.track_id, event.track_title);
+				
+				Event ev = getScheduleHandler(this,event.title);
+				
+				Log.d("DATABASE",ev.title);
+				
 				/*
 				if (json.has("user_titles")){
 					StringBuilder speakers = new StringBuilder();
@@ -841,7 +847,7 @@ public class Schedule extends Activity {
   		
   		db = new DataBaseHandler(context);
   		//Retrieve id of row to update
-  		int id = getDataHandler(context, title).getId();
+  		int id = getScheduleHandler(context, title).getId();
   		
   		Event ev = new Event(id, event_id, title, description, start_time, end_time, room_title, track_id, track_title);
   		
@@ -854,25 +860,38 @@ public class Schedule extends Activity {
   		
   		db = new DataBaseHandler(context);
   		//Retrieve id of row to update
-  		int id = getDataHandler(context, fullname).getId();
+  		int id = getSpeakersHandler(context, fullname).getId();
   		
   		Speaker sp = new Speaker(id, fullname, biography, twitter, identica, website, blog_url, affiliation);
   		
   		db.updateSpeakerRow(sp);
   	}
   	
-  	//Returns the DataHandler object of the given row "name"
-  	public static DataHandler getDataHandler(Context context, String name){
+  	
+  	public static Event getScheduleHandler(Context context, String title){
   		db = new DataBaseHandler(context);
   		
-  		return db.getValue(name);
+  		return db.getScheduleRow(title);
   	}
   	
-  	//Returns the value of the given row "name"
-  	public static String getValue(Context context, String name){
+  	public static Speaker getSpeakersHandler(Context context, String fullname){
   		db = new DataBaseHandler(context);
   		
-  		return db.getValue(name).getValue();
-  		
+  		return db.getSpeakersRow(fullname);
   	}
+  	
+//  	//Returns the DataHandler object of the given row "name"
+//  	public static DataHandler getDataHandler(Context context, String name){
+//  		db = new DataBaseHandler(context);
+//  		
+//  		return db.getValue(name);
+//  	}
+//  	
+//  	//Returns the value of the given row "name"
+//  	public static String getValue(Context context, String name){
+//  		db = new DataBaseHandler(context);
+//  		
+//  		return db.getValue(name).getValue();
+//  		
+//  	}
 }

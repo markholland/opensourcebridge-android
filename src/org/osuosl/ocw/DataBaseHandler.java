@@ -1,12 +1,10 @@
 package org.osuosl.ocw;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
@@ -54,32 +52,64 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 
 	}
 	
-//	 // Update single value
-// 	public int updateValue(DataHandler dh){
-// 		SQLiteDatabase db = null;
-// 		int i = 0;
-// 		
-// 		try {
-//			db = this.getWritableDatabase();
-//			
-//			ContentValues values = new ContentValues();
-//			values.put(KEY_NAME, dh.getName());
-//			values.put(KEY_VALUE, dh.getValue());
-//			
-//			// updating row
-//			i = db.update(TABLE_NAME, values, KEY_ID + " = ?",
-//					new String[] { String.valueOf(dh.getId())});
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-// 		
-// 		finally{
-//        	db.close();
-//        }
-// 		
-// 		return i;
-// 	}
+	public Long addScheduleRow(Event ev){
+		SQLiteDatabase db = null;
+ 		Long i = 0l;
+		try {
+			db = this.getWritableDatabase();
+			
+			ContentValues values = new ContentValues();
+			values.put(KEY_EVENT_ID, ev.getEventId());
+			values.put(KEY_TITLE, ev.getTitle());
+			values.put(KEY_DESCRIPTION, ev.getDescription());
+			values.put(KEY_START, ev.getStart().toString());
+			values.put(KEY_END, ev.getEnd().toString());
+			values.put(KEY_ROOM_TITLE, ev.getLocation());
+			values.put(KEY_TRACK_ID, ev.getTrackId());
+			values.put(KEY_TITLE, ev.getTitle());
+			
+			// updating row
+			i = db.insert(SCHEDULE_TABLE_NAME, null, values);//String.valueOf(ev.getId())});
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+ 		
+ 		finally{
+        	db.close();
+        }
+ 		return i;
+	}
+	
+	public Long addSpeakersRow(Speaker sp){
+		SQLiteDatabase db = null;
+ 		Long i = 0l;
+ 		
+ 		try {
+			db = this.getWritableDatabase();
+			
+			ContentValues values = new ContentValues();
+			values.put(KEY_SPEAKER_ID, sp.getId());
+			values.put(KEY_NAME, sp.getName());
+			values.put(KEY_BIO, sp.getBiography());
+			values.put(KEY_TWITTER, sp.getTwitter());
+			values.put(KEY_IDENTICA, sp.getIdentica());
+			values.put(KEY_WEBSITE, sp.getWebsite());
+			values.put(KEY_BLOG, sp.getBlog());
+			values.put(KEY_AFFILIATION, sp.getAffiliation());
+			
+			// updating row
+			i = db.insert(SPEAKERS_TABLE_NAME, null, values);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+ 		
+ 		finally{
+        	db.close();
+        }
+ 		return i;
+	}
  	
  	public int updateScheduleRow(Event ev){
  		SQLiteDatabase db = null;
@@ -101,7 +131,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			
 			// updating row
 			i = db.update(SCHEDULE_TABLE_NAME, values, KEY_SCHEDULE_ID + " = ?",
-					new String[] { "1" });//String.valueOf(ev.getId())});
+					new String[] { String.valueOf(ev.getId())});
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -158,7 +188,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 					new String[] { title }, null, null, null, null);
 			if (cursor != null){
 			    cursor.moveToFirst();
-			    
+			    Log.d("DATABASE",""+cursor.getCount());
  
 			    ev = new Event(
 			        cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), 

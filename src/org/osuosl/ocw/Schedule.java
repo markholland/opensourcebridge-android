@@ -626,14 +626,9 @@ public class Schedule extends Activity {
 					event.track_title = "";
 				}
 				
-				updateScheduleRow(this, event.id, event.title, event.description, event.start,
-						event.end, event.location, event.track_id, event.track_title);
 				
-				Event ev = getScheduleHandler(this,event.title);
 				
-				Log.d("DATABASE",ev.title);
 				
-				/*
 				if (json.has("user_titles")){
 					StringBuilder speakers = new StringBuilder();
 					JSONArray speakers_json = json.getJSONArray("user_titles");
@@ -649,7 +644,9 @@ public class Schedule extends Activity {
 				if (json.has("user_ids")){
 					event.speaker_ids = json.getJSONArray("user_ids");
 				}
-				*/
+				
+				addScheduleRow(this,event);
+				
 				events.add(event);
 			}
 		} catch (JSONException e) {
@@ -828,18 +825,14 @@ public class Schedule extends Activity {
 	
 	/////////////////////////////////////////////////////////////
 	
+	//Updates a given row "name" with a "value"
+  	public static void addScheduleRow(Context context, Event ev){
+  		
+  		db = new DataBaseHandler(context);
+  		
+  		db.addScheduleRow(ev);
+  	}
 	
-//	
-//	//Updates a given row "name" with a "value"
-//  	public static void updateValue(Context context, String name, String value){
-//  		db = new DataBaseHandler(context);
-//  		//Retrieve id of row to update
-//  		int id = getDataHandler(context, name).getId();
-//  		
-//  		DataHandler dh = new DataHandler(id, name, value);
-//  		
-//  		db.updateValue(dh);
-//  	}
   	
     //Updates a given row "name" with a "value"
   	public static void updateScheduleRow(Context context, int event_id, String title, String description, Date start_time,
@@ -879,19 +872,5 @@ public class Schedule extends Activity {
   		
   		return db.getSpeakersRow(fullname);
   	}
-  	
-//  	//Returns the DataHandler object of the given row "name"
-//  	public static DataHandler getDataHandler(Context context, String name){
-//  		db = new DataBaseHandler(context);
-//  		
-//  		return db.getValue(name);
-//  	}
-//  	
-//  	//Returns the value of the given row "name"
-//  	public static String getValue(Context context, String name){
-//  		db = new DataBaseHandler(context);
-//  		
-//  		return db.getValue(name).getValue();
-//  		
-//  	}
+
 }

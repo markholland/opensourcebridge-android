@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
@@ -27,6 +28,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
     private static final String KEY_ROOM_TITLE = "room_title";
     private static final String KEY_TRACK_ID = "track_id";
     private static final String KEY_TRACK_TITLE = "track_title";
+    private static final String KEY_SPEAKER_IDS = "speaker_ids";
     
     // Speakers Table Columns names
     private static final String KEY_SPEAKER_ID = "speaker_id";
@@ -68,6 +70,12 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			values.put(KEY_TRACK_ID, ev.getTrackId());
 			values.put(KEY_TRACK_TITLE, ev.getTrackTitle());
 			
+			String speakerIds = "";
+			if(ev.getSpeaker_ids() != null){
+				speakerIds = convertArrayToString(ev.getSpeaker_ids());
+				Log.d("SPEAKERSSTRING",speakerIds);
+				values.put(KEY_SPEAKER_IDS, speakerIds);
+			}
 			// updating row
 			i = db.insert(SCHEDULE_TABLE_NAME, null, values);//String.valueOf(ev.getId())});
 		} catch (Exception e) {
@@ -129,6 +137,9 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			values.put(KEY_TRACK_ID, ev.getTrackId());
 			values.put(KEY_TRACK_TITLE, ev.getTrackTitle());
 			
+			String speakerIds = convertArrayToString(ev.getSpeaker_ids());
+			
+			values.put(KEY_SPEAKER_IDS, speakerIds);
 			// updating row
 			i = db.update(SCHEDULE_TABLE_NAME, values, KEY_EVENT_ID + " = ?",
 					new String[] { String.valueOf(ev.getId())});
@@ -184,16 +195,32 @@ public class DataBaseHandler extends SQLiteAssetHelper {
  
 			Cursor cursor = db.query(SCHEDULE_TABLE_NAME, new String[] { KEY_EVENT_ID,
 					KEY_TITLE, KEY_DESCRIPTION, KEY_START, KEY_END, KEY_ROOM_TITLE, KEY_TRACK_ID, 
-					KEY_TRACK_TITLE }, KEY_EVENT_ID + "=?",
+					KEY_TRACK_TITLE, KEY_SPEAKER_IDS }, KEY_EVENT_ID + "=?",
 					new String[] { id }, null, null, null, null);
 			if (cursor != null){
 			    cursor.moveToFirst();
-			   // Log.d("DATABASE",""+cursor.getCount());
+			    // Log.d("DATABASE",""+cursor.getCount());
  
 			    ev = new Event();
+			    
+			    
+			    
+			    
+			    String title = cursor.getString(1);
+			    String description = cursor.getString(2);
+			    String start_time = cursor.getString(3);
+			    String end_time = cursor.getString(4);
+			    String room_title = cursor.getString(5);
+			    String track_id = cursor.getString(6);
+			    String track_title = cursor.getString(7);
+			    String sIds = cursor.getString(8);
+			    // TODO
+			    Log.d("SPEAKERSSTIRNG", sIds+"blah");
+			    String[] speakerids = new String[1];
+			    speakerids[0] = sIds;//.split(",");
+				
 			    ev.EventFromDatabase(
-			        cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), 
-			        cursor.getString(5), cursor.getString(6), cursor.getString(7));
+			        title, description, start_time, end_time, room_title, track_id, track_title, speakerids);
 			
 			}
 		} catch (Exception e) {
@@ -310,5 +337,25 @@ public class DataBaseHandler extends SQLiteAssetHelper {
     	}
 
     	return exists;
+    }
+    
+    
+    public static String convertArrayToString(String[] array){
+        String str = "";
+        for (int i = 0;i<array.length; i++) {
+        	str = str+array[i];
+            // Do not append comma at the end of last element
+            if(i<array.length-1){
+                str = str+",";
+            }
+        }
+        return str;
+    }
+    public static String[] convertStringToArray(String str){
+    	if(str == null){
+    		Log.d("NULLLL","NUULLLL");
+    	}
+        String[] arr = str.split(",");
+        return arr;
     }
 }

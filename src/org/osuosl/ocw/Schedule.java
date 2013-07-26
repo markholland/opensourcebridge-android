@@ -188,20 +188,20 @@ public class Schedule extends Activity {
 			public void onClick(View v) {
 				
 				mBio.removeAllViews();
-				JSONArray speaker_ids = mEvent.speaker_ids;
+				String[] speaker_ids = mEvent.speaker_ids;
 				if (speaker_ids != null) {
-					for (int i=0; i<speaker_ids.length(); i++) {
-						try {
-							View view = loadBioView(speaker_ids.getInt(i));
+					for (int i=0; i<speaker_ids.length; i++) {
+//						try {
+							View view = loadBioView(Integer.parseInt(speaker_ids[i]));
 							if (view != null) {
 								if (i>0){
 									view.setPadding(0, 30, 0, 0);
 								}
 								mBio.addView(view);
 							}
-						} catch (JSONException e) {
-							e.printStackTrace();
-						}
+//						} catch (JSONException e) {
+//							e.printStackTrace();
+//						}
 					}
 				
 					mDescription.setVisibility(View.GONE);
@@ -224,52 +224,68 @@ public class Schedule extends Activity {
 					speaker = mSpeakers.get(id);
 				} else {
 					try {
-						String raw = getURL(SPEAKER_URI_BASE + id + ".json", false);
-						JSONObject json = new JSONObject(raw);
-						speaker = new Speaker();
-						mSpeakers.put(id, speaker);
-						speaker.name  = json.getString("fullname");
-						speaker.biography  = json.getString("biography").replace("\r","");
-						if (json.has("twitter")) {
-							speaker.twitter  = json.getString("twitter");
-						}
-						if (json.has("identica")){
-							speaker.identica  = json.getString("identica");
-						}
-						if (json.has("website")) {
-							speaker.website  = json.getString("website");
-						}
-						if (json.has("blog_url")) {
-							speaker.blog = json.getString("blog_url");
-						}
-						if (json.has("affiliation")) {
-							speaker.affiliation  = json.getString("affiliation");
-						}
+						String raw_json = getURL(SPEAKER_URI_BASE + id + ".json", "SPEAKERS", false);
 						
 						
-						// TODO
-						// dont touch database if no internet, database is already loaded
-						
-						Log.d("CURRENT SPEAKER ROW", speaker.getName());
-						
-						if(speakerRowExists(getApplicationContext(),""+speaker.getId()) == 0){
-							addSpeakersRow(getApplicationContext(),speaker);
-							Log.d("ADDED ROW", "ADDED ROW");
+						if (raw_json.equals("database")){
+
+							long size = db.numRows("SPEAKERS");
+							for(int i=0; i<size; i++) {
+								speaker = new Speaker();
+								mSpeakers.put(id, speaker);
+								speaker = db.getSpeakersRow(""+i);
+
+								}
+						} else {
+
+							JSONObject json = new JSONObject(raw_json);
+							speaker = new Speaker();
+							mSpeakers.put(id, speaker);
+							speaker.id = json.getInt("id");
+							speaker.name  = json.getString("fullname");
+							speaker.biography  = json.getString("biography").replace("\r","");
+							if (json.has("twitter")) {
+								speaker.twitter  = json.getString("twitter");
+							}
+							if (json.has("identica")){
+								speaker.identica  = json.getString("identica");
+							}
+							if (json.has("website")) {
+								speaker.website  = json.getString("website");
+							}
+							if (json.has("blog_url")) {
+								speaker.blog = json.getString("blog_url");
+							}
+							if (json.has("affiliation")) {
+								speaker.affiliation  = json.getString("affiliation");
+							}
+
+
+							// TODO
+							// dont touch database if no internet, database is already loaded
+
+							Log.d("CURRENT SPEAKER ROW", speaker.getName());
+
+							if(speakerRowExists(getApplicationContext(),""+speaker.getId()) == 0){
+								addSpeakersRow(getApplicationContext(),speaker);
+								Log.d("ADDED ROW", "ADDED ROW");
+							}
+							else if(speakerRowExists(getApplicationContext(),""+speaker.getId()) == 1) {
+								updateSpeakersRow(getApplicationContext(),speaker);
+								Log.d("UPDATED SPEAKER ROW", "UPDATED SPEAKER ROW");
+							}
+							else if(speakerRowExists(getApplicationContext(),""+speaker.getId()) == -1) {
+								//error checking if exists
+							}
 						}
-						else if(speakerRowExists(getApplicationContext(),""+speaker.getId()) == 1) {
-							updateSpeakersRow(getApplicationContext(),speaker);
-							Log.d("UPDATED SPEAKER ROW", "UPDATED SPEAKER ROW");
+					
+
+						} catch (JSONException e) {
+							e.printStackTrace();
+						} catch (IOException e) {
+							// file couldn't be loaded
 						}
-						else if(speakerRowExists(getApplicationContext(),""+speaker.getId()) == -1) {
-							//error checking if exists
-						}
-						
-					} catch (JSONException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						// file couldn't be loaded
 					}
-				}
 				
 				// create view
 				if (speaker != null) {
@@ -524,7 +540,7 @@ public class Schedule extends Activity {
 	 * @param force - force refresh of data
 	 * @return
 	 */
-	private String getURL(String uri, boolean force) throws IOException{
+	private String getURL(String uri, String table, boolean force) throws IOException{
 		InputStream is = null;
 		OutputStream os = null;
 		Context context = getApplicationContext();
@@ -541,10 +557,14 @@ public class Schedule extends Activity {
 		try {
 			// determine whether to open local file or remote file
 			// Retrieve from database instead of raw file
-			if ((db.numRows("SCHEDULE") != 0) && /*file.lastModified()+CACHE_TIMEOUT > System.currentTimeMillis() &&*/ !force){
-				
+			
+			
+			if (table.equals("SCHEDULE") && (db.numRows("SCHEDULE") != 0) && /*file.lastModified()+CACHE_TIMEOUT > System.currentTimeMillis() &&*/ !force){
 				return "database";
-				
+			}
+			else if(table.equals("SPEAKERS") && (db.numRows("SPEAKERS") != 0) && /*file.lastModified()+CACHE_TIMEOUT > System.currentTimeMillis() &&*/ !force){
+				return "database";	
+			
 			} else {
 				URL url = new URL(uri);
 				URLConnection conn = null;
@@ -612,7 +632,7 @@ public class Schedule extends Activity {
 	private void parseProposals(ICal calendar, boolean force){
 		ArrayList<Event> events = new ArrayList<Event>();
 		try{
-			String raw_json = getURL(SCHEDULE_URI, force);
+			String raw_json = getURL(SCHEDULE_URI, "SCHEDULE",force);
 			
 			if (raw_json.equals("database")){
 				
@@ -683,7 +703,24 @@ public class Schedule extends Activity {
 						event.speakers = speakers.toString();
 					}
 					if (json.has("user_ids")){
-						event.speaker_ids = json.getJSONArray("user_ids");
+						
+						JSONArray userids = json.getJSONArray("user_ids");
+						String [] stringArray = new String[userids.length()];
+						for(int j = 0; j < userids.length(); j++)
+						{
+						    try {
+						        int in = userids.getInt(j);
+//						        String aux = jsonObject.toString();
+//						        aux = aux.replace("[", "");
+//						        aux = aux.replace("]", "");
+						        stringArray[j] = (""+in);
+						        Log.d("STRINGARRAY", stringArray[j]);
+						    }
+						    catch (JSONException e) {
+						        e.printStackTrace();
+						    }
+						}
+						event.speaker_ids = stringArray;
 					}
 					// TODO
 					// dont touch database if no internet, database is already loaded

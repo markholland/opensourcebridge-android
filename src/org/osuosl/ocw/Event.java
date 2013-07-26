@@ -27,7 +27,7 @@ public class Event {
 	public int track_id;
 	public String track_title;
 	public String speakers;
-	public JSONArray speaker_ids;
+	public String[] speaker_ids;
 	
 	public Event(){
 		id = -1;
@@ -44,7 +44,7 @@ public class Event {
 	}
 	
 	public Event(int id, String title, String description, Date start_time,
-  			Date end_time, String room_title, int track_id, String track_title){
+  			Date end_time, String room_title, int track_id, String track_title, String[] speaker_ids){
 		
 		this.id = id;
 		//this.event_id = event_id;
@@ -55,12 +55,13 @@ public class Event {
 		this.location = room_title;
 		this.track_id = track_id;
 		this.track_title = track_title;
+		this.speaker_ids = speaker_ids;
 	}
 	
 	
 	
 	public Event(String title, String description, String start_time,
-  			String end_time, String room_title, String track_id, String track_title){
+  			String end_time, String room_title, String track_id, String track_title, String[] speaker_ids){
 		
 		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss-'07:00'");
 		
@@ -77,10 +78,11 @@ public class Event {
 		this.location = room_title;
 		this.track_id = Integer.parseInt(track_id);
 		this.track_title = track_title;
+		this.speaker_ids = speaker_ids;
 	}
 	
 	public void EventFromDatabase(String title, String description, String start_time,
-  			String end_time, String room_title, String track_id, String track_title){
+  			String end_time, String room_title, String track_id, String track_title, String[] speaker_ids){
 		
 		DateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzzz yyyy");
 		
@@ -97,6 +99,7 @@ public class Event {
 		this.location = room_title;
 		this.track_id = Integer.parseInt(track_id);
 		this.track_title = track_title;
+		this.speaker_ids = speaker_ids;
 	}
 	
 	/*public String getTrackName() {
@@ -119,6 +122,8 @@ public class Event {
 		}
 	}*/
 	
+	
+
 	/**
 	 * @return the resource id for the track color
 	 */
@@ -235,6 +240,14 @@ public class Event {
 
 	public void setTrackTitle(String track_title) {
 		this.track_title = track_title;
+	}
+	
+	public String[] getSpeaker_ids() {
+		return speaker_ids;
+	}
+
+	public void setSpeaker_ids(String[] speaker_ids) {
+		this.speaker_ids = speaker_ids;
 	}
 
 	

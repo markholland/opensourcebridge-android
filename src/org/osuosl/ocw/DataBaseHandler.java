@@ -3,8 +3,8 @@ package org.osuosl.ocw;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
@@ -143,7 +143,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
  		return i;
  	}
  	
- 	public int updateSpeakerRow(Speaker sp){
+ 	public int updateSpeakersRow(Speaker sp){
  		SQLiteDatabase db = null;
  		int i = 0;
  		
@@ -190,7 +190,8 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			    cursor.moveToFirst();
 			   // Log.d("DATABASE",""+cursor.getCount());
  
-			    ev = new Event(
+			    ev = new Event();
+			    ev.EventFromDatabase(
 			        cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), 
 			        cursor.getString(5), cursor.getString(6), cursor.getString(7));
 			
@@ -238,6 +239,25 @@ public class DataBaseHandler extends SQLiteAssetHelper {
         }
         
         return sp;
+    }
+    
+    public long numRows(String table_name){
+    	long numRows = 0l;
+    	SQLiteDatabase db = null;
+        try {
+			db = this.getReadableDatabase();
+			numRows = DatabaseUtils.queryNumEntries(db, table_name);
+    	} catch (Exception e) {
+    		// TODO Auto-generated catch block
+    		e.printStackTrace();
+    	}
+
+    	finally{
+    		db.close();
+    	}
+
+        return numRows;
+        	
     }
     
     public int existsEvent(String id) {

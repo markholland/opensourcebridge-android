@@ -79,6 +79,26 @@ public class Event {
 		this.track_title = track_title;
 	}
 	
+	public void EventFromDatabase(String title, String description, String start_time,
+  			String end_time, String room_title, String track_id, String track_title){
+		
+		DateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzzz yyyy");
+		
+		//this.id = Integer.parseInt(id);
+		//this.event_id = Integer.parseInt(event_id);
+		this.title = title;
+		this.description = description;
+		try{
+			this.start = formatter.parse(start_time);
+			this.end = formatter.parse(end_time);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		this.location = room_title;
+		this.track_id = Integer.parseInt(track_id);
+		this.track_title = track_title;
+	}
+	
 	/*public String getTrackName() {
 		// TODO Fetch tracks from OCW.
 		switch(track) {

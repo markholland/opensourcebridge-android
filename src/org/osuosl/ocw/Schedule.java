@@ -113,7 +113,7 @@ public class Schedule extends Activity {
     Button mShowBio;
     
     private static final String SCHEDULE_URI = "http://www.partiallogic.com/gsoc2013/schedule.json";
-    private static final String SPEAKER_URI_BASE = "http://opensourcebridge.org/users/";
+    private static final String SPEAKER_URI_BASE = "http://www.partiallogic.com/gsoc2013/speakers/";
     
     /** Called when the activity is first created. */
 	@Override
@@ -245,6 +245,25 @@ public class Schedule extends Activity {
 						if (json.has("affiliation")) {
 							speaker.affiliation  = json.getString("affiliation");
 						}
+						
+						
+						// TODO
+						// dont touch database if no internet, database is already loaded
+						
+						Log.d("CURRENT SPEAKER ROW", speaker.getName());
+						
+						if(speakerRowExists(getApplicationContext(),""+speaker.getId()) == 0){
+							addSpeakersRow(getApplicationContext(),speaker);
+							Log.d("ADDED ROW", "ADDED ROW");
+						}
+						else if(speakerRowExists(getApplicationContext(),""+speaker.getId()) == 1) {
+							updateSpeakersRow(getApplicationContext(),speaker);
+							Log.d("UPDATED SPEAKER ROW", "UPDATED SPEAKER ROW");
+						}
+						else if(speakerRowExists(getApplicationContext(),""+speaker.getId()) == -1) {
+							//error checking if exists
+						}
+						
 					} catch (JSONException e) {
 						e.printStackTrace();
 					} catch (IOException e) {
@@ -513,7 +532,7 @@ public class Schedule extends Activity {
 		// get file path for cached file
 		String dir = context.getFilesDir().getAbsolutePath();
 		String path = uri.substring(uri.lastIndexOf("/")+1);
-		File file = new File(dir+"/"+path);
+		//File file = new File(dir+"/"+path);
 		String line;
 		StringBuilder sb = new StringBuilder();
 		
@@ -522,13 +541,9 @@ public class Schedule extends Activity {
 		try {
 			// determine whether to open local file or remote file
 			// Retrieve from database instead of raw file
-			if (file.exists() && file.lastModified()+CACHE_TIMEOUT > System.currentTimeMillis() && !force){
+			if ((db.numRows("SCHEDULE") != 0) && /*file.lastModified()+CACHE_TIMEOUT > System.currentTimeMillis() &&*/ !force){
 				
-				
-				is = new FileInputStream(file);
-				
-				
-				
+				return "database";
 				
 			} else {
 				URL url = new URL(uri);
@@ -541,8 +556,8 @@ public class Schedule extends Activity {
 					os = context.openFileOutput(path, Context.MODE_PRIVATE);
 				} catch (IOException e) {
 					// fall back to local file if exists, regardless of age
-					if (file.exists()) {
-						is = new FileInputStream(file);
+					if ((db.numRows("SCHEDULE") != 0)) {
+						return "database";
 					} else {
 						throw e;
 					}
@@ -551,19 +566,19 @@ public class Schedule extends Activity {
 		
 			// read entire file, write cache at same time if we are fetching from the remote uri
 			BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"), 8192);
-			OutputStreamWriter bw = null;
-			if (os != null) {
-				bw = new OutputStreamWriter(os);
-			}
+			//OutputStreamWriter bw = null;
+//			if (os != null) {
+//				bw = new OutputStreamWriter(os);
+//			}
 			while ((line = br.readLine()) != null) {
 				sb.append(line);
-				if (bw != null) {
-					bw.append(line);
-				}
+//				if (bw != null) {
+//					bw.append(line);
+//				}
 			}
-			if (bw != null) {
-				bw.flush();
-			}
+//			if (bw != null) {
+//				bw.flush();
+//			}
 			
 		} catch (IOException e) {
 			// failure to get file, throw this higher
@@ -598,81 +613,97 @@ public class Schedule extends Activity {
 		ArrayList<Event> events = new ArrayList<Event>();
 		try{
 			String raw_json = getURL(SCHEDULE_URI, force);
-			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss-'07:00'");
-			JSONObject schedule = new JSONObject(raw_json);
-			JSONArray json_events = schedule.getJSONArray("items");
-			int size = json_events.length();
-			for(int i=0; i<size; i++){
-				JSONObject json = json_events.getJSONObject(i);
-				Event event = new Event();
+			
+			if (raw_json.equals("database")){
 				
-				event.id = json.getInt("event_id");
-				event.title = json.getString("title");
-				event.description = json.getString("description")
+				long size = db.numRows("SCHEDULE");
+				for(int i=0; i<size; i++){
+					Event event = new Event();
+
+					event = db.getScheduleRow(""+i);
+					
+					events.add(event);
+				}
+			
+			} else {
+				
+			
+				DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss-'07:00'");
+				JSONObject schedule = new JSONObject(raw_json);
+				JSONArray json_events = schedule.getJSONArray("items");
+				int size = json_events.length();
+				for(int i=0; i<size; i++){
+					JSONObject json = json_events.getJSONObject(i);
+					Event event = new Event();
+
+					event.id = json.getInt("event_id");
+					event.title = json.getString("event_title");
+					event.description = json.getString("description")
 							.replace("\r","")
 							.replace("<br>","\n")
 							.replace("<blockquote>","")
 							.replace("</blockquote>","")
 							.replace("<b>","")
 							.replace("</b>","");
-				if (event.description.equals("")){
-					//XXX fill description with spaces, fixes a bug where android will
-					//    center the logo on the detail page without content in description
-					event.description = "                                                                                  ";
-				}
-				event.start = formatter.parse(json.getString("start_time"));
-				event.end = formatter.parse(json.getString("end_time"));
-				event.location = json.getString("room_title");
-				if (event.location == "null"){
-					event.location = "";
-				}
-				if (json.has("track_id")){
-					event.track_id = json.getInt("track_id");
-				} else {
-					event.track_id = -1;
-				}
-				if(json.has("track_title")){
-					event.track_title = json.getString("track_title");
-				} else {
-					event.track_title = "";
-				}
-				
-				
-				
-				
-				if (json.has("user_titles")){
-					StringBuilder speakers = new StringBuilder();
-					JSONArray speakers_json = json.getJSONArray("user_titles");
-					for(int z=0; z<speakers_json.length(); z++){
-						String speaker = speakers_json.getString(z);
-						if (z>0){
-							speakers.append(", ");
-						}
-						speakers.append(speaker);
+					if (event.description.equals("")){
+						//XXX fill description with spaces, fixes a bug where android will
+						//    center the logo on the detail page without content in description
+						event.description = "                                                                                  ";
 					}
-					event.speakers = speakers.toString();
+					event.start = formatter.parse(json.getString("start_time"));
+					event.end = formatter.parse(json.getString("end_time"));
+					event.location = json.getString("room_title");
+					if (event.location == "null"){
+						event.location = "";
+					}
+					if (json.has("track_id")){
+						event.track_id = json.getInt("track_id");
+					} else {
+						event.track_id = -1;
+					}
+					if(json.has("track_title")){
+						event.track_title = json.getString("track_title");
+					} else {
+						event.track_title = "";
+					}
+
+
+
+
+					if (json.has("user_titles")){
+						StringBuilder speakers = new StringBuilder();
+						JSONArray speakers_json = json.getJSONArray("user_titles");
+						for(int z=0; z<speakers_json.length(); z++){
+							String speaker = speakers_json.getString(z);
+							if (z>0){
+								speakers.append(", ");
+							}
+							speakers.append(speaker);
+						}
+						event.speakers = speakers.toString();
+					}
+					if (json.has("user_ids")){
+						event.speaker_ids = json.getJSONArray("user_ids");
+					}
+					// TODO
+					// dont touch database if no internet, database is already loaded
+
+					Log.d("CURRENT ROW", event.getTitle());
+
+					if(eventRowExists(this,""+event.getId()) == 0){
+						addScheduleRow(this,event);
+						Log.d("ADDED ROW", "ADDED ROW");
+					}
+					else if(eventRowExists(this,""+event.getId()) == 1) {
+						updateScheduleRow(this,event);
+						Log.d("UPDATED ROW", "UPDATED ROW");
+					}
+					else if(eventRowExists(this,""+event.getId()) == -1) {
+						//error checking if exists
+					}
+
+					events.add(event);
 				}
-				if (json.has("user_ids")){
-					event.speaker_ids = json.getJSONArray("user_ids");
-				}
-				// TODO
-				// dont touch database if no internet, database is already loaded
-				
-				Log.d("CURRENT ROW", event.getTitle());
-				
-				if(eventRowExists(this,""+event.getId()) == 0){
-					addScheduleRow(this,event);
-					Log.d("ADDED ROW", "ADDED ROW");
-				}
-				else if(eventRowExists(this,""+event.getId()) == 1) {
-					updateScheduleRow(this,event);
-					Log.d("UPDATED ROW", "UPDATED ROW");
-				}
-				else if(eventRowExists(this,""+event.getId()) == -1) {
-					//error checking if exists
-				}
-				
-				events.add(event);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -850,12 +881,19 @@ public class Schedule extends Activity {
 	
 	/////////////////////////////////////////////////////////////
 	
-	//Updates a given row "name" with a "value"
+	
   	public static void addScheduleRow(Context context, Event ev){
   		
   		//db = new DataBaseHandler(context);
   		
   		db.addScheduleRow(ev);
+  	}
+  	
+  	public static void addSpeakersRow(Context context, Speaker sp){
+  		
+  		//db = new DataBaseHandler(context);
+  		
+  		db.addSpeakersRow(sp);
   	}
   	
   	public static int eventRowExists(Context context, String id){
@@ -873,26 +911,15 @@ public class Schedule extends Activity {
   	}
 	
   	
-    //Updates a given row "name" with a "value"
+    
   	public static void updateScheduleRow(Context context, Event ev){
   		
-  		//db = new DataBaseHandler(context);
-  		//Retrieve id of row to update
-  		//int id = getScheduleHandler(context, ev.getTitle()).getId();
   		db.updateScheduleRow(ev);
   	}
   	
-  	//Updates a given row "name" with a "value"
-  	public static void updateSpeakersRow(Context context, String fullname, String biography, String twitter,
-  			String identica, String website, String blog_url, String affiliation){
+  	public static void updateSpeakersRow(Context context, Speaker sp){
   		
-  		//db = new DataBaseHandler(context);
-  		//Retrieve id of row to update
-  		int id = getSpeakersHandler(context, fullname).getId();
-  		
-  		Speaker sp = new Speaker(id, fullname, biography, twitter, identica, website, blog_url, affiliation);
-  		
-  		db.updateSpeakerRow(sp);
+  		db.updateSpeakersRow(sp);
   	}
   	
   	

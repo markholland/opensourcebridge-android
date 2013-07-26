@@ -29,7 +29,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
     private static final String KEY_TRACK_TITLE = "track_title";
     
     // Speakers Table Columns names
-    private static final String KEY_SPEAKER_ID = "id";
+    private static final String KEY_SPEAKER_ID = "speaker_id";
     private static final String KEY_NAME = "fullname";
     private static final String KEY_BIO = "biography";
     private static final String KEY_TWITTER = "twitter";
@@ -127,10 +127,10 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			values.put(KEY_END, ev.getEnd().toString());
 			values.put(KEY_ROOM_TITLE, ev.getLocation());
 			values.put(KEY_TRACK_ID, ev.getTrackId());
-			values.put(KEY_TITLE, ev.getTitle());
+			values.put(KEY_TRACK_TITLE, ev.getTrackTitle());
 			
 			// updating row
-			i = db.update(SCHEDULE_TABLE_NAME, values, KEY_SCHEDULE_ID + " = ?",
+			i = db.update(SCHEDULE_TABLE_NAME, values, KEY_EVENT_ID + " = ?",
 					new String[] { String.valueOf(ev.getId())});
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -175,7 +175,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
  	}
  
     // Getting single schedule row
-    Event getScheduleRow(String title) {
+    Event getScheduleRow(String id) {
     	Event ev = null;
     	SQLiteDatabase db = null;
         try {
@@ -184,11 +184,11 @@ public class DataBaseHandler extends SQLiteAssetHelper {
  
 			Cursor cursor = db.query(SCHEDULE_TABLE_NAME, new String[] { KEY_EVENT_ID,
 					KEY_TITLE, KEY_DESCRIPTION, KEY_START, KEY_END, KEY_ROOM_TITLE, KEY_TRACK_ID, 
-					KEY_TRACK_TITLE }, KEY_TITLE + "=?",
-					new String[] { title }, null, null, null, null);
+					KEY_TRACK_TITLE }, KEY_EVENT_ID + "=?",
+					new String[] { id }, null, null, null, null);
 			if (cursor != null){
 			    cursor.moveToFirst();
-			    Log.d("DATABASE",""+cursor.getCount());
+			   // Log.d("DATABASE",""+cursor.getCount());
  
 			    ev = new Event(
 			        cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), 
@@ -208,7 +208,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
     }
     
     // Getting single speakers row
-    Speaker getSpeakersRow(String fullname) {
+    Speaker getSpeakersRow(String id) {
     	Speaker sp = null;
     	SQLiteDatabase db = null;
         try {
@@ -216,8 +216,8 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			
  
 			Cursor cursor = db.query(SPEAKERS_TABLE_NAME, new String[] { KEY_SPEAKER_ID, KEY_NAME,
-			        KEY_BIO, KEY_TWITTER, KEY_IDENTICA, KEY_WEBSITE, KEY_BLOG, KEY_AFFILIATION, }, KEY_NAME + "=?",
-			        new String[] { fullname }, null, null, null, null);
+			        KEY_BIO, KEY_TWITTER, KEY_IDENTICA, KEY_WEBSITE, KEY_BLOG, KEY_AFFILIATION, }, KEY_SPEAKER_ID + "=?",
+			        new String[] { id }, null, null, null, null);
 			if (cursor != null){
 			    cursor.moveToFirst();
 			    
@@ -238,5 +238,57 @@ public class DataBaseHandler extends SQLiteAssetHelper {
         }
         
         return sp;
+    }
+    
+    public int existsEvent(String id) {
+    	int exists = -1;
+    	SQLiteDatabase db = null;
+        try {
+			db = this.getReadableDatabase();
+			
+    	
+    	   Cursor cursor = db.rawQuery("select 1 from SCHEDULE where event_id=?", 
+    	        new String[] { id });
+    	   Boolean b = (cursor.getCount() > 0);
+    	   exists = b? 1 : 0;
+    	   cursor.close();
+    	   
+    	
+        } catch (Exception e) {
+    		// TODO Auto-generated catch block
+    		e.printStackTrace();
+    	}
+
+    	finally{
+    		db.close();
+    	}
+
+    	return exists;
+    }
+    
+    public int existsSpeaker(String id) {
+    	int exists = -1;
+    	SQLiteDatabase db = null;
+        try {
+			db = this.getReadableDatabase();
+			
+    	
+    	   Cursor cursor = db.rawQuery("select 1 from SPEAKERS where speaker_id=?", 
+    	        new String[] { id });
+    	   Boolean b = (cursor.getCount() > 0);
+    	   exists = b? 1 : 0;
+    	   cursor.close();
+    	   
+    	
+        } catch (Exception e) {
+    		// TODO Auto-generated catch block
+    		e.printStackTrace();
+    	}
+
+    	finally{
+    		db.close();
+    	}
+
+    	return exists;
     }
 }

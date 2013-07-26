@@ -60,10 +60,10 @@ public class Schedule extends Activity {
 	
 	// TODO Fetch dates from OCW.
 	// TODO Refactor dates as array.
-	private static final Date DAY1 = new Date(112, 5, 26);
-	private static final Date DAY2 = new Date(112, 5, 27);
-	private static final Date DAY3 = new Date(112, 5, 28);
-	private static final Date DAY4 = new Date(112, 5, 29);
+	private static final Date DAY1 = new Date(113, 6, 25); //wdcnz date
+//	private static final Date DAY2 = new Date(113, 6, 27);
+//	private static final Date DAY3 = new Date(113, 6, 28);
+//	private static final Date DAY4 = new Date(113, 6, 29);
 
 	// TODO Generate menu items from dates fetched from OCW.
 	private static final int MENU_DAY1 = 1;
@@ -112,7 +112,7 @@ public class Schedule extends Activity {
     Button mShowDescription;
     Button mShowBio;
     
-    private static final String SCHEDULE_URI = "http://opensourcebridge.org/events/2012/schedule.json";
+    private static final String SCHEDULE_URI = "http://www.partiallogic.com/gsoc2013/schedule.json";
     private static final String SPEAKER_URI_BASE = "http://opensourcebridge.org/users/";
     
     /** Called when the activity is first created. */
@@ -321,7 +321,10 @@ public class Schedule extends Activity {
 		    	now();
 		    	}
 		});
-    }
+    
+        db = new DataBaseHandler(context);
+    
+    }//end onCreate
 	
 	/**
 	 * Shows the session description, hides all other subviews
@@ -349,9 +352,9 @@ public class Schedule extends Activity {
 
 		// TODO Generate days menu from data fetched from OCW.
 	    dayMenu.add(0, MENU_DAY1, 0, this.getDayAsString(DAY1));
-	    dayMenu.add(0, MENU_DAY2, 0, this.getDayAsString(DAY2));
-	    dayMenu.add(0, MENU_DAY3, 0, this.getDayAsString(DAY3));
-	    dayMenu.add(0, MENU_DAY4, 0, this.getDayAsString(DAY4));
+//	    dayMenu.add(0, MENU_DAY2, 0, this.getDayAsString(DAY2));
+//	    dayMenu.add(0, MENU_DAY3, 0, this.getDayAsString(DAY3));
+//	    dayMenu.add(0, MENU_DAY4, 0, this.getDayAsString(DAY4));
 
 		menu.add(0, MENU_NEXT, 0, "Next Day").setIcon(R.drawable.ic_menu_forward);
 	    menu.add(0, MENU_NOW, 0, "Now").setIcon(android.R.drawable.ic_menu_mylocation);
@@ -370,15 +373,15 @@ public class Schedule extends Activity {
 	    case MENU_DAY1:
 	    	setDay(DAY1);
 	        return true;
-    	case MENU_DAY2:
-    		setDay(DAY2);
-	        return true;
-		case MENU_DAY3:
-			setDay(DAY3);
-    		return true;
-		case MENU_DAY4:
-			setDay(DAY4);
-			return true;
+//    	case MENU_DAY2:
+//    		setDay(DAY2);
+//	        return true;
+//		case MENU_DAY3:
+//			setDay(DAY3);
+//    		return true;
+//		case MENU_DAY4:
+//			setDay(DAY4);
+//			return true;
 		case MENU_PREV:
 			previous();
 			return true;
@@ -432,40 +435,41 @@ public class Schedule extends Activity {
 	 *      currently underway
 	 */
 	public void now(){
-		Date now = new Date();
-		if (now.before(DAY1) || now.after(DAY4)) {
-			setDay(DAY1);
-		} else {
-			// use now, since it will have the time of day for 
-			// jumping to the right time
-			setDay(now);
-		}
+//		Date now = new Date();
+//		if (now.before(DAY1) || now.after(DAY4)) {
+//			setDay(DAY1);
+//		} else {
+//			// use now, since it will have the time of day for 
+//			// jumping to the right time
+//			setDay(now);
+//		}
+		setDay(DAY1);
 	}
 	
 	/**
 	 * Jumps to the next day, if not already at the end
 	 */
 	public void next() {
-		if (isSameDay(mCurrentDate, DAY1)) {
-			setDay(DAY2);
-		} else if (isSameDay(mCurrentDate, DAY2)) {
-			setDay(DAY3);
-		} else if (isSameDay(mCurrentDate, DAY3)) {
-			setDay(DAY4);
-		}
+//		if (isSameDay(mCurrentDate, DAY1)) {
+//			setDay(DAY2);
+//		} else if (isSameDay(mCurrentDate, DAY2)) {
+//			setDay(DAY3);
+//		} else if (isSameDay(mCurrentDate, DAY3)) {
+//			setDay(DAY4);
+//		}
 	}
 	
 	/**
 	 * Jumps to the previous day if now already at the beginning
 	 */
 	public void previous() {
-		if (isSameDay(mCurrentDate, DAY4)) {
-			setDay(DAY3);
-		} else if (isSameDay(mCurrentDate, DAY3)) {
-			setDay(DAY2);
-		} else if (isSameDay(mCurrentDate, DAY2)) {
-			setDay(DAY1);
-		}
+//		if (isSameDay(mCurrentDate, DAY4)) {
+//			setDay(DAY3);
+//		} else if (isSameDay(mCurrentDate, DAY3)) {
+//			setDay(DAY2);
+//		} else if (isSameDay(mCurrentDate, DAY2)) {
+//			setDay(DAY1);
+//		}
 	}
 	
 	/**
@@ -513,12 +517,19 @@ public class Schedule extends Activity {
 		String line;
 		StringBuilder sb = new StringBuilder();
 		
-		// Retrieve database instead of raw file
+		
 		
 		try {
 			// determine whether to open local file or remote file
+			// Retrieve from database instead of raw file
 			if (file.exists() && file.lastModified()+CACHE_TIMEOUT > System.currentTimeMillis() && !force){
+				
+				
 				is = new FileInputStream(file);
+				
+				
+				
+				
 			} else {
 				URL url = new URL(uri);
 				URLConnection conn = null;
@@ -645,7 +656,21 @@ public class Schedule extends Activity {
 					event.speaker_ids = json.getJSONArray("user_ids");
 				}
 				// TODO
-				addScheduleRow(this,event);
+				// dont touch database if no internet, database is already loaded
+				
+				Log.d("CURRENT ROW", event.getTitle());
+				
+				if(eventRowExists(this,""+event.getId()) == 0){
+					addScheduleRow(this,event);
+					Log.d("ADDED ROW", "ADDED ROW");
+				}
+				else if(eventRowExists(this,""+event.getId()) == 1) {
+					updateScheduleRow(this,event);
+					Log.d("UPDATED ROW", "UPDATED ROW");
+				}
+				else if(eventRowExists(this,""+event.getId()) == -1) {
+					//error checking if exists
+				}
 				
 				events.add(event);
 			}
@@ -828,30 +853,40 @@ public class Schedule extends Activity {
 	//Updates a given row "name" with a "value"
   	public static void addScheduleRow(Context context, Event ev){
   		
-  		db = new DataBaseHandler(context);
+  		//db = new DataBaseHandler(context);
   		
   		db.addScheduleRow(ev);
   	}
+  	
+  	public static int eventRowExists(Context context, String id){
+  		
+  		//db = new DataBaseHandler(context);
+  		
+  		return db.existsEvent(id);
+  	}
+  	
+  	public static int speakerRowExists(Context context, String id){
+  		
+  		//db = new DataBaseHandler(context);
+  		
+  		return db.existsSpeaker(id);
+  	}
 	
   	
-//    //Updates a given row "name" with a "value"
-//  	public static void updateScheduleRow(Context context, int event_id, String title, String description, Date start_time,
-//  			Date end_time, String room_title, int track_id, String track_title){
-//  		
-//  		db = new DataBaseHandler(context);
-//  		//Retrieve id of row to update
-//  		int id = getScheduleHandler(context, title).getId();
-//  		
-//  		Event ev = new Event(id title, description, start_time, end_time, room_title, track_id, track_title);
-//  		
-//  		db.updateScheduleRow(ev);
-//  	}
+    //Updates a given row "name" with a "value"
+  	public static void updateScheduleRow(Context context, Event ev){
+  		
+  		//db = new DataBaseHandler(context);
+  		//Retrieve id of row to update
+  		//int id = getScheduleHandler(context, ev.getTitle()).getId();
+  		db.updateScheduleRow(ev);
+  	}
   	
   	//Updates a given row "name" with a "value"
   	public static void updateSpeakersRow(Context context, String fullname, String biography, String twitter,
   			String identica, String website, String blog_url, String affiliation){
   		
-  		db = new DataBaseHandler(context);
+  		//db = new DataBaseHandler(context);
   		//Retrieve id of row to update
   		int id = getSpeakersHandler(context, fullname).getId();
   		
@@ -862,13 +897,13 @@ public class Schedule extends Activity {
   	
   	
   	public static Event getScheduleHandler(Context context, String title){
-  		db = new DataBaseHandler(context);
+  		//db = new DataBaseHandler(context);
   		
   		return db.getScheduleRow(title);
   	}
   	
   	public static Speaker getSpeakersHandler(Context context, String fullname){
-  		db = new DataBaseHandler(context);
+  		//db = new DataBaseHandler(context);
   		
   		return db.getSpeakersRow(fullname);
   	}

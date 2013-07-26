@@ -644,7 +644,7 @@ public class Schedule extends Activity {
 				if (json.has("user_ids")){
 					event.speaker_ids = json.getJSONArray("user_ids");
 				}
-				
+				// TODO
 				addScheduleRow(this,event);
 				
 				events.add(event);
@@ -834,18 +834,18 @@ public class Schedule extends Activity {
   	}
 	
   	
-    //Updates a given row "name" with a "value"
-  	public static void updateScheduleRow(Context context, int event_id, String title, String description, Date start_time,
-  			Date end_time, String room_title, int track_id, String track_title){
-  		
-  		db = new DataBaseHandler(context);
-  		//Retrieve id of row to update
-  		int id = getScheduleHandler(context, title).getId();
-  		
-  		Event ev = new Event(id, event_id, title, description, start_time, end_time, room_title, track_id, track_title);
-  		
-  		db.updateScheduleRow(ev);
-  	}
+//    //Updates a given row "name" with a "value"
+//  	public static void updateScheduleRow(Context context, int event_id, String title, String description, Date start_time,
+//  			Date end_time, String room_title, int track_id, String track_title){
+//  		
+//  		db = new DataBaseHandler(context);
+//  		//Retrieve id of row to update
+//  		int id = getScheduleHandler(context, title).getId();
+//  		
+//  		Event ev = new Event(id title, description, start_time, end_time, room_title, track_id, track_title);
+//  		
+//  		db.updateScheduleRow(ev);
+//  	}
   	
   	//Updates a given row "name" with a "value"
   	public static void updateSpeakersRow(Context context, String fullname, String biography, String twitter,

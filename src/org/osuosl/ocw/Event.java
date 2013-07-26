@@ -23,7 +23,7 @@ public class Event {
 	public String url;
 	public String location;
 	public String brief;
-	public int event_id;
+	//public int event_id;
 	public int track_id;
 	public String track_title;
 	public String speakers;
@@ -43,11 +43,11 @@ public class Event {
 		speaker_ids = null;
 	}
 	
-	public Event(int id, int event_id, String title, String description, Date start_time,
+	public Event(int id, String title, String description, Date start_time,
   			Date end_time, String room_title, int track_id, String track_title){
 		
 		this.id = id;
-		this.event_id = event_id;
+		//this.event_id = event_id;
 		this.title = title;
 		this.description = description;
 		this.start = start_time;
@@ -59,13 +59,13 @@ public class Event {
 	
 	
 	
-	public Event(String event_id, String title, String description, String start_time,
+	public Event(String title, String description, String start_time,
   			String end_time, String room_title, String track_id, String track_title){
 		
 		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss-'07:00'");
 		
 		//this.id = Integer.parseInt(id);
-		this.event_id = Integer.parseInt(event_id);
+		//this.event_id = Integer.parseInt(event_id);
 		this.title = title;
 		this.description = description;
 		try{
@@ -193,13 +193,13 @@ public class Event {
 		this.location = location;
 	}
 
-	public int getEventId() {
-		return event_id;
-	}
-
-	public void setEventId(int EventId) {
-		this.event_id = EventId;
-	}
+//	public int getEventId() {
+//		return event_id;
+//	}
+//
+//	public void setEventId(int EventId) {
+//		this.event_id = EventId;
+//	}
 
 	public int getTrackId() {
 		return track_id;
@@ -209,11 +209,11 @@ public class Event {
 		this.track_id = trackId;
 	}
 
-	public String getTrack_title() {
+	public String getTrackTitle() {
 		return track_title;
 	}
 
-	public void setTrack_title(String track_title) {
+	public void setTrackTitle(String track_title) {
 		this.track_title = track_title;
 	}
 

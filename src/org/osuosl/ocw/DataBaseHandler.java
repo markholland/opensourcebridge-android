@@ -59,14 +59,14 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			db = this.getWritableDatabase();
 			
 			ContentValues values = new ContentValues();
-			values.put(KEY_EVENT_ID, ev.getEventId());
+			values.put(KEY_EVENT_ID, ev.getId());
 			values.put(KEY_TITLE, ev.getTitle());
 			values.put(KEY_DESCRIPTION, ev.getDescription());
 			values.put(KEY_START, ev.getStart().toString());
 			values.put(KEY_END, ev.getEnd().toString());
 			values.put(KEY_ROOM_TITLE, ev.getLocation());
 			values.put(KEY_TRACK_ID, ev.getTrackId());
-			values.put(KEY_TITLE, ev.getTitle());
+			values.put(KEY_TRACK_TITLE, ev.getTrackTitle());
 			
 			// updating row
 			i = db.insert(SCHEDULE_TABLE_NAME, null, values);//String.valueOf(ev.getId())});
@@ -120,7 +120,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			db = this.getWritableDatabase();
 			
 			ContentValues values = new ContentValues();
-			values.put(KEY_EVENT_ID, ev.getEventId());
+			values.put(KEY_EVENT_ID, ev.getId());
 			values.put(KEY_TITLE, ev.getTitle());
 			values.put(KEY_DESCRIPTION, ev.getDescription());
 			values.put(KEY_START, ev.getStart().toString());
@@ -192,8 +192,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
  
 			    ev = new Event(
 			        cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), 
-			        cursor.getString(5), cursor.getString(6), cursor.getString(7), cursor.getString(8)
-			        );
+			        cursor.getString(5), cursor.getString(6), cursor.getString(7));
 			
 			}
 		} catch (Exception e) {

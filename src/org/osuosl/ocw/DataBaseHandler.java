@@ -249,7 +249,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 	 * @param id event_id of the Event to be retrieved.
 	 * @return Event with event_id == id.
 	 */
-	Event getScheduleRow(String id) {
+	public Event getScheduleRow(String id) {
 		Event ev = null;
 		SQLiteDatabase db = null;
 		try {
@@ -280,7 +280,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 					speakerids[0] = sIds;//.split(",");
 
 					ev.EventFromDatabase(
-							title, description, start_time, end_time, room_title, track_id, track_title, speakerids);
+							id, title, description, start_time, end_time, room_title, track_id, track_title, speakerids);
 
 				}
 				db.setTransactionSuccessful();
@@ -306,7 +306,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 	 * @param id speaker_id of the Speaker to be retrieved.
 	 * @return Speaker with speaker_id == id.
 	 */
-	Speaker getSpeakersRow(String id) {
+	public Speaker getSpeakersRow(String id) {
 		Speaker sp = null;
 		SQLiteDatabase db = null;
 		try {

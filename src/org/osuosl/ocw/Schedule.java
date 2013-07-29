@@ -224,7 +224,7 @@ public class Schedule extends Activity {
 					speaker = mSpeakers.get(id);
 				} else {
 					try {
-						String raw_json = getURL(SPEAKER_URI_BASE + id + ".json", "SPEAKERS", false);
+						String raw_json = getURL(SPEAKER_URI_BASE + id + ".json", "SPEAKERS", id, false);
 						
 						
 						if (raw_json.equals("database")){
@@ -232,15 +232,15 @@ public class Schedule extends Activity {
 							long size = db.numRows("SPEAKERS");
 							for(int i=0; i<size; i++) {
 								speaker = new Speaker();
-								mSpeakers.put(id, speaker);
 								speaker = db.getSpeakersRow(""+id);
-
+								mSpeakers.put(id, speaker);
+								
 								}
 						} else {
 
 							JSONObject json = new JSONObject(raw_json);
 							speaker = new Speaker();
-							mSpeakers.put(id, speaker);
+							
 							speaker.id = json.getInt("id");
 							speaker.name  = json.getString("fullname");
 							speaker.biography  = json.getString("biography").replace("\r","");
@@ -260,7 +260,7 @@ public class Schedule extends Activity {
 								speaker.affiliation  = json.getString("affiliation");
 							}
 
-
+							mSpeakers.put(id, speaker);
 							// TODO
 							// dont touch database if no internet, database is already loaded
 
@@ -305,7 +305,7 @@ public class Schedule extends Activity {
 					}
 					
 					String website = speaker.website;
-					if (website != null && website != "" && website != "null"){
+					if (website != null && website != "" && website != "null" && website.length() > 0){
 						TextView text = (TextView) view.findViewById(R.id.website);
 						text.setText(speaker.website);
 						View parent = (View) text.getParent();
@@ -540,7 +540,7 @@ public class Schedule extends Activity {
 	 * @param force - force refresh of data
 	 * @return
 	 */
-	private String getURL(String uri, String table, boolean force) throws IOException{
+	private String getURL(String uri, String table, int id, boolean force) throws IOException{
 		InputStream is = null;
 		OutputStream os = null;
 		Context context = getApplicationContext();
@@ -562,7 +562,7 @@ public class Schedule extends Activity {
 			if (table.equals("SCHEDULE") && (db.numRows("SCHEDULE") != 0) && /*file.lastModified()+CACHE_TIMEOUT > System.currentTimeMillis() &&*/ !force){
 				return "database";
 			}
-			else if(table.equals("SPEAKERS") && (db.numRows("SPEAKERS") != 0) && /*file.lastModified()+CACHE_TIMEOUT > System.currentTimeMillis() &&*/ !force){
+			else if(table.equals("SPEAKERS") && (db.existsSpeaker(""+id) == 1) && /*file.lastModified()+CACHE_TIMEOUT > System.currentTimeMillis() &&*/ !force){
 				return "database";	
 			
 			} else {
@@ -632,7 +632,8 @@ public class Schedule extends Activity {
 	private void parseProposals(ICal calendar, boolean force){
 		ArrayList<Event> events = new ArrayList<Event>();
 		try{
-			String raw_json = getURL(SCHEDULE_URI, "SCHEDULE",force);
+			//TODO
+			String raw_json = getURL(SCHEDULE_URI, "SCHEDULE", 0, force);
 			
 			if (raw_json.equals("database")){
 				

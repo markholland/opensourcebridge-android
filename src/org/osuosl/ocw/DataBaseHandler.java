@@ -168,9 +168,12 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 				values.put(KEY_TRACK_ID, ev.getTrackId());
 				values.put(KEY_TRACK_TITLE, ev.getTrackTitle());
 
-				String speakerIds = convertArrayToString(ev.getSpeaker_ids());
-
+				String speakerIds = "";
+				if(ev.getSpeaker_ids() != null){
+					speakerIds = convertArrayToString(ev.getSpeaker_ids());
+				}
 				values.put(KEY_SPEAKER_IDS, speakerIds);
+				
 				// updating row
 				i = db.update(SCHEDULE_TABLE_NAME, values, KEY_EVENT_ID + " = ?",
 						new String[] { String.valueOf(ev.getId())});

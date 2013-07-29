@@ -38,8 +38,11 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 	private static final String KEY_WEBSITE = "website";
 	private static final String KEY_BLOG = "blog_url";
 	private static final String KEY_AFFILIATION = "affiliation";
-
-
+	
+	
+	// Queries
+	private static final String[] GET_SCHEDULE_ROW = new String[]{KEY_EVENT_ID, KEY_TITLE, KEY_DESCRIPTION, KEY_START, KEY_END, KEY_ROOM_TITLE, KEY_TRACK_ID, KEY_TRACK_TITLE, KEY_SPEAKER_IDS};
+	
 
 
 	public DataBaseHandler(Context context) {
@@ -255,9 +258,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			db.beginTransaction();
 			try{
 
-				Cursor cursor = db.query(SCHEDULE_TABLE_NAME, new String[] { KEY_EVENT_ID,
-						KEY_TITLE, KEY_DESCRIPTION, KEY_START, KEY_END, KEY_ROOM_TITLE, KEY_TRACK_ID, 
-						KEY_TRACK_TITLE, KEY_SPEAKER_IDS }, KEY_EVENT_ID + "=?",
+				Cursor cursor = db.query(SCHEDULE_TABLE_NAME, GET_SCHEDULE_ROW, KEY_EVENT_ID + "=?",
 						new String[] { id }, null, null, null, null);
 				if (cursor != null){
 					cursor.moveToFirst();

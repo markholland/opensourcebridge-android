@@ -37,8 +37,8 @@ public class Speaker {
 		
 	}
 	
-	public Speaker(String id, String name, String biography, String twitter, String affiliation, 
-			String identica, String website, String blog){
+	public Speaker(String id, String name, String biography, String twitter, 
+			String identica, String website, String blog, String affiliation){
 		this.id = Integer.parseInt(id);
 		this.name = name;
 		this.biography = biography;

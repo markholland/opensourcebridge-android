@@ -81,12 +81,12 @@ public class Event {
 		this.speaker_ids = speaker_ids;
 	}
 	
-	public void EventFromDatabase(String title, String description, String start_time,
+	public void EventFromDatabase(String event_id, String title, String description, String start_time,
   			String end_time, String room_title, String track_id, String track_title, String[] speaker_ids){
 		
 		DateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzzz yyyy");
 		
-		//this.id = Integer.parseInt(id);
+		this.id = Integer.parseInt(event_id);
 		//this.event_id = Integer.parseInt(event_id);
 		this.title = title;
 		this.description = description;

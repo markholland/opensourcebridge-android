@@ -215,7 +215,6 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			    String track_title = cursor.getString(7);
 			    String sIds = cursor.getString(8);
 			    // TODO
-			    Log.d("SPEAKERSSTIRNG", sIds+"blah");
 			    String[] speakerids = new String[1];
 			    speakerids[0] = sIds;//.split(",");
 				
@@ -243,9 +242,12 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			db = this.getReadableDatabase();
 			
  
-			Cursor cursor = db.query(SPEAKERS_TABLE_NAME, new String[] { KEY_SPEAKER_ID, KEY_NAME,
-			        KEY_BIO, KEY_TWITTER, KEY_IDENTICA, KEY_WEBSITE, KEY_BLOG, KEY_AFFILIATION, }, KEY_SPEAKER_ID + "=?",
-			        new String[] { id }, null, null, null, null);
+//			Cursor cursor = db.query(SPEAKERS_TABLE_NAME, new String[] { KEY_SPEAKER_ID, KEY_NAME,
+//			        KEY_BIO, KEY_TWITTER, KEY_IDENTICA, KEY_WEBSITE, KEY_BLOG, KEY_AFFILIATION, }, KEY_SPEAKER_ID + "=?",
+//			        new String[] { id }, null, null, null, null);
+			
+			Cursor cursor = db.rawQuery("SELECT * FROM SPEAKERS WHERE speaker_id = "+id, null);
+			
 			if (cursor != null){
 			    cursor.moveToFirst();
 			    

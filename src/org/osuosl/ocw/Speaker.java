@@ -13,14 +13,14 @@ public class Speaker {
 	
 	public Speaker(){
 
-		int id = -1;
-		String name = null;
-		String biography = null;
-		String twitter = null;
-		String affiliation = null;
-		String identica = null;
-		String website = null;
-		String blog = null;
+		this.id = -1;
+		this.name = null;
+		this.biography = null;
+		this.twitter = null;
+		this.affiliation = null;
+		this.identica = null;
+		this.website = null;
+		this.blog = null;
 
 	}
 

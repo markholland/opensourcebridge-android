@@ -233,7 +233,7 @@ public class Schedule extends Activity {
 							for(int i=0; i<size; i++) {
 								speaker = new Speaker();
 								mSpeakers.put(id, speaker);
-								speaker = db.getSpeakersRow(""+i);
+								speaker = db.getSpeakersRow(""+id);
 
 								}
 						} else {

@@ -45,6 +45,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 public class Schedule extends Activity {
@@ -184,6 +185,8 @@ public class Schedule extends Activity {
         mShowBio.setOnClickListener(new OnClickListener() { 
 			public void onClick(View v) {
 				
+				boolean display = true;
+				String error = "";
 				mBio.removeAllViews();
 				String[] speaker_ids = mEvent.speaker_ids;
 				if (speaker_ids != null) {
@@ -197,7 +200,9 @@ public class Schedule extends Activity {
 								mBio.addView(view);
 							} else {
 								//bio not yet downloaded
-								mBio.addView(notDownloadedBioView());
+								display = false;
+								error = "The speakers for this event haven't been downloaded yet";
+								//mBio.addView(notDownloadedBioView());
 							}
 //						} catch (JSONException e) {
 //							e.printStackTrace();
@@ -205,38 +210,22 @@ public class Schedule extends Activity {
 					}
 				} else { 
 					// Event doesn't have any speakers
-					mBio.addView(emptyBioView());
+					display = false;
+					error = "This event doesn't have any speakers";
+					//mBio.addView(emptyBioView());
 				}
-				mDescription.setVisibility(View.GONE);
-				mBio.setVisibility(View.VISIBLE);
+				if(display){
+					mDescription.setVisibility(View.GONE);
+					mBio.setVisibility(View.VISIBLE);
+				} else { 
+					Toast.makeText(getApplicationContext(), 
+							error, 
+							Toast.LENGTH_LONG).show();
+				}
 				
 			}
 			
-			/**
-			 * loads a view when no speaker info has been downloaded yet
-			 * @return
-			 */
-			private View notDownloadedBioView(){
-				LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				View view = vi.inflate(R.layout.bio, null);
-				TextView name = (TextView) view.findViewById(R.id.name);
-				//TODO remove hard coded string
-				name.setText("Bio not yet downloaded, try connecting to the internet and loading again.");
-				return view;
-			}
 			
-			/**
-			 * loads a view when event has no speaker
-			 * @return
-			 */
-			private View emptyBioView(){
-				LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				View view = vi.inflate(R.layout.bio, null);
-				TextView name = (TextView) view.findViewById(R.id.name);
-				//TODO remove hard coded string
-				name.setText("Doesn't apply");
-				return view;
-			}
 			
 			/**
 			 * loads a view populated with the speakers info

@@ -195,6 +195,9 @@ public class Schedule extends Activity {
 									view.setPadding(0, 30, 0, 0);
 								}
 								mBio.addView(view);
+							} else {
+								//bio not yet downloaded
+								mBio.addView(notDownloadedBioView());
 							}
 //						} catch (JSONException e) {
 //							e.printStackTrace();
@@ -210,7 +213,19 @@ public class Schedule extends Activity {
 			}
 			
 			/**
-			 * loads a view when no speaker info is available
+			 * loads a view when no speaker info has been downloaded yet
+			 * @return
+			 */
+			private View notDownloadedBioView(){
+				LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				View view = vi.inflate(R.layout.bio, null);
+				TextView name = (TextView) view.findViewById(R.id.name);
+				name.setText("Bio not yet downloaded, try connecting to the internet and loading again.");
+				return view;
+			}
+			
+			/**
+			 * loads a view when event has no speaker
 			 * @return
 			 */
 			private View emptyBioView(){

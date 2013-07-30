@@ -1,13 +1,10 @@
 package org.osuosl.ocw;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.DateFormat;
@@ -203,10 +200,25 @@ public class Schedule extends Activity {
 //							e.printStackTrace();
 //						}
 					}
-				
-					mDescription.setVisibility(View.GONE);
-					mBio.setVisibility(View.VISIBLE);
+				} else { 
+					// Event doesn't have any speakers
+					mBio.addView(emptyBioView());
 				}
+				mDescription.setVisibility(View.GONE);
+				mBio.setVisibility(View.VISIBLE);
+				
+			}
+			
+			/**
+			 * loads a view when no speaker info is available
+			 * @return
+			 */
+			private View emptyBioView(){
+				LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				View view = vi.inflate(R.layout.bio, null);
+				TextView name = (TextView) view.findViewById(R.id.name);
+				name.setText("Doesn't apply");
+				return view;
 			}
 			
 			/**
@@ -234,7 +246,6 @@ public class Schedule extends Activity {
 								speaker = new Speaker();
 								speaker = db.getSpeakersRow(""+id);
 								mSpeakers.put(id, speaker);
-								
 								}
 						} else {
 

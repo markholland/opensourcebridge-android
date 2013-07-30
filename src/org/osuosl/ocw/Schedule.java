@@ -220,6 +220,7 @@ public class Schedule extends Activity {
 				LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				View view = vi.inflate(R.layout.bio, null);
 				TextView name = (TextView) view.findViewById(R.id.name);
+				//TODO remove hard coded string
 				name.setText("Bio not yet downloaded, try connecting to the internet and loading again.");
 				return view;
 			}
@@ -232,6 +233,7 @@ public class Schedule extends Activity {
 				LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				View view = vi.inflate(R.layout.bio, null);
 				TextView name = (TextView) view.findViewById(R.id.name);
+				//TODO remove hard coded string
 				name.setText("Doesn't apply");
 				return view;
 			}

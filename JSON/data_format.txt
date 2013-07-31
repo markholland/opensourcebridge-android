@@ -1,0 +1,65 @@
+Data Format
+
+This is a description of data that the app expects.
+
+General information about data:
+
+	- All data is JSON
+	- Extra fields can be included, but are discouraged because it affects loading times
+		optional fields can be left out altogether
+	- Dates must be formatted: YYYY-MM-DDTHH:MM:SS-07:00
+	- Unless otherwise noted objects are dictionaries containing the properties described
+
+Conference
+
+This describes general information about the conference.
+
+start - first date of the conference
+end - end date of the conference
+tracks - dictionary of Track objects
+location - dictionary of location objects
+
+
+Track
+
+A track for the conference. It is good to have additional tracks for other, lunch, etc
+
+name
+color - main color for the track. This will be used in the event listing and event detail views.
+color_dark - a darker version of the color for highlight area on the event detail view
+color_text - color to use for event titles on detail page. Generally this should be white or black depending on whether color is dark or light
+
+Location
+
+A room or other location
+
+name
+
+Schedule
+
+A list of events. Schedules should only include events for a single day.
+
+items - array of events making up the day.
+
+Event 
+
+An event or session at the conference. This may include things such as registration, breaks, lunch, etc
+
+id - ID for event
+title - title of event
+description -
+room_id - room
+user_ids - array of speaker IDs
+track_id - ID of track
+start_time - full date of start time
+end_time - full date of end time
+
+Speaker
+
+name
+biography
+affiliation
+twitter
+email
+website
+blog

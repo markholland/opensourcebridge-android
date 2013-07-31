@@ -517,6 +517,16 @@ public class Schedule extends Activity {
 //		} else if (isSameDay(mCurrentDate, DAY3)) {
 //			setDay(DAY4);
 //		}
+		
+		//Find the index of the current day and then set to the next
+		boolean found = false;
+		for(int i = 0; i < DAYS.size() - 1 && !found; i++){
+			if(mCurrentDate == DAYS.get(i)){
+				setDay(DAYS.get(i+1));
+				found = true;
+			}
+		}
+		
 	}
 	
 	/**
@@ -530,6 +540,14 @@ public class Schedule extends Activity {
 //		} else if (isSameDay(mCurrentDate, DAY2)) {
 //			setDay(DAY1);
 //		}
+		boolean found = false;
+		for(int i = DAYS.size() - 1; i > 0 && !found; i--){
+			if(mCurrentDate == DAYS.get(i)){
+				setDay(DAYS.get(i-1));
+				found = true;
+			}
+		}
+		
 	}
 	
 	/**

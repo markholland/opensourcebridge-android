@@ -58,6 +58,10 @@ public class Schedule extends Activity {
 	
 	// TODO Fetch dates from OCW.
 	// TODO Refactor dates as array.
+	private ArrayList<Date> DAYS;
+//	private Date open_date;
+//	private Date close_date;
+//	private int num_days;
 	private static final Date DAY1 = new Date(113, 6, 25); //wdcnz date
 //	private static final Date DAY2 = new Date(113, 6, 27);
 //	private static final Date DAY3 = new Date(113, 6, 28);
@@ -121,6 +125,7 @@ public class Schedule extends Activity {
         mHandler = new Handler();
         
         mSpeakers = new HashMap<Integer, Speaker>();
+        DAYS = new ArrayList<Date>();
         
         mDate = (TextView) findViewById(R.id.date);
         mEvents = (ListView) findViewById(R.id.events);
@@ -202,7 +207,7 @@ public class Schedule extends Activity {
 								//bio not yet downloaded
 								display = false;
 								error = "The speakers for this event haven't been downloaded yet";
-								//mBio.addView(notDownloadedBioView());
+								
 							}
 //						} catch (JSONException e) {
 //							e.printStackTrace();
@@ -212,7 +217,7 @@ public class Schedule extends Activity {
 					// Event doesn't have any speakers
 					display = false;
 					error = "This event doesn't have any speakers";
-					//mBio.addView(emptyBioView());
+					
 				}
 				if(display){
 					mDescription.setVisibility(View.GONE);
@@ -370,6 +375,7 @@ public class Schedule extends Activity {
         mHandler.post(new Runnable() {
 		    public void run() { 
 		    	loadSchedule(true);
+		    	//have number of days
 		    	now();
 		    	}
 		});
@@ -403,10 +409,18 @@ public class Schedule extends Activity {
 		SubMenu dayMenu = menu.addSubMenu("Day").setIcon(android.R.drawable.ic_menu_today);
 
 		// TODO Generate days menu from data fetched from OCW.
-	    dayMenu.add(0, MENU_DAY1, 0, this.getDayAsString(DAY1));
+//	    dayMenu.add(0, MENU_DAY1, 0, this.getDayAsString(DAY1));
 //	    dayMenu.add(0, MENU_DAY2, 0, this.getDayAsString(DAY2));
 //	    dayMenu.add(0, MENU_DAY3, 0, this.getDayAsString(DAY3));
 //	    dayMenu.add(0, MENU_DAY4, 0, this.getDayAsString(DAY4));
+	    
+	    for(int i = 0; i < DAYS.size(); i++){
+	    	
+	    	dayMenu.add(0, i, 0, this.getDayAsString(DAYS.get(i)));
+	    	
+	    }
+	    
+	    
 
 		menu.add(0, MENU_NEXT, 0, "Next Day").setIcon(R.drawable.ic_menu_forward);
 	    menu.add(0, MENU_NOW, 0, "Now").setIcon(android.R.drawable.ic_menu_mylocation);
@@ -447,6 +461,8 @@ public class Schedule extends Activity {
 			mHandler.post(new Runnable() {
 			    public void run() { 
 			    	loadSchedule(true);
+			    	//have number of days
+			    	
 			    	now();
 			    	}
 			}); 
@@ -487,15 +503,15 @@ public class Schedule extends Activity {
 	 *      currently underway
 	 */
 	public void now(){
-//		Date now = new Date();
-//		if (now.before(DAY1) || now.after(DAY4)) {
-//			setDay(DAY1);
-//		} else {
-//			// use now, since it will have the time of day for 
-//			// jumping to the right time
-//			setDay(now);
-//		}
-		setDay(DAY1);
+		Date now = new Date();
+		if (now.before(DAYS.get(0)) || now.after(DAYS.get(DAYS.size() - 1))) {
+			setDay(DAYS.get(0));
+		} else {
+			// use now, since it will have the time of day for 
+			// jumping to the right time
+			setDay(now);
+		}
+		//setDay(DAY1);
 	}
 	
 	/**
@@ -509,6 +525,16 @@ public class Schedule extends Activity {
 //		} else if (isSameDay(mCurrentDate, DAY3)) {
 //			setDay(DAY4);
 //		}
+		
+		//Find the index of the current day and then set to the next
+		boolean found = false;
+		for(int i = 0; i < DAYS.size() - 1 && !found; i++){
+			if(mCurrentDate == DAYS.get(i)){
+				setDay(DAYS.get(i+1));
+				found = true;
+			}
+		}
+		
 	}
 	
 	/**
@@ -522,6 +548,14 @@ public class Schedule extends Activity {
 //		} else if (isSameDay(mCurrentDate, DAY2)) {
 //			setDay(DAY1);
 //		}
+		boolean found = false;
+		for(int i = DAYS.size() - 1; i > 0 && !found; i--){
+			if(mCurrentDate == DAYS.get(i)){
+				setDay(DAYS.get(i-1));
+				found = true;
+			}
+		}
+		
 	}
 	
 	/**
@@ -546,6 +580,11 @@ public class Schedule extends Activity {
 		mCurrentDate = new Date(1900, 0, 0);
 		ICal calendar = new ICal();
 		parseProposals(calendar, force);
+		//Days available here
+		Log.d("DAYS", DAYS.toString());
+		
+		
+		
 		mAdapter = new EventAdapter(this, R.layout.listevent, calendar.getEvents());
         mEvents.setAdapter(mAdapter);
 	}
@@ -668,6 +707,11 @@ public class Schedule extends Activity {
 			
 				DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss-'07:00'");
 				JSONObject schedule = new JSONObject(raw_json);
+				
+//				open_date = formatter.parse(schedule.getString("open_date"));
+//				close_date = formatter.parse(schedule.getString("close_date"));
+//				num_days = schedule.getInt("num_days");
+				
 				JSONArray json_events = schedule.getJSONArray("items");
 				int size = json_events.length();
 				for(int i=0; i<size; i++){
@@ -689,6 +733,27 @@ public class Schedule extends Activity {
 						event.description = "                                                                                  ";
 					}
 					event.start = formatter.parse(json.getString("start_time"));
+					
+					
+					
+					
+					
+					//If no days then add the first
+					if(DAYS.isEmpty())
+						DAYS.add(event.start);
+					//if the event date is after the last added days date then add the day
+					Log.d("event.date",""+event.start.getDate());
+					Log.d("Last added date", ""+DAYS.get(DAYS.size() - 1).getDate());
+					if(event.start.getDate() > (DAYS.get(DAYS.size() - 1).getDate())){
+						DAYS.add(event.start);
+					}
+					
+					
+					
+					
+					
+					
+					
 					event.end = formatter.parse(json.getString("end_time"));
 					event.location = json.getString("room_title");
 					if (event.location == "null"){

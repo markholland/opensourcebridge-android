@@ -163,6 +163,9 @@ public class Schedule extends Activity {
 					return;// ignore clicks on the dates
 				}
 				Event event = (Event) item;
+				if (event.getTrack_id() == -1){
+					return;// ignore clicks on non-events
+				}
 				Context context = getApplicationContext();
 				mHeader.setBackgroundColor(context.getResources().getColor(event.getTrackColor()));
 				mTitle.setText(event.getEvent_title());
@@ -657,6 +660,10 @@ public class Schedule extends Activity {
 			else if(table.equals("SPEAKERS") && (db.existsSpeaker(""+id) == 1) && /*file.lastModified()+CACHE_TIMEOUT > System.currentTimeMillis() &&*/ !force){
 				return "database";	
 			
+			}
+			else if(table.equals("TRACKS") && (db.existsTrack(""+id) == 1) && /*file.lastModified()+CACHE_TIMEOUT > System.currentTimeMillis() &&*/ !force){
+				return "database";	
+			
 			} else {
 				URL url = new URL(uri);
 				URLConnection conn = null;
@@ -734,7 +741,7 @@ public class Schedule extends Activity {
 			
 			} else {
 				JSONObject tracks = new JSONObject(raw_json);
-				JSONArray json_tracks = tracks.getJSONArray("items");
+				JSONArray json_tracks = tracks.getJSONArray("tracks");
 				int size = json_tracks.length();
 				for(int i=0; i<size; i++){
 					JSONObject json = json_tracks.getJSONObject(i);
@@ -771,7 +778,7 @@ public class Schedule extends Activity {
 					else if(trackExists(""+track.getTrack_id()) == -1) {
 						//error checking if exists
 					}
-
+					
 					mTracks.put(track.getTrack_id(), track);
 				}
 			}
@@ -1037,6 +1044,7 @@ public class Schedule extends Activity {
 						TextView track = (TextView) v.findViewById(R.id.track);
 						track.setTextColor(context.getResources().getColor(event.getTrackColor()));
 						track.setText(mTracks.get(event.getTrack_id()).getTrack_title());
+					
 					}
 					if (event_title != null) {
 						event_title.setText(event.getEvent_title());

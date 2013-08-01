@@ -25,6 +25,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -167,7 +168,9 @@ public class Schedule extends Activity {
 					return;// ignore clicks on non-events
 				}
 				Context context = getApplicationContext();
-				mHeader.setBackgroundColor(context.getResources().getColor(event.getTrackColor()));
+				//only set color if event has track_id
+				if(event.getTrack_id() != -1)
+					mHeader.setBackgroundColor(Color.parseColor(mTracks.get(event.getTrack_id()).getColor()));
 				mTitle.setText(event.getEvent_title());
 				mLocation.setText(event.getRoom_title());
 				DateFormat startFormat = new SimpleDateFormat("E, h:mm");
@@ -176,7 +179,7 @@ public class Schedule extends Activity {
 				mTime.setText(timeString);
 				//TODO Fix for multiple speakers
 				mSpeaker.setText(loadBio(Integer.parseInt(event.getSpeaker_ids()[0])).getFullname());
-				mTimeLocation.setBackgroundColor(context.getResources().getColor(event.getTrackColorDark()));
+				mTimeLocation.setBackgroundColor(Color.parseColor(mTracks.get(event.getTrack_id()).getColor()));
 				mDescription.setText(event.getDescription());
 				show_description();
 				mDescriptionScroller.scrollTo(0, 0);
@@ -1042,7 +1045,7 @@ public class Schedule extends Activity {
 					if (event.getTrack_id() != -1) {
 						Context context = getApplicationContext();
 						TextView track = (TextView) v.findViewById(R.id.track);
-						track.setTextColor(context.getResources().getColor(event.getTrackColor()));
+						track.setTextColor(Color.parseColor(mTracks.get(event.getTrack_id()).getColor_text()));
 						track.setText(mTracks.get(event.getTrack_id()).getTrack_title());
 					
 					}

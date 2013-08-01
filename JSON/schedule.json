@@ -300,6 +300,33 @@
       "description": "",
       "room_id": "",
       "room_title": ""
+    },
+    {
+      "event_id": 20,
+      "event_title": "The Xero after party",
+      "start_time": "2013-07-26T18:05:00-07:00",
+      "end_time": "2013-07-26T21:00:00-07:00",
+      "description": "",
+      "room_id": "",
+      "room_title": ""
+    },
+    {
+      "event_id": 21,
+      "event_title": "The Xero after party",
+      "start_time": "2013-07-27T18:05:00-07:00",
+      "end_time": "2013-07-27T21:00:00-07:00",
+      "description": "",
+      "room_id": "",
+      "room_title": ""
+    },
+    {
+      "event_id": 22,
+      "event_title": "The Xero after party",
+      "start_time": "2013-07-28T18:05:00-07:00",
+      "end_time": "2013-07-28T21:00:00-07:00",
+      "description": "",
+      "room_id": "",
+      "room_title": ""
     }
   ],
   "is_admin": false

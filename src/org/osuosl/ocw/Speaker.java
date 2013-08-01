@@ -5,12 +5,12 @@ public class Speaker {
 	private int speaker_id;
 	private String fullname;
 	private String biography;
-	public String affiliation;
-	public String twitter;
-	public String email;
-	public String website;
-	public String blog;
-	public String linkedin;
+	private String affiliation;
+	private String twitter;
+	private String email;
+	private String website;
+	private String blog;
+	private String linkedin;
 	
 	public Speaker(){
 

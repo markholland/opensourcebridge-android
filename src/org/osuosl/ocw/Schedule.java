@@ -163,13 +163,13 @@ public class Schedule extends Activity {
 				Event event = (Event) item;
 				Context context = getApplicationContext();
 				mHeader.setBackgroundColor(context.getResources().getColor(event.getTrackColor()));
-				mTitle.setText(event.title);
-				mLocation.setText(event.location);
+				mTitle.setText(event.getEvent_title());
+				mLocation.setText(event.getRoom_title());
 				DateFormat startFormat = new SimpleDateFormat("E, h:mm");
 				DateFormat endFormat = new SimpleDateFormat("h:mm a");
-				String timeString = startFormat.format(event.start) + " - " + endFormat.format(event.end);
+				String timeString = startFormat.format(event.getStart_time()) + " - " + endFormat.format(event.getEnd_time());
 				mTime.setText(timeString);
-				mSpeaker.setText(event.speakers);
+				mSpeaker.setText(loadBio(event.getSpeaker_ids()));
 				mTimeLocation.setBackgroundColor(context.getResources().getColor(event.getTrackColorDark()));
 				mDescription.setText(event.description);
 				show_description();
@@ -233,13 +233,92 @@ public class Schedule extends Activity {
 			
 			
 			
+			private Speaker loadBio(int id){
+				
+				Speaker speaker = null;
+				
+				try {
+					String raw_json = getURL(SPEAKER_URI_BASE + id + ".json", "SPEAKERS", id, false);
+					
+					
+					if (raw_json.equals("database")){
+
+						long size = db.numRows("SPEAKERS");
+						for(int i=0; i<size; i++) {
+							speaker = new Speaker();
+							speaker = db.getSpeakersRow(""+id);
+							mSpeakers.put(id, speaker);
+							}
+					} else {
+
+						JSONObject json = new JSONObject(raw_json);
+						speaker = new Speaker();
+						
+						speaker.setSpeaker_id(json.getInt("speaker_id"));
+						speaker.setFullname(json.getString("fullname"));
+						
+						//Optional fields
+						if (json.has("biography")) {
+							speaker.setBiography(json.getString("biography").replace("\r",""));
+						}
+						if (json.has("affiliation")) {
+							speaker.setAffiliation(json.getString("affiliation"));
+						}
+						if (json.has("twitter")) {
+							speaker.setTwitter(json.getString("twitter"));
+						}
+						if (json.has("email")){
+							speaker.setEmail(json.getString("email"));
+						}
+						if (json.has("website")) {
+							speaker.setWebsite(json.getString("website"));
+						}
+						if (json.has("blog")) {
+							speaker.setBlog(json.getString("blog"));
+						}
+						if (json.has("linkedin")) {
+							speaker.setLinkedin(json.getString("linkedin"));
+						}
+						
+
+						mSpeakers.put(id, speaker);
+						// TODO
+						// dont touch database if no internet, database is already loaded
+
+						Log.d("CURRENT SPEAKER ROW", speaker.getFullname());
+
+						if(speakerRowExists(getApplicationContext(),""+speaker.getSpeaker_id()) == 0){
+							addSpeakersRow(getApplicationContext(),speaker);
+							Log.d("ADDED ROW", "ADDED ROW");
+						}
+						else if(speakerRowExists(getApplicationContext(),""+speaker.getSpeaker_id()) == 1) {
+							updateSpeakersRow(getApplicationContext(),speaker);
+							Log.d("UPDATED SPEAKER ROW", "UPDATED SPEAKER ROW");
+						}
+						else if(speakerRowExists(getApplicationContext(),""+speaker.getSpeaker_id()) == -1) {
+							//error checking if exists
+						}
+					}
+				
+
+					} catch (JSONException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						// file couldn't be loaded
+					}
+				
+				return speaker;
+				
+			}
+			
+			
 			/**
 			 * loads a view populated with the speakers info
 			 * @param id
 			 * @return
 			 */
-			private View loadBioView(int sid) {
-				Integer id = new Integer(sid);
+			private View loadBioView(int id) {
+//				Integer id = new Integer(sid);
 				Speaker speaker = null;
 				View view = null;
 				// check memory to see if speaker had already been loaded
@@ -247,111 +326,61 @@ public class Schedule extends Activity {
 				if (mSpeakers.containsKey(id)){
 					speaker = mSpeakers.get(id);
 				} else {
-					try {
-						String raw_json = getURL(SPEAKER_URI_BASE + id + ".json", "SPEAKERS", id, false);
-						
-						
-						if (raw_json.equals("database")){
-
-							long size = db.numRows("SPEAKERS");
-							for(int i=0; i<size; i++) {
-								speaker = new Speaker();
-								speaker = db.getSpeakersRow(""+id);
-								mSpeakers.put(id, speaker);
-								}
-						} else {
-
-							JSONObject json = new JSONObject(raw_json);
-							speaker = new Speaker();
-							
-							speaker.id = json.getInt("id");
-							speaker.name  = json.getString("fullname");
-							speaker.biography  = json.getString("biography").replace("\r","");
-							if (json.has("twitter")) {
-								speaker.twitter  = json.getString("twitter");
-							}
-							if (json.has("identica")){
-								speaker.identica  = json.getString("identica");
-							}
-							if (json.has("website")) {
-								speaker.website  = json.getString("website");
-							}
-							if (json.has("blog_url")) {
-								speaker.blog = json.getString("blog_url");
-							}
-							if (json.has("affiliation")) {
-								speaker.affiliation  = json.getString("affiliation");
-							}
-
-							mSpeakers.put(id, speaker);
-							// TODO
-							// dont touch database if no internet, database is already loaded
-
-							Log.d("CURRENT SPEAKER ROW", speaker.getName());
-
-							if(speakerRowExists(getApplicationContext(),""+speaker.getId()) == 0){
-								addSpeakersRow(getApplicationContext(),speaker);
-								Log.d("ADDED ROW", "ADDED ROW");
-							}
-							else if(speakerRowExists(getApplicationContext(),""+speaker.getId()) == 1) {
-								updateSpeakersRow(getApplicationContext(),speaker);
-								Log.d("UPDATED SPEAKER ROW", "UPDATED SPEAKER ROW");
-							}
-							else if(speakerRowExists(getApplicationContext(),""+speaker.getId()) == -1) {
-								//error checking if exists
-							}
-						}
-					
-
-						} catch (JSONException e) {
-							e.printStackTrace();
-						} catch (IOException e) {
-							// file couldn't be loaded
-						}
-					}
-				
+					speaker = loadBio(id);
+				}
 				// create view
 				if (speaker != null) {
 					LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 					view = vi.inflate(R.layout.bio, null);
 					TextView name = (TextView) view.findViewById(R.id.name);
-					name.setText(speaker.name);
+					name.setText(speaker.getFullname());
 					TextView biography = (TextView) view.findViewById(R.id.biography);
-					biography.setText(speaker.biography);
+					biography.setText(speaker.getBiography());
 					
-					String twitter = speaker.twitter;
-					if (twitter != null && twitter != ""  && twitter != "null"){
-						TextView text = (TextView) view.findViewById(R.id.twitter);
-						text.setText(twitter);
-						View parent = (View) text.getParent();
-						parent.setVisibility(View.VISIBLE);
-					}
+					// Single string variable for all text
+					String textToSet = speaker.getAffiliation();
 					
-					String website = speaker.website;
-					if (website != null && website != "" && website != "null" && website.length() > 0){
-						TextView text = (TextView) view.findViewById(R.id.website);
-						text.setText(speaker.website);
-						View parent = (View) text.getParent();
-						parent.setVisibility(View.VISIBLE);
-					}
-					
-					String blog = speaker.blog;
-					if (blog != null && blog != "" && blog != "null"){
-						TextView text = (TextView) view.findViewById(R.id.blog);
-						text.setText(speaker.blog);
-						View parent = (View) text.getParent();
-						parent.setVisibility(View.VISIBLE);
-					}
-					
-					if (speaker.affiliation != null){
+					if (textToSet != null){
 						TextView text = (TextView) view.findViewById(R.id.affiliation);
-						text.setText(speaker.affiliation);
+						text.setText(textToSet);
 					}
 					
-					String identica = speaker.identica;
-					if (identica != null && identica != "" && identica != "null"){
+					textToSet = speaker.getTwitter();
+					if (textToSet != null && textToSet != ""  && textToSet != "null" && textToSet.length() > 0){
+						TextView text = (TextView) view.findViewById(R.id.twitter);
+						text.setText(textToSet);
+						View parent = (View) text.getParent();
+						parent.setVisibility(View.VISIBLE);
+					}
+					
+					textToSet = speaker.getEmail();
+					if (textToSet != null && textToSet != "" && textToSet != "null" && textToSet.length() > 0){
+						TextView text = (TextView) view.findViewById(R.id.website);
+						text.setText(textToSet);
+						View parent = (View) text.getParent();
+						parent.setVisibility(View.VISIBLE);
+					}
+					
+					textToSet = speaker.getWebsite();
+					if (textToSet != null && textToSet != "" && textToSet != "null" && textToSet.length() > 0){
+						TextView text = (TextView) view.findViewById(R.id.website);
+						text.setText(textToSet);
+						View parent = (View) text.getParent();
+						parent.setVisibility(View.VISIBLE);
+					}
+					
+					textToSet = speaker.getBlog();
+					if (textToSet != null && textToSet != "" && textToSet != "null" && textToSet.length() > 0){
+						TextView text = (TextView) view.findViewById(R.id.blog);
+						text.setText(textToSet);
+						View parent = (View) text.getParent();
+						parent.setVisibility(View.VISIBLE);
+					}
+					
+					textToSet = speaker.getLinkedin();
+					if (textToSet != null && textToSet != "" && textToSet != "null" && textToSet.length() > 0){
 						TextView text = (TextView) view.findViewById(R.id.identica);
-						text.setText(speaker.identica);
+						text.setText(textToSet);
 						View parent = (View) text.getParent();
 						parent.setVisibility(View.VISIBLE);
 					}

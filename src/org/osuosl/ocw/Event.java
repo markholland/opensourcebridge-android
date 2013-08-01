@@ -16,90 +16,65 @@ public class Event {
 	private static final int TRACK_HACKS = 24;
     private static final int TRACK_BOF = 25;
 	
-    public int id;
-	public Date start, end;
-	public String description;
-	public String title;
-	public String url;
-	public String location;
-	public String brief;
-	//public int event_id;
-	public int track_id;
-	public String track_title;
-	public String speakers;
-	public String[] speaker_ids;
+    private int event_id;
+    private String event_title;
+    private Date start_time;
+    private Date end_time;
+    private String description;
+    private String room_title;
+    private int track_id;
+    private String[] speaker_ids;
+    private String presenter;
 	
 	public Event(){
-		id = -1;
-		start = null;
-		end = null;
-		description = null;
-		title = null;
-		url = null;
-		location = null;
-		track_id = -1;
-		track_title = null;
-		speakers = null;
-		speaker_ids = null;
+		this.event_id = -1;
+		this.event_title = null;
+		this.start_time = null;
+		this.end_time = null;
+		this.description = null;
+		this.event_title = null;
+		this.room_title = null;
+		this.track_id = -1;
+		this.speaker_ids = null;
+		this.presenter = null;
 	}
 	
-	public Event(int id, String title, String description, Date start_time,
-  			Date end_time, String room_title, int track_id, String track_title, String[] speaker_ids){
+	public Event(int event_id, String event_title, String description, Date start_time,
+  			Date end_time, String room_title, int track_id, String[] speaker_ids,
+  			String presenter){
 		
-		this.id = id;
-		//this.event_id = event_id;
-		this.title = title;
+		this.event_id = event_id;
+		this.event_title = event_title;
 		this.description = description;
-		this.start = start_time;
-		this.end = end_time;
-		this.location = room_title;
+		this.start_time = start_time;
+		this.end_time = end_time;
+		this.room_title = room_title;
 		this.track_id = track_id;
-		this.track_title = track_title;
 		this.speaker_ids = speaker_ids;
+		this.presenter = presenter;
 	}
 	
 	
 	
-	public Event(String title, String description, String start_time,
-  			String end_time, String room_title, String track_id, String track_title, String[] speaker_ids){
-		
-		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss-'07:00'");
-		
-		//this.id = Integer.parseInt(id);
-		//this.event_id = Integer.parseInt(event_id);
-		this.title = title;
-		this.description = description;
-		try{
-			this.start = formatter.parse(start_time);
-			this.end = formatter.parse(end_time);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		this.location = room_title;
-		this.track_id = Integer.parseInt(track_id);
-		this.track_title = track_title;
-		this.speaker_ids = speaker_ids;
-	}
-	
-	public void EventFromDatabase(String event_id, String title, String description, String start_time,
-  			String end_time, String room_title, String track_id, String track_title, String[] speaker_ids){
+	public Event(String event_id, String event_title, String description, String start_time,
+  			String end_time, String room_title, String track_id, String[] speaker_ids,
+  			String presenter){
 		
 		DateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzzz yyyy");
 		
-		this.id = Integer.parseInt(event_id);
-		//this.event_id = Integer.parseInt(event_id);
-		this.title = title;
+		this.event_id = Integer.parseInt(event_id);
+		this.event_title = event_title;
 		this.description = description;
 		try{
-			this.start = formatter.parse(start_time);
-			this.end = formatter.parse(end_time);
+			this.start_time = formatter.parse(start_time);
+			this.end_time = formatter.parse(end_time);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		this.location = room_title;
+		this.room_title = room_title;
 		this.track_id = Integer.parseInt(track_id);
-		this.track_title = track_title;
 		this.speaker_ids = speaker_ids;
+		this.presenter = presenter;
 	}
 	
 	/*public String getTrackName() {
@@ -169,29 +144,37 @@ public class Event {
 	           return R.color.track_other_dark;
 	   }
     }
-    
-    public int getId() {
-		return id;
+
+	public int getEvent_id() {
+		return event_id;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public void setEvent_id(int event_id) {
+		this.event_id = event_id;
 	}
 
-	public Date getStart() {
-		return start;
+	public String getEvent_title() {
+		return event_title;
 	}
 
-	public void setStart(Date start) {
-		this.start = start;
+	public void setEvent_title(String event_title) {
+		this.event_title = event_title;
 	}
 
-	public Date getEnd() {
-		return end;
+	public Date getStart_time() {
+		return start_time;
 	}
 
-	public void setEnd(Date end) {
-		this.end = end;
+	public void setStart_time(Date start_time) {
+		this.start_time = start_time;
+	}
+
+	public Date getEnd_time() {
+		return end_time;
+	}
+
+	public void setEnd_time(Date end_time) {
+		this.end_time = end_time;
 	}
 
 	public String getDescription() {
@@ -202,46 +185,22 @@ public class Event {
 		this.description = description;
 	}
 
-	public String getTitle() {
-		return title;
+	public String getRoom_title() {
+		return room_title;
 	}
 
-	public void setTitle(String title) {
-		this.title = title;
+	public void setRoom_title(String room_title) {
+		this.room_title = room_title;
 	}
 
-	public String getLocation() {
-		return location;
-	}
-
-	public void setLocation(String location) {
-		this.location = location;
-	}
-
-//	public int getEventId() {
-//		return event_id;
-//	}
-//
-//	public void setEventId(int EventId) {
-//		this.event_id = EventId;
-//	}
-
-	public int getTrackId() {
+	public int getTrack_id() {
 		return track_id;
 	}
 
-	public void setTrackId(int trackId) {
-		this.track_id = trackId;
+	public void setTrack_id(int track_id) {
+		this.track_id = track_id;
 	}
 
-	public String getTrackTitle() {
-		return track_title;
-	}
-
-	public void setTrackTitle(String track_title) {
-		this.track_title = track_title;
-	}
-	
 	public String[] getSpeaker_ids() {
 		return speaker_ids;
 	}
@@ -249,6 +208,16 @@ public class Event {
 	public void setSpeaker_ids(String[] speaker_ids) {
 		this.speaker_ids = speaker_ids;
 	}
+
+	public String getPresenter() {
+		return presenter;
+	}
+
+	public void setPresenter(String presenter) {
+		this.presenter = presenter;
+	}
+    
+
 
 	
 }

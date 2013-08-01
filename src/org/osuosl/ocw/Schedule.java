@@ -178,16 +178,25 @@ public class Schedule extends Activity {
 				String timeString = startFormat.format(event.getStart_time()) + " - " + endFormat.format(event.getEnd_time());
 				mTime.setText(timeString);
 				//TODO Fix for multiple speakers
-				mSpeaker.setText(loadBio(Integer.parseInt(event.getSpeaker_ids()[0])).getFullname());
-				mTimeLocation.setBackgroundColor(Color.parseColor(mTracks.get(event.getTrack_id()).getColor()));
-				mDescription.setText(event.getDescription());
-				show_description();
-				mDescriptionScroller.scrollTo(0, 0);
-				mFlipper.setInAnimation(mInRight);
-                mFlipper.setOutAnimation(mOutLeft);
-                mFlipper.showNext();
-                mEvent = event;
-                mDetail = true;
+				Log.d("SPEAKERID",event.getSpeaker_ids()[0]);
+				
+				Speaker sp = loadBio(Integer.parseInt(event.getSpeaker_ids()[0]));
+				if(sp!=null){
+					mSpeaker.setText(sp.getFullname());
+					mTimeLocation.setBackgroundColor(Color.parseColor(mTracks.get(event.getTrack_id()).getColor()));
+					mDescription.setText(event.getDescription());
+					show_description();
+					mDescriptionScroller.scrollTo(0, 0);
+					mFlipper.setInAnimation(mInRight);
+					mFlipper.setOutAnimation(mOutLeft);
+					mFlipper.showNext();
+					mEvent = event;
+					mDetail = true;
+				} else { 
+					Toast.makeText(getApplicationContext(), 
+							"Event info not downloaded", 
+							Toast.LENGTH_LONG).show();
+				}
 			}
 		});
         
@@ -276,7 +285,7 @@ public class Schedule extends Activity {
 		try {
 			String raw_json = getURL(SPEAKER_URI_BASE + id + ".json", "SPEAKERS", id, false);
 			
-			
+			Log.d("CHECK DATABASE",raw_json);
 			if (raw_json.equals("database")){
 
 				long size = db.numRows("SPEAKERS");
@@ -342,7 +351,7 @@ public class Schedule extends Activity {
 			} catch (IOException e) {
 				// file couldn't be loaded
 			}
-		
+		Log.d("SPEAKER NULL", ""+speaker);
 		return speaker;
 		
 	}

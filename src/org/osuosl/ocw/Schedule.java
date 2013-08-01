@@ -115,6 +115,7 @@ public class Schedule extends Activity {
     Button mShowBio;
     
     private static final String SCHEDULE_URI = "http://www.partiallogic.com/gsoc2013/schedule.json";
+    private static final String TRACKS_URI = "http://www.partiallogic.com/gsoc2013/tracks.json";
     private static final String SPEAKER_URI_BASE = "http://www.partiallogic.com/gsoc2013/speakers/";
     
     /** Called when the activity is first created. */

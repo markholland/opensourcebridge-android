@@ -99,6 +99,7 @@ public class Schedule extends Activity {
     // session details
     Event mEvent = null;
     HashMap<Integer, Speaker> mSpeakers;
+    HashMap<Integer, Track> mTracks;
     View mHeader;
     TextView mTitle;
     TextView mTime;
@@ -126,6 +127,7 @@ public class Schedule extends Activity {
         mHandler = new Handler();
         
         mSpeakers = new HashMap<Integer, Speaker>();
+        mTracks = new HashMap<Integer, Track>();
         DAYS = new ArrayList<Date>();
         
         mDate = (TextView) findViewById(R.id.date);
@@ -612,6 +614,7 @@ public class Schedule extends Activity {
 		//    This will cause it to update the list immediately.
 		mCurrentDate = new Date(1900, 0, 0);
 		ICal calendar = new ICal();
+		loadTracks(force);
 		parseProposals(calendar, force);
 		//Days available here
 		Log.d("DAYS", DAYS.toString());
@@ -713,6 +716,73 @@ public class Schedule extends Activity {
 		return sb.toString();
 	}
 	
+	private void loadTracks(boolean force){
+		try{
+			//TODO
+			String raw_json = getURL(TRACKS_URI, "TRACKS", 0, force);
+			
+			if (raw_json.equals("database")){
+				
+				long size = db.numRows("TRACKS");
+				for(int i=0; i<size; i++){
+					Track track = new Track();
+
+					track = db.getTracksRow(""+i);
+					
+					mTracks.put(track.getTrack_id(), track);
+				}
+			
+			} else {
+				JSONObject tracks = new JSONObject(raw_json);
+				JSONArray json_tracks = tracks.getJSONArray("items");
+				int size = json_tracks.length();
+				for(int i=0; i<size; i++){
+					JSONObject json = json_tracks.getJSONObject(i);
+					Track track = new Track();
+
+					track.setTrack_id(json.getInt("track_id"));
+					track.setTrack_title(json.getString("track_title"));
+					
+					if (json.has("color")){
+						track.setColor(json.getString("color"));
+					} else {
+						track.setColor("");
+					}
+					
+					if (json.has("color_text")){
+						track.setColor_text(json.getString("color_text"));
+					} else {
+						track.setColor_text("");
+					}
+					
+					// TODO
+					// dont touch database if no internet, database is already loaded
+
+					Log.d("CURRENT ROW", track.getTrack_title());
+
+					if(trackExists(""+track.getTrack_id()) == 0){
+						addTrack(track);
+						Log.d("ADDED ROW", "ADDED ROW");
+					}
+					else if(trackExists(""+track.getTrack_id()) == 1) {
+						updateTrack(track);
+						Log.d("UPDATED ROW", "UPDATED ROW");
+					}
+					else if(trackExists(""+track.getTrack_id()) == -1) {
+						//error checking if exists
+					}
+
+					mTracks.put(track.getTrack_id(), track);
+				}
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			// unable to get file, show error to user
+			// TODO
+		}
+	}
+	
 	/**
 	 * parse events from json file and update the given calendar
 	 * @param calendar
@@ -768,29 +838,33 @@ public class Schedule extends Activity {
 					
 					event.setEnd_time(formatter.parse(json.getString("end_time")));
 					
-					event.setDescription(json.getString("description")
-							.replace("\r","")
-							.replace("<br>","\n")
-							.replace("<blockquote>","")
-							.replace("</blockquote>","")
-							.replace("<b>","")
-							.replace("</b>",""));
-					if (event.getDescription().equals("")){
-						//XXX fill description with spaces, fixes a bug where android will
-						//    center the logo on the detail page without content in description
-						event.setDescription("                                                                                  ");
+					if(json.has("description")){
+						event.setDescription(json.getString("description")
+								.replace("\r","")
+								.replace("<br>","\n")
+								.replace("<blockquote>","")
+								.replace("</blockquote>","")
+								.replace("<b>","")
+								.replace("</b>",""));
+						if (event.getDescription().equals("")){
+							//XXX fill description with spaces, fixes a bug where android will
+							//    center the logo on the detail page without content in description
+							event.setDescription("                                                                                  ");
+						}
 					}
-					
-					event.setRoom_title(json.getString("room_title"));
-					if (event.getRoom_title() == "null"){
-						event.setRoom_title("");
+					if(json.has("room_title")){
+						event.setRoom_title(json.getString("room_title"));
+						if (event.getRoom_title() == "null"){
+							event.setRoom_title("");
+						}
 					}
-					if (json.has("track_id")){
-						event.setTrack_id(json.getInt("track_id"));
-					} else {
-						event.setTrack_id(-1);
+					if(json.has("track_id")){
+						if (json.has("track_id")){
+							event.setTrack_id(json.getInt("track_id"));
+						} else {
+							event.setTrack_id(-1);
+						}
 					}
-					
 					
 					if (json.has("speaker_ids")){
 						
@@ -962,7 +1036,7 @@ public class Schedule extends Activity {
 						Context context = getApplicationContext();
 						TextView track = (TextView) v.findViewById(R.id.track);
 						track.setTextColor(context.getResources().getColor(event.getTrackColor()));
-						track.setText(getTrack(""+event.getTrack_id()).getTrack_title());
+						track.setText(mTracks.get(event.getTrack_id()).getTrack_title());
 					}
 					if (event_title != null) {
 						event_title.setText(event.getEvent_title());

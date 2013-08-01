@@ -36,8 +36,8 @@ Holds the information of the different tracks that an event can pertain to.
 
 Each track is an array with the following.
 
-name: Title of the track.
-id: Unique integer that identifies the track.
+track_id: Unique integer that identifies the track.
+track_title: Title of the track.
 color - Main color for the track. This will be used in the event listing and event detail views.*
 color_text - Color to use for event titles on detail page. Generally this should be white or black depending on whether color is dark or light.
 
@@ -47,8 +47,8 @@ Speaker
 
 url = hostname/speakers/id.json
 
+speaker_id: Unique integer that identifies the speaker.
 fullname: Full name of the speaker.
-id: Unique integer that identifies the speaker.
 biography: A short blurb about the speaker.
 affiliation: Company/organisation they represent at the conference.
 twitter : The speakers twitter handle without the ampersand @.

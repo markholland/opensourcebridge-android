@@ -23,7 +23,7 @@ end_time: The date and time that the event ends.
 description: Information about the event.(Shown when event is selected). *
 room_title: Name or description of location for the event. *
 track_id: Unique integer to identify the type of event. *
-user_ids: Array of integers with the ids of the speakers at the event. *
+speaker_ids: Array of integers with the ids of the speakers at the event. *
 presenter: Host for the event, i.e. a Q&A mediator. *
 
 Are optional, the rest must be present.

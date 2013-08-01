@@ -813,6 +813,16 @@ public class Schedule extends Activity {
 					event = db.getScheduleRow(""+i);
 					
 					events.add(event);
+					
+					//If no days then add the first
+					if(DAYS.isEmpty())
+						DAYS.add(event.getStart_time());
+					//if the event date is after the last added days date then add the day
+					Log.d("event.date",""+event.getStart_time().getDate());
+					Log.d("Last added date", ""+DAYS.get(DAYS.size() - 1).getDate());
+					if(event.getStart_time().getDate() > (DAYS.get(DAYS.size() - 1).getDate())){
+						DAYS.add(event.getStart_time());
+					}
 				}
 			
 			} else {

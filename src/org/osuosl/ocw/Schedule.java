@@ -812,6 +812,14 @@ public class Schedule extends Activity {
 						}
 						event.setSpeaker_ids(stringArray);
 					}
+					
+					if(json.has("presenter")){
+						event.setPresenter(json.getString("presenter"));
+					} else {
+						event.setPresenter("");
+					}
+					
+					
 					// TODO
 					// dont touch database if no internet, database is already loaded
 
@@ -954,7 +962,7 @@ public class Schedule extends Activity {
 						Context context = getApplicationContext();
 						TextView track = (TextView) v.findViewById(R.id.track);
 						track.setTextColor(context.getResources().getColor(event.getTrackColor()));
-						track.setText(getTrack(event.getTrack_id()).getTrack_title());
+						track.setText(getTrack(""+event.getTrack_id()).getTrack_title());
 					}
 					if (event_title != null) {
 						event_title.setText(event.getEvent_title());
@@ -1031,7 +1039,7 @@ public class Schedule extends Activity {
   	}
   	
   	public static void updateTrack(Track tr){
-  		db.updateTrackRow(tr);
+  		db.updateTracksRow(tr);
   	}
   	
   	public static Event getSchedule(String event_id){
@@ -1042,8 +1050,8 @@ public class Schedule extends Activity {
   		return db.getSpeakersRow(speaker_id);
   	}
   		
-  	public static Track getTrack(int track_id){
-  		return db.getTrackRow(track_id);
+  	public static Track getTrack(String track_id){
+  		return db.getTracksRow(track_id);
   	}
   	
   	public static int eventExists(String event_id){

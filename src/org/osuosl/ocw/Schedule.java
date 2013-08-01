@@ -104,7 +104,7 @@ public class Schedule extends Activity {
     View mHeader;
     TextView mTitle;
     TextView mTime;
-    TextView mLocation;
+    TextView mRoom_title;
     View mTimeLocation;
     TextView mSpeaker;
     ScrollView mDescriptionScroller;
@@ -147,7 +147,7 @@ public class Schedule extends Activity {
         mTitle = (TextView) detail.findViewById(R.id.title);
         mTimeLocation = detail.findViewById(R.id.time_location);
         mTime = (TextView) detail.findViewById(R.id.time);
-        mLocation = (TextView) detail.findViewById(R.id.location);
+        mRoom_title = (TextView) detail.findViewById(R.id.room_title);
         mDescription = (TextView) detail.findViewById(R.id.description);
         mDescriptionScroller = (ScrollView) detail.findViewById(R.id.description_scroller);
         mBio = (LinearLayout) detail.findViewById(R.id.bio);
@@ -172,7 +172,7 @@ public class Schedule extends Activity {
 				if(event.getTrack_id() != -1)
 					mHeader.setBackgroundColor(Color.parseColor(mTracks.get(event.getTrack_id()).getColor()));
 				mTitle.setText(event.getEvent_title());
-				mLocation.setText(event.getRoom_title());
+				mRoom_title.setText(event.getRoom_title());
 				DateFormat startFormat = new SimpleDateFormat("E, h:mm");
 				DateFormat endFormat = new SimpleDateFormat("h:mm a");
 				String timeString = startFormat.format(event.getStart_time()) + " - " + endFormat.format(event.getEnd_time());
@@ -1040,7 +1040,7 @@ public class Schedule extends Activity {
 				v = vi.inflate(R.layout.listevent, null);
 				if (event != null) {
 					TextView event_title = (TextView) v.findViewById(R.id.title);
-					TextView room_title = (TextView) v.findViewById(R.id.location);
+					TextView room_title = (TextView) v.findViewById(R.id.room_title);
 					TextView time = (TextView) v.findViewById(R.id.time);
 					if (event.getTrack_id() != -1) {
 						Context context = getApplicationContext();

@@ -5,53 +5,53 @@ public class Speaker {
 	private int speaker_id;
 	private String fullname;
 	private String biography;
-	public String affiliation;
-	public String twitter;
-	public String email;
-	public String website;
-	public String blog;
-	public String linkedin;
+	private String affiliation;
+	private String twitter;
+	private String email;
+	private String website;
+	private String blog;
+	private String linkedin;
 	
 	public Speaker(){
 
 		this.speaker_id = -1;
 		this.fullname = null;
 		this.biography = null;
+		this.affiliation = null;
 		this.twitter = null;
 		this.email = null;
-		this.affiliation = null;
 		this.website = null;
 		this.blog = null;
 		this.linkedin = null;
 
 	}
 
-	public Speaker(int speaker_id, String fullname, String biography, String twitter, 
-			String email, String affiliation, String website, String blog, 
+	public Speaker(int speaker_id, String fullname, String biography, String affiliation,
+			String twitter, String email, String website, String blog, 
 			String linkedin){
 		
 		this.speaker_id = speaker_id;
 		this.fullname = fullname;
 		this.biography = biography;
+		this.affiliation = affiliation;
 		this.twitter = twitter;
 		this.email = email;
-		this.affiliation = affiliation;
 		this.website = website;
 		this.blog = blog;
 		this.linkedin = linkedin;
 		
 	}
 	
-	public Speaker(String speaker_id, String fullname, String biography, String twitter, 
-			String email, String affiliation, String website, String blog, 
+	public Speaker(String speaker_id, String fullname, String biography, String affiliation,
+			String twitter, String email, String website, String blog, 
 			String linkedin){
 		
 		this.speaker_id = Integer.parseInt(speaker_id);
 		this.fullname = fullname;
 		this.biography = biography;
+		this.affiliation = affiliation;
 		this.twitter = twitter;
 		this.email = email;
-		this.affiliation = affiliation;
 		this.website = website;
 		this.blog = blog;
 		this.linkedin = linkedin;

@@ -25,6 +25,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -99,6 +100,7 @@ public class Schedule extends Activity {
     // session details
     Event mEvent = null;
     HashMap<Integer, Speaker> mSpeakers;
+    HashMap<Integer, Track> mTracks;
     View mHeader;
     TextView mTitle;
     TextView mTime;
@@ -126,6 +128,7 @@ public class Schedule extends Activity {
         mHandler = new Handler();
         
         mSpeakers = new HashMap<Integer, Speaker>();
+        mTracks = new HashMap<Integer, Track>();
         DAYS = new ArrayList<Date>();
         
         mDate = (TextView) findViewById(R.id.date);
@@ -161,17 +164,23 @@ public class Schedule extends Activity {
 					return;// ignore clicks on the dates
 				}
 				Event event = (Event) item;
+				if (event.getTrack_id() == -1){
+					return;// ignore clicks on non-events
+				}
 				Context context = getApplicationContext();
-				mHeader.setBackgroundColor(context.getResources().getColor(event.getTrackColor()));
-				mTitle.setText(event.title);
-				mLocation.setText(event.location);
+				//only set color if event has track_id
+				if(event.getTrack_id() != -1)
+					mHeader.setBackgroundColor(Color.parseColor(mTracks.get(event.getTrack_id()).getColor()));
+				mTitle.setText(event.getEvent_title());
+				mLocation.setText(event.getRoom_title());
 				DateFormat startFormat = new SimpleDateFormat("E, h:mm");
 				DateFormat endFormat = new SimpleDateFormat("h:mm a");
-				String timeString = startFormat.format(event.start) + " - " + endFormat.format(event.end);
+				String timeString = startFormat.format(event.getStart_time()) + " - " + endFormat.format(event.getEnd_time());
 				mTime.setText(timeString);
-				mSpeaker.setText(event.speakers);
-				mTimeLocation.setBackgroundColor(context.getResources().getColor(event.getTrackColorDark()));
-				mDescription.setText(event.description);
+				//TODO Fix for multiple speakers
+				mSpeaker.setText(loadBio(Integer.parseInt(event.getSpeaker_ids()[0])).getFullname());
+				mTimeLocation.setBackgroundColor(Color.parseColor(mTracks.get(event.getTrack_id()).getColor()));
+				mDescription.setText(event.getDescription());
 				show_description();
 				mDescriptionScroller.scrollTo(0, 0);
 				mFlipper.setInAnimation(mInRight);
@@ -194,7 +203,7 @@ public class Schedule extends Activity {
 				boolean display = true;
 				String error = "";
 				mBio.removeAllViews();
-				String[] speaker_ids = mEvent.speaker_ids;
+				String[] speaker_ids = mEvent.getSpeaker_ids();
 				if (speaker_ids != null) {
 					for (int i=0; i<speaker_ids.length; i++) {
 //						try {
@@ -233,132 +242,7 @@ public class Schedule extends Activity {
 			
 			
 			
-			/**
-			 * loads a view populated with the speakers info
-			 * @param id
-			 * @return
-			 */
-			private View loadBioView(int sid) {
-				Integer id = new Integer(sid);
-				Speaker speaker = null;
-				View view = null;
-				// check memory to see if speaker had already been loaded
-				// else load the speaker from persistent storage
-				if (mSpeakers.containsKey(id)){
-					speaker = mSpeakers.get(id);
-				} else {
-					try {
-						String raw_json = getURL(SPEAKER_URI_BASE + id + ".json", "SPEAKERS", id, false);
-						
-						
-						if (raw_json.equals("database")){
-
-							long size = db.numRows("SPEAKERS");
-							for(int i=0; i<size; i++) {
-								speaker = new Speaker();
-								speaker = db.getSpeakersRow(""+id);
-								mSpeakers.put(id, speaker);
-								}
-						} else {
-
-							JSONObject json = new JSONObject(raw_json);
-							speaker = new Speaker();
-							
-							speaker.id = json.getInt("id");
-							speaker.name  = json.getString("fullname");
-							speaker.biography  = json.getString("biography").replace("\r","");
-							if (json.has("twitter")) {
-								speaker.twitter  = json.getString("twitter");
-							}
-							if (json.has("identica")){
-								speaker.identica  = json.getString("identica");
-							}
-							if (json.has("website")) {
-								speaker.website  = json.getString("website");
-							}
-							if (json.has("blog_url")) {
-								speaker.blog = json.getString("blog_url");
-							}
-							if (json.has("affiliation")) {
-								speaker.affiliation  = json.getString("affiliation");
-							}
-
-							mSpeakers.put(id, speaker);
-							// TODO
-							// dont touch database if no internet, database is already loaded
-
-							Log.d("CURRENT SPEAKER ROW", speaker.getName());
-
-							if(speakerRowExists(getApplicationContext(),""+speaker.getId()) == 0){
-								addSpeakersRow(getApplicationContext(),speaker);
-								Log.d("ADDED ROW", "ADDED ROW");
-							}
-							else if(speakerRowExists(getApplicationContext(),""+speaker.getId()) == 1) {
-								updateSpeakersRow(getApplicationContext(),speaker);
-								Log.d("UPDATED SPEAKER ROW", "UPDATED SPEAKER ROW");
-							}
-							else if(speakerRowExists(getApplicationContext(),""+speaker.getId()) == -1) {
-								//error checking if exists
-							}
-						}
-					
-
-						} catch (JSONException e) {
-							e.printStackTrace();
-						} catch (IOException e) {
-							// file couldn't be loaded
-						}
-					}
-				
-				// create view
-				if (speaker != null) {
-					LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-					view = vi.inflate(R.layout.bio, null);
-					TextView name = (TextView) view.findViewById(R.id.name);
-					name.setText(speaker.name);
-					TextView biography = (TextView) view.findViewById(R.id.biography);
-					biography.setText(speaker.biography);
-					
-					String twitter = speaker.twitter;
-					if (twitter != null && twitter != ""  && twitter != "null"){
-						TextView text = (TextView) view.findViewById(R.id.twitter);
-						text.setText(twitter);
-						View parent = (View) text.getParent();
-						parent.setVisibility(View.VISIBLE);
-					}
-					
-					String website = speaker.website;
-					if (website != null && website != "" && website != "null" && website.length() > 0){
-						TextView text = (TextView) view.findViewById(R.id.website);
-						text.setText(speaker.website);
-						View parent = (View) text.getParent();
-						parent.setVisibility(View.VISIBLE);
-					}
-					
-					String blog = speaker.blog;
-					if (blog != null && blog != "" && blog != "null"){
-						TextView text = (TextView) view.findViewById(R.id.blog);
-						text.setText(speaker.blog);
-						View parent = (View) text.getParent();
-						parent.setVisibility(View.VISIBLE);
-					}
-					
-					if (speaker.affiliation != null){
-						TextView text = (TextView) view.findViewById(R.id.affiliation);
-						text.setText(speaker.affiliation);
-					}
-					
-					String identica = speaker.identica;
-					if (identica != null && identica != "" && identica != "null"){
-						TextView text = (TextView) view.findViewById(R.id.identica);
-						text.setText(speaker.identica);
-						View parent = (View) text.getParent();
-						parent.setVisibility(View.VISIBLE);
-					}
-				}
-				
-				return view;
-			}
+			
         });
         
         mShare.setOnClickListener(new OnClickListener() { 
@@ -384,6 +268,162 @@ public class Schedule extends Activity {
         db = new DataBaseHandler(context);
     
     }//end onCreate
+	
+	public Speaker loadBio(int id){
+		
+		Speaker speaker = null;
+		
+		try {
+			String raw_json = getURL(SPEAKER_URI_BASE + id + ".json", "SPEAKERS", id, false);
+			
+			
+			if (raw_json.equals("database")){
+
+				long size = db.numRows("SPEAKERS");
+				for(int i=0; i<size; i++) {
+					speaker = new Speaker();
+					speaker = db.getSpeakersRow(""+id);
+					mSpeakers.put(id, speaker);
+					}
+			} else {
+
+				JSONObject json = new JSONObject(raw_json);
+				speaker = new Speaker();
+				
+				speaker.setSpeaker_id(json.getInt("speaker_id"));
+				speaker.setFullname(json.getString("fullname"));
+				
+				//Optional fields
+				if (json.has("biography")) {
+					speaker.setBiography(json.getString("biography").replace("\r",""));
+				}
+				if (json.has("affiliation")) {
+					speaker.setAffiliation(json.getString("affiliation"));
+				}
+				if (json.has("twitter")) {
+					speaker.setTwitter(json.getString("twitter"));
+				}
+				if (json.has("email")){
+					speaker.setEmail(json.getString("email"));
+				}
+				if (json.has("website")) {
+					speaker.setWebsite(json.getString("website"));
+				}
+				if (json.has("blog")) {
+					speaker.setBlog(json.getString("blog"));
+				}
+				if (json.has("linkedin")) {
+					speaker.setLinkedin(json.getString("linkedin"));
+				}
+				
+
+				mSpeakers.put(id, speaker);
+				// TODO
+				// dont touch database if no internet, database is already loaded
+
+				Log.d("CURRENT SPEAKER ROW", speaker.getFullname());
+
+				if(speakerExists(""+speaker.getSpeaker_id()) == 0){
+					addSpeaker(speaker);
+					Log.d("ADDED ROW", "ADDED ROW");
+				}
+				else if(speakerExists(""+speaker.getSpeaker_id()) == 1) {
+					updateSpeaker(speaker);
+					Log.d("UPDATED SPEAKER ROW", "UPDATED SPEAKER ROW");
+				}
+				else if(speakerExists(""+speaker.getSpeaker_id()) == -1) {
+					//error checking if exists
+				}
+			}
+		
+
+			} catch (JSONException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				// file couldn't be loaded
+			}
+		
+		return speaker;
+		
+	}
+	
+	
+	/**
+	 * loads a view populated with the speakers info
+	 * @param id
+	 * @return
+	 */
+	private View loadBioView(int id) {
+//		Integer id = new Integer(sid);
+		Speaker speaker = null;
+		View view = null;
+		// check memory to see if speaker had already been loaded
+		// else load the speaker from persistent storage
+		if (mSpeakers.containsKey(id)){
+			speaker = mSpeakers.get(id);
+		} else {
+			speaker = loadBio(id);
+		}
+		// create view
+		if (speaker != null) {
+			LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			view = vi.inflate(R.layout.bio, null);
+			TextView name = (TextView) view.findViewById(R.id.name);
+			name.setText(speaker.getFullname());
+			TextView biography = (TextView) view.findViewById(R.id.biography);
+			biography.setText(speaker.getBiography());
+			
+			// Single string variable for all text
+			String textToSet = speaker.getAffiliation();
+			
+			if (textToSet != null){
+				TextView text = (TextView) view.findViewById(R.id.affiliation);
+				text.setText(textToSet);
+			}
+			
+			textToSet = speaker.getTwitter();
+			if (textToSet != null && textToSet != ""  && textToSet != "null" && textToSet.length() > 0){
+				TextView text = (TextView) view.findViewById(R.id.twitter);
+				text.setText(textToSet);
+				View parent = (View) text.getParent();
+				parent.setVisibility(View.VISIBLE);
+			}
+			
+			textToSet = speaker.getEmail();
+			if (textToSet != null && textToSet != "" && textToSet != "null" && textToSet.length() > 0){
+				TextView text = (TextView) view.findViewById(R.id.website);
+				text.setText(textToSet);
+				View parent = (View) text.getParent();
+				parent.setVisibility(View.VISIBLE);
+			}
+			
+			textToSet = speaker.getWebsite();
+			if (textToSet != null && textToSet != "" && textToSet != "null" && textToSet.length() > 0){
+				TextView text = (TextView) view.findViewById(R.id.website);
+				text.setText(textToSet);
+				View parent = (View) text.getParent();
+				parent.setVisibility(View.VISIBLE);
+			}
+			
+			textToSet = speaker.getBlog();
+			if (textToSet != null && textToSet != "" && textToSet != "null" && textToSet.length() > 0){
+				TextView text = (TextView) view.findViewById(R.id.blog);
+				text.setText(textToSet);
+				View parent = (View) text.getParent();
+				parent.setVisibility(View.VISIBLE);
+			}
+			
+			textToSet = speaker.getLinkedin();
+			if (textToSet != null && textToSet != "" && textToSet != "null" && textToSet.length() > 0){
+				TextView text = (TextView) view.findViewById(R.id.identica);
+				text.setText(textToSet);
+				View parent = (View) text.getParent();
+				parent.setVisibility(View.VISIBLE);
+			}
+		}
+		
+		return view;
+	}
 	
 	/**
 	 * Shows the session description, hides all other subviews
@@ -580,6 +620,7 @@ public class Schedule extends Activity {
 		//    This will cause it to update the list immediately.
 		mCurrentDate = new Date(1900, 0, 0);
 		ICal calendar = new ICal();
+		loadTracks(force);
 		parseProposals(calendar, force);
 		//Days available here
 		Log.d("DAYS", DAYS.toString());
@@ -620,6 +661,10 @@ public class Schedule extends Activity {
 				return "database";
 			}
 			else if(table.equals("SPEAKERS") && (db.existsSpeaker(""+id) == 1) && /*file.lastModified()+CACHE_TIMEOUT > System.currentTimeMillis() &&*/ !force){
+				return "database";	
+			
+			}
+			else if(table.equals("TRACKS") && (db.existsTrack(""+id) == 1) && /*file.lastModified()+CACHE_TIMEOUT > System.currentTimeMillis() &&*/ !force){
 				return "database";	
 			
 			} else {
@@ -681,6 +726,73 @@ public class Schedule extends Activity {
 		return sb.toString();
 	}
 	
+	private void loadTracks(boolean force){
+		try{
+			//TODO
+			String raw_json = getURL(TRACKS_URI, "TRACKS", 0, force);
+			
+			if (raw_json.equals("database")){
+				
+				long size = db.numRows("TRACKS");
+				for(int i=0; i<size; i++){
+					Track track = new Track();
+
+					track = db.getTracksRow(""+i);
+					
+					mTracks.put(track.getTrack_id(), track);
+				}
+			
+			} else {
+				JSONObject tracks = new JSONObject(raw_json);
+				JSONArray json_tracks = tracks.getJSONArray("tracks");
+				int size = json_tracks.length();
+				for(int i=0; i<size; i++){
+					JSONObject json = json_tracks.getJSONObject(i);
+					Track track = new Track();
+
+					track.setTrack_id(json.getInt("track_id"));
+					track.setTrack_title(json.getString("track_title"));
+					
+					if (json.has("color")){
+						track.setColor(json.getString("color"));
+					} else {
+						track.setColor("");
+					}
+					
+					if (json.has("color_text")){
+						track.setColor_text(json.getString("color_text"));
+					} else {
+						track.setColor_text("");
+					}
+					
+					// TODO
+					// dont touch database if no internet, database is already loaded
+
+					Log.d("CURRENT ROW", track.getTrack_title());
+
+					if(trackExists(""+track.getTrack_id()) == 0){
+						addTrack(track);
+						Log.d("ADDED ROW", "ADDED ROW");
+					}
+					else if(trackExists(""+track.getTrack_id()) == 1) {
+						updateTrack(track);
+						Log.d("UPDATED ROW", "UPDATED ROW");
+					}
+					else if(trackExists(""+track.getTrack_id()) == -1) {
+						//error checking if exists
+					}
+					
+					mTracks.put(track.getTrack_id(), track);
+				}
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			// unable to get file, show error to user
+			// TODO
+		}
+	}
+	
 	/**
 	 * parse events from json file and update the given calendar
 	 * @param calendar
@@ -719,81 +831,59 @@ public class Schedule extends Activity {
 					JSONObject json = json_events.getJSONObject(i);
 					Event event = new Event();
 
-					event.id = json.getInt("event_id");
-					event.title = json.getString("event_title");
-					event.description = json.getString("description")
-							.replace("\r","")
-							.replace("<br>","\n")
-							.replace("<blockquote>","")
-							.replace("</blockquote>","")
-							.replace("<b>","")
-							.replace("</b>","");
-					if (event.description.equals("")){
-						//XXX fill description with spaces, fixes a bug where android will
-						//    center the logo on the detail page without content in description
-						event.description = "                                                                                  ";
-					}
-					event.start = formatter.parse(json.getString("start_time"));
+					event.setEvent_id(json.getInt("event_id"));
+					event.setEvent_title(json.getString("event_title"));
 					
-					
-					
-					
+					event.setStart_time(formatter.parse(json.getString("start_time")));
 					
 					//If no days then add the first
 					if(DAYS.isEmpty())
-						DAYS.add(event.start);
+						DAYS.add(event.getStart_time());
 					//if the event date is after the last added days date then add the day
-					Log.d("event.date",""+event.start.getDate());
+					Log.d("event.date",""+event.getStart_time().getDate());
 					Log.d("Last added date", ""+DAYS.get(DAYS.size() - 1).getDate());
-					if(event.start.getDate() > (DAYS.get(DAYS.size() - 1).getDate())){
-						DAYS.add(event.start);
+					if(event.getStart_time().getDate() > (DAYS.get(DAYS.size() - 1).getDate())){
+						DAYS.add(event.getStart_time());
 					}
 					
+					event.setEnd_time(formatter.parse(json.getString("end_time")));
 					
-					
-					
-					
-					
-					
-					event.end = formatter.parse(json.getString("end_time"));
-					event.location = json.getString("room_title");
-					if (event.location == "null"){
-						event.location = "";
-					}
-					if (json.has("track_id")){
-						event.track_id = json.getInt("track_id");
-					} else {
-						event.track_id = -1;
-					}
-					if(json.has("track_title")){
-						event.track_title = json.getString("track_title");
-					} else {
-						event.track_title = "";
-					}
-
-
-
-
-					if (json.has("user_titles")){
-						StringBuilder speakers = new StringBuilder();
-						JSONArray speakers_json = json.getJSONArray("user_titles");
-						for(int z=0; z<speakers_json.length(); z++){
-							String speaker = speakers_json.getString(z);
-							if (z>0){
-								speakers.append(", ");
-							}
-							speakers.append(speaker);
+					if(json.has("description")){
+						event.setDescription(json.getString("description")
+								.replace("\r","")
+								.replace("<br>","\n")
+								.replace("<blockquote>","")
+								.replace("</blockquote>","")
+								.replace("<b>","")
+								.replace("</b>",""));
+						if (event.getDescription().equals("")){
+							//XXX fill description with spaces, fixes a bug where android will
+							//    center the logo on the detail page without content in description
+							event.setDescription("                                                                                  ");
 						}
-						event.speakers = speakers.toString();
 					}
-					if (json.has("user_ids")){
+					if(json.has("room_title")){
+						event.setRoom_title(json.getString("room_title"));
+						if (event.getRoom_title() == "null"){
+							event.setRoom_title("");
+						}
+					}
+					if(json.has("track_id")){
+						if (json.has("track_id")){
+							event.setTrack_id(json.getInt("track_id"));
+						} else {
+							event.setTrack_id(-1);
+						}
+					}
+					
+					if (json.has("speaker_ids")){
 						
-						JSONArray userids = json.getJSONArray("user_ids");
-						String [] stringArray = new String[userids.length()];
-						for(int j = 0; j < userids.length(); j++)
+						JSONArray speaker_ids = json.getJSONArray("speaker_ids");
+						String [] stringArray = new String[speaker_ids.length()];
+						for(int j = 0; j < speaker_ids.length(); j++)
 						{
 						    try {
-						        int in = userids.getInt(j);
+						        int in = speaker_ids.getInt(j);
 //						        String aux = jsonObject.toString();
 //						        aux = aux.replace("[", "");
 //						        aux = aux.replace("]", "");
@@ -804,22 +894,30 @@ public class Schedule extends Activity {
 						        e.printStackTrace();
 						    }
 						}
-						event.speaker_ids = stringArray;
+						event.setSpeaker_ids(stringArray);
 					}
+					
+					if(json.has("presenter")){
+						event.setPresenter(json.getString("presenter"));
+					} else {
+						event.setPresenter("");
+					}
+					
+					
 					// TODO
 					// dont touch database if no internet, database is already loaded
 
-					Log.d("CURRENT ROW", event.getTitle());
+					Log.d("CURRENT ROW", event.getEvent_title());
 
-					if(eventRowExists(this,""+event.getId()) == 0){
-						addScheduleRow(this,event);
+					if(eventExists(""+event.getEvent_id()) == 0){
+						addSchedule(event);
 						Log.d("ADDED ROW", "ADDED ROW");
 					}
-					else if(eventRowExists(this,""+event.getId()) == 1) {
-						updateScheduleRow(this,event);
+					else if(eventExists(""+event.getEvent_id()) == 1) {
+						updateSchedule(event);
 						Log.d("UPDATED ROW", "UPDATED ROW");
 					}
-					else if(eventRowExists(this,""+event.getId()) == -1) {
+					else if(eventExists(""+event.getEvent_id()) == -1) {
 						//error checking if exists
 					}
 
@@ -876,9 +974,9 @@ public class Schedule extends Activity {
 			Date currentStart = null;
 			for (int i=0; i<size; i++){
 				Event event = items.get(i);
-				if(isSameDay(date, event.start)){
-					if(currentStart == null || event.start.after(currentStart)) {
-						currentStart = event.start;
+				if(isSameDay(date, event.getStart_time())){
+					if(currentStart == null || event.getStart_time().after(currentStart)) {
+						currentStart = event.getStart_time();
 						filtered.add(currentStart);
 					}
 					filtered.add(event);
@@ -909,7 +1007,7 @@ public class Schedule extends Activity {
 					}
 				} else {
 					Event event = (Event) item;
-					if (event.end.after(date)) {
+					if (event.getEnd_time().after(date)) {
 						// should display the time marker instead of the
 						// session
 						mEvents.setSelection(i-1);
@@ -938,28 +1036,30 @@ public class Schedule extends Activity {
 				DateFormat formatter = new SimpleDateFormat("h:mm a");
 				time.setText(formatter.format(date));
 			} else {
-				Event e = (Event) item;
+				Event event = (Event) item;
 				v = vi.inflate(R.layout.listevent, null);
-				if (e != null) {
-					TextView title = (TextView) v.findViewById(R.id.title);
-					TextView location = (TextView) v.findViewById(R.id.location);
+				if (event != null) {
+					TextView event_title = (TextView) v.findViewById(R.id.title);
+					TextView room_title = (TextView) v.findViewById(R.id.location);
 					TextView time = (TextView) v.findViewById(R.id.time);
-					if (title != null) {
-						title.setText(e.title);
+					if (event.getTrack_id() != -1) {
+						Context context = getApplicationContext();
+						TextView track = (TextView) v.findViewById(R.id.track);
+						track.setTextColor(Color.parseColor(mTracks.get(event.getTrack_id()).getColor_text()));
+						track.setText(mTracks.get(event.getTrack_id()).getTrack_title());
+					
 					}
-					if (location != null) {
-						location.setText(e.location);
+					if (event_title != null) {
+						event_title.setText(event.getEvent_title());
+					}
+					if (room_title != null) {
+						room_title.setText(event.getRoom_title());
 					}
 					if (time != null) {
 						DateFormat formatter = new SimpleDateFormat("h:mm");
-						time.setText(formatter.format(e.start) + "-" + formatter.format(e.end));
+						time.setText(formatter.format(event.getStart_time()) + "-" + formatter.format(event.getEnd_time()));
 					}
-					if (e.track_id != -1) {
-						Context context = getApplicationContext();
-						TextView track = (TextView) v.findViewById(R.id.track);
-						track.setTextColor(context.getResources().getColor(e.getTrackColor()));
-						track.setText(e.track_title);
-					}
+					
 				}
 			}
 			return v;
@@ -1003,57 +1103,69 @@ public class Schedule extends Activity {
 	/////////////////////////////////////////////////////////////
 	
 	
-  	public static void addScheduleRow(Context context, Event ev){
-  		
-  		//db = new DataBaseHandler(context);
-  		
+  	public static void addSchedule(Event ev){
   		db.addScheduleRow(ev);
   	}
   	
-  	public static void addSpeakersRow(Context context, Speaker sp){
-  		
-  		//db = new DataBaseHandler(context);
-  		
+  	public static void addSpeaker(Speaker sp){
   		db.addSpeakersRow(sp);
   	}
   	
-  	public static int eventRowExists(Context context, String id){
-  		
-  		//db = new DataBaseHandler(context);
-  		
-  		return db.existsEvent(id);
+  	public static void addTrack(Track tr){
+  		db.addTrackRow(tr);
   	}
   	
-  	public static int speakerRowExists(Context context, String id){
-  		
-  		//db = new DataBaseHandler(context);
-  		
-  		return db.existsSpeaker(id);
-  	}
-	
-  	
-    
-  	public static void updateScheduleRow(Context context, Event ev){
-  		
+  	public static void updateSchedule(Event ev){
   		db.updateScheduleRow(ev);
   	}
   	
-  	public static void updateSpeakersRow(Context context, Speaker sp){
-  		
+  	public static void updateSpeaker(Speaker sp){
   		db.updateSpeakersRow(sp);
   	}
   	
-  	
-  	public static Event getScheduleHandler(Context context, String title){
-  		//db = new DataBaseHandler(context);
-  		
-  		return db.getScheduleRow(title);
+  	public static void updateTrack(Track tr){
+  		db.updateTracksRow(tr);
   	}
   	
-  	public static Speaker getSpeakersHandler(Context context, String fullname){
-  		//db = new DataBaseHandler(context);
-  		
-  		return db.getSpeakersRow(fullname);
+  	public static Event getSchedule(String event_id){
+  		return db.getScheduleRow(event_id);
   	}
+  	
+  	public static Speaker getSpeaker(String speaker_id){
+  		return db.getSpeakersRow(speaker_id);
+  	}
+  		
+  	public static Track getTrack(String track_id){
+  		return db.getTracksRow(track_id);
+  	}
+  	
+  	public static int eventExists(String event_id){
+  		return db.existsEvent(event_id);
+  	}
+  	
+  	public static int speakerExists(String speaker_id){
+  		return db.existsSpeaker(speaker_id);
+  	}
+  	
+  	public static int trackExists(String track_id){
+  		return db.existsTrack(track_id);
+  	}
+	
+  	
+  	
+  	
+//  	public static Event getScheduleHandler(Context context, String title){
+//  		//db = new DataBaseHandler(context);
+//  		
+//  		return db.getScheduleRow(title);
+//  	}
+//  	
+//  	public static Speaker getSpeakersHandler(Context context, String fullname){
+//  		//db = new DataBaseHandler(context);
+//  		
+//  		return db.getSpeakersRow(fullname);
+//  	}
+  	
+  	
 
 }

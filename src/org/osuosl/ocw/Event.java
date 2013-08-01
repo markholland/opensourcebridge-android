@@ -39,8 +39,8 @@ public class Event {
 		this.presenter = null;
 	}
 	
-	public Event(int event_id, String event_title, String description, Date start_time,
-  			Date end_time, String room_title, int track_id, String[] speaker_ids,
+	public Event(int event_id, String event_title, Date start_time,
+  			Date end_time, String description, String room_title, int track_id, String[] speaker_ids,
   			String presenter){
 		
 		this.event_id = event_id;
@@ -56,8 +56,8 @@ public class Event {
 	
 	
 	
-	public Event(String event_id, String event_title, String description, String start_time,
-  			String end_time, String room_title, String track_id, String[] speaker_ids,
+	public Event(String event_id, String event_title, String start_time,
+  			String end_time, String description, String room_title, String track_id, String[] speaker_ids,
   			String presenter){
 		
 		DateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzzz yyyy");
@@ -99,51 +99,51 @@ public class Event {
 	
 	
 
-	/**
-	 * @return the resource id for the track color
-	 */
-	public int getTrackColor() {
-		// TODO Fetch tracks from OCW.
-		switch(track_id) {
-		case TRACK_BUSINESS:
-			return R.color.track_business;
-		case TRACK_CHEMISTRY:
-			return R.color.track_chemistry;
-		case TRACK_COOKING:
-			return R.color.track_cooking;
-		case TRACK_CULTURE:
-			return R.color.track_culture;
-		case TRACK_HACKS:
-			return R.color.track_hacks;
-        case TRACK_BOF:
-            return R.color.track_bof;
-		default:
-			return R.color.track_other;
-		}
-	}
-	
-	/**
-    * @return the resource id for the track color darker shade
-    */
-    public int getTrackColorDark() {
-       // TODO Fetch tracks from OCW.
-	   switch(track_id) {
-	   case TRACK_BUSINESS:
-	           return R.color.track_business_dark;
-	   case TRACK_CHEMISTRY:
-	           return R.color.track_chemistry_dark;
-	   case TRACK_COOKING:
-	           return R.color.track_cooking_dark;
-	   case TRACK_CULTURE:
-	           return R.color.track_culture_dark;
-	   case TRACK_HACKS:
-	           return R.color.track_hacks_dark;
-       case TRACK_BOF:
-               return R.color.track_bof_dark;
-	   default:
-	           return R.color.track_other_dark;
-	   }
-    }
+//	/**
+//	 * @return the resource id for the track color
+//	 */
+//	public int getTrackColor() {
+//		// TODO Fetch tracks from OCW.
+//		switch(track_id) {
+//		case TRACK_BUSINESS:
+//			return R.color.track_business;
+//		case TRACK_CHEMISTRY:
+//			return R.color.track_chemistry;
+//		case TRACK_COOKING:
+//			return R.color.track_cooking;
+//		case TRACK_CULTURE:
+//			return R.color.track_culture;
+//		case TRACK_HACKS:
+//			return R.color.track_hacks;
+//        case TRACK_BOF:
+//            return R.color.track_bof;
+//		default:
+//			return R.color.track_other;
+//		}
+//	}
+//	
+//	/**
+//    * @return the resource id for the track color darker shade
+//    */
+//    public int getTrackColorDark() {
+//       // TODO Fetch tracks from OCW.
+//	   switch(track_id) {
+//	   case TRACK_BUSINESS:
+//	           return R.color.track_business_dark;
+//	   case TRACK_CHEMISTRY:
+//	           return R.color.track_chemistry_dark;
+//	   case TRACK_COOKING:
+//	           return R.color.track_cooking_dark;
+//	   case TRACK_CULTURE:
+//	           return R.color.track_culture_dark;
+//	   case TRACK_HACKS:
+//	           return R.color.track_hacks_dark;
+//       case TRACK_BOF:
+//               return R.color.track_bof_dark;
+//	   default:
+//	           return R.color.track_other_dark;
+//	   }
+//    }
 
 	public int getEvent_id() {
 		return event_id;

@@ -39,8 +39,8 @@ public class Event {
 		this.presenter = null;
 	}
 	
-	public Event(int event_id, String event_title, String description, Date start_time,
-  			Date end_time, String room_title, int track_id, String[] speaker_ids,
+	public Event(int event_id, String event_title, Date start_time,
+  			Date end_time, String description, String room_title, int track_id, String[] speaker_ids,
   			String presenter){
 		
 		this.event_id = event_id;

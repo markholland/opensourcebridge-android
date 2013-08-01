@@ -409,10 +409,18 @@ public class Schedule extends Activity {
 		SubMenu dayMenu = menu.addSubMenu("Day").setIcon(android.R.drawable.ic_menu_today);
 
 		// TODO Generate days menu from data fetched from OCW.
-	    dayMenu.add(0, MENU_DAY1, 0, this.getDayAsString(DAY1));
+//	    dayMenu.add(0, MENU_DAY1, 0, this.getDayAsString(DAY1));
 //	    dayMenu.add(0, MENU_DAY2, 0, this.getDayAsString(DAY2));
 //	    dayMenu.add(0, MENU_DAY3, 0, this.getDayAsString(DAY3));
 //	    dayMenu.add(0, MENU_DAY4, 0, this.getDayAsString(DAY4));
+	    
+	    for(int i = 0; i < DAYS.size(); i++){
+	    	
+	    	dayMenu.add(0, i, 0, this.getDayAsString(DAYS.get(i)));
+	    	
+	    }
+	    
+	    
 
 		menu.add(0, MENU_NEXT, 0, "Next Day").setIcon(R.drawable.ic_menu_forward);
 	    menu.add(0, MENU_NOW, 0, "Now").setIcon(android.R.drawable.ic_menu_mylocation);

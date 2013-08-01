@@ -3,14 +3,8 @@
     {
       "track_id": 0,
       "track_title": "Talk",
-      "color": "",
-      "color_text": ""
-    },
-    {
-      "track_id": 1,
-      "track_title": "Not a talk",
-      "color": "",
-      "color_text": ""
+      "color": "red",
+      "color_text": "white"
     }
   ]
 }

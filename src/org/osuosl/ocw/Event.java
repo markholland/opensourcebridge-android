@@ -56,8 +56,8 @@ public class Event {
 	
 	
 	
-	public Event(String event_id, String event_title, String description, String start_time,
-  			String end_time, String room_title, String track_id, String[] speaker_ids,
+	public Event(String event_id, String event_title, String start_time,
+  			String end_time, String description, String room_title, String track_id, String[] speaker_ids,
   			String presenter){
 		
 		DateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzzz yyyy");

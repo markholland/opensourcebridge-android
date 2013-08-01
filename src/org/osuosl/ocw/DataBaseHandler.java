@@ -21,7 +21,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 
 	// Schedule table column names
 	private static final String KEY_EVENT_ID = "event_id";
-	private static final String KEY_TITLE = "title";
+	private static final String KEY_TITLE = "event_title";
 	private static final String KEY_START = "start_time";
 	private static final String KEY_END = "end_time";
 	private static final String KEY_DESCRIPTION = "description";
@@ -48,7 +48,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 	private static final String KEY_COLOR_TEXT = "color_text";
 	
 	// Queries
-	private static final String[] GET_SCHEDULE_ROW = new String[]{KEY_EVENT_ID, KEY_TITLE, KEY_DESCRIPTION, KEY_START, KEY_END, KEY_ROOM_TITLE, KEY_TRACK_ID, KEY_SPEAKER_IDS, KEY_PRESENTER};
+	private static final String[] GET_SCHEDULE_ROW = new String[]{KEY_EVENT_ID, KEY_TITLE, KEY_START, KEY_END, KEY_DESCRIPTION, KEY_ROOM_TITLE, KEY_TRACK_ID, KEY_SPEAKER_IDS, KEY_PRESENTER};
 	
 
 
@@ -81,8 +81,9 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 				String speakerIds = "";
 				if(event.getSpeaker_ids() != null){
 					speakerIds = convertArrayToString(event.getSpeaker_ids());
+					values.put(KEY_SPEAKER_IDS, speakerIds);
 				}
-				values.put(KEY_SPEAKER_IDS, speakerIds);
+				
 				
 				values.put(KEY_PRESENTER, event.getPresenter());
 				
@@ -174,8 +175,8 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 				ContentValues values = new ContentValues();
 				values.put(KEY_TRACK_ID, track.getTrack_id());
 				values.put(KEY_TRACK_TITLE, track.getTrack_title());
-				values.put(KEY_TRACK_ID, track.getColor());
-				values.put(KEY_TRACK_ID, track.getColor_text());
+				values.put(KEY_COLOR, track.getColor());
+				values.put(KEY_COLOR_TEXT, track.getColor_text());
 				
 
 				//adding row
@@ -208,14 +209,13 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 		SQLiteDatabase db = null;
 		int i = 0;
 
-
 		try {
 			db = this.getWritableDatabase();
 
 			db.beginTransaction();
 			try{
 				ContentValues values = new ContentValues();
-				values.put(KEY_EVENT_ID, event.getTrack_id());
+				values.put(KEY_EVENT_ID, event.getEvent_id());
 				values.put(KEY_TITLE, event.getEvent_title());
 				values.put(KEY_START, event.getStart_time().toString());
 				values.put(KEY_END, event.getEnd_time().toString());
@@ -226,8 +226,9 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 				String speakerIds = "";
 				if(event.getSpeaker_ids() != null){
 					speakerIds = convertArrayToString(event.getSpeaker_ids());
+					values.put(KEY_SPEAKER_IDS, speakerIds);
 				}
-				values.put(KEY_SPEAKER_IDS, speakerIds);
+				
 				values.put(KEY_PRESENTER, event.getPresenter());
 
 				// updating row
@@ -315,8 +316,8 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 				ContentValues values = new ContentValues();
 				values.put(KEY_TRACK_ID, track.getTrack_id());
 				values.put(KEY_TRACK_TITLE, track.getTrack_title());
-				values.put(KEY_TRACK_ID, track.getColor());
-				values.put(KEY_TRACK_ID, track.getColor_text());
+				values.put(KEY_COLOR, track.getColor());
+				values.put(KEY_COLOR_TEXT, track.getColor_text());
 				
 
 				//adding row

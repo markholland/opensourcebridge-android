@@ -554,12 +554,21 @@ public class Schedule extends Activity {
 	 */
 	public void now(){
 		Date now = new Date();
-		if (now.before(DAYS.get(0)) || now.after(DAYS.get(DAYS.size() - 1))) {
-			setDay(DAYS.get(0));
+		
+		if(!DAYS.isEmpty()){
+
+			if (now.before(DAYS.get(0)) || now.after(DAYS.get(DAYS.size() - 1))) {
+				setDay(DAYS.get(0));
+			} else {
+				// use now, since it will have the time of day for 
+				// jumping to the right time
+				setDay(now);
+			}
+			
 		} else {
-			// use now, since it will have the time of day for 
-			// jumping to the right time
-			setDay(now);
+			Toast.makeText(getApplicationContext(), 
+					"Conference info not downloaded", 
+					Toast.LENGTH_LONG).show();
 		}
 		//setDay(DAY1);
 	}
@@ -821,16 +830,18 @@ public class Schedule extends Activity {
 
 					event = db.getScheduleRow(""+i);
 					
-					events.add(event);
-					
-					//If no days then add the first
-					if(DAYS.isEmpty())
-						DAYS.add(event.getStart_time());
-					//if the event date is after the last added days date then add the day
-					Log.d("event.date",""+event.getStart_time().getDate());
-					Log.d("Last added date", ""+DAYS.get(DAYS.size() - 1).getDate());
-					if(event.getStart_time().getDate() > (DAYS.get(DAYS.size() - 1).getDate())){
-						DAYS.add(event.getStart_time());
+					if(event != null){
+						events.add(event);
+
+						//If no days then add the first
+						if(DAYS.isEmpty())
+							DAYS.add(event.getStart_time());
+						//if the event date is after the last added days date then add the day
+						Log.d("event.date",""+event.getStart_time().getDate());
+						Log.d("Last added date", ""+DAYS.get(DAYS.size() - 1).getDate());
+						if(event.getStart_time().getDate() > (DAYS.get(DAYS.size() - 1).getDate())){
+							DAYS.add(event.getStart_time());
+						}
 					}
 				}
 			

@@ -62,6 +62,9 @@ public class Schedule extends Activity {
 	private ArrayList<Date> DAYS;
 
 
+	//Global Toast object
+	private Toast toast;
+	
 	private static final int MENU_NEXT = -5;
 	private static final int MENU_PREV = -6;
 	private static final int MENU_ABOUT = -7;
@@ -115,6 +118,8 @@ public class Schedule extends Activity {
         setContentView(R.layout.main);
         mHandler = new Handler();
         
+        toast = Toast.makeText(getBaseContext(), "", Toast.LENGTH_SHORT);
+        
         mSpeakers = new HashMap<Integer, Speaker>();
         mTracks = new HashMap<Integer, Track>();
         DAYS = new ArrayList<Date>();
@@ -147,6 +152,10 @@ public class Schedule extends Activity {
         
         mEvents.setOnItemClickListener(new ListView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapterview, View view, int position, long id) {
+				//Remove toast if showing
+				toast.cancel();
+
+				
 				Object item = mAdapter.mFiltered.get(position);
 				if (item instanceof Date) {
 					return;// ignore clicks on the dates
@@ -181,21 +190,25 @@ public class Schedule extends Activity {
 					mEvent = event;
 					mDetail = true;
 				} else { 
-					Toast.makeText(getApplicationContext(), 
-							"Event info not downloaded", 
-							Toast.LENGTH_LONG).show();
+					//TODO remove hardcoded string
+					toast.setText("Event info not downloaded");
+					toast.show();
 				}
 			}
 		});
         
         mShowDescription.setOnClickListener(new OnClickListener() { 
 			public void onClick(View v) {
+				//Remove toast if showing
+				toast.cancel();
 				show_description();
 			}
         });
 
         mShowBio.setOnClickListener(new OnClickListener() { 
 			public void onClick(View v) {
+				//Remove toast if showing
+				toast.cancel();
 				
 				boolean display = true;
 				String error = "";
@@ -230,9 +243,9 @@ public class Schedule extends Activity {
 					mDescription.setVisibility(View.GONE);
 					mBio.setVisibility(View.VISIBLE);
 				} else { 
-					Toast.makeText(getApplicationContext(), 
-							error, 
-							Toast.LENGTH_LONG).show();
+					//TODO remove hardcoded string
+					toast.setText(error);
+					toast.show();
 				}
 				
 			}
@@ -244,6 +257,8 @@ public class Schedule extends Activity {
         
         mShare.setOnClickListener(new OnClickListener() { 
 			public void onClick(View v) {
+				//Remove toast if showing
+				toast.cancel();
 				Intent intent = new Intent(android.content.Intent.ACTION_SEND);
 				intent.setType("text/plain");
 				Resources r = getApplicationContext().getResources();
@@ -438,7 +453,16 @@ public class Schedule extends Activity {
 			showList();
 			return true;
 		}
+		
+		switch (keyCode) {
+		case KeyEvent.KEYCODE_MENU:
+			//Cancel any toasts when pressing the menu button
+			toast.cancel();
+		}
+		
 		return super.onKeyDown(keyCode, event);
+		
+		
 	}
 	
 	/* Creates the menu items */
@@ -552,11 +576,12 @@ public class Schedule extends Activity {
 			}
 			
 		} else {
-			Toast.makeText(getApplicationContext(), 
-					"Conference info not downloaded", 
-					Toast.LENGTH_LONG).show();
+			//TODO remove hardcoded string
+			toast.setText("Conference info not downloaded");
+			toast.show();
+			
 		}
-		//setDay(DAY1);
+		
 	}
 	
 	/**
@@ -579,6 +604,12 @@ public class Schedule extends Activity {
 				found = true;
 			}
 		}
+		if(!found) {
+			//TODO remove hardcoded string
+			toast.setText("No more days");
+			toast.show();
+			
+		}
 		
 	}
 	
@@ -599,6 +630,11 @@ public class Schedule extends Activity {
 				setDay(DAYS.get(i-1));
 				found = true;
 			}
+		}
+		if(!found) {
+			//TODO remove hardcoded string
+			toast.setText("No more days");
+			toast.show();
 		}
 		
 	}

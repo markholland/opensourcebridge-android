@@ -60,19 +60,7 @@ public class Schedule extends Activity {
 	// TODO Fetch dates from OCW.
 	// TODO Refactor dates as array.
 	private ArrayList<Date> DAYS;
-//	private Date open_date;
-//	private Date close_date;
-//	private int num_days;
-//	private static final Date DAY1 = new Date(113, 6, 25); //wdcnz date
-//	private static final Date DAY2 = new Date(113, 6, 27);
-//	private static final Date DAY3 = new Date(113, 6, 28);
-//	private static final Date DAY4 = new Date(113, 6, 29);
 
-	// TODO Generate menu items from dates fetched from OCW.
-//	private static final int MENU_DAY1 = 1;
-//	private static final int MENU_DAY2 = 2;
-//	private static final int MENU_DAY3 = 3;
-//	private static final int MENU_DAY4 = 4;
 
 	private static final int MENU_NEXT = -5;
 	private static final int MENU_PREV = -6;
@@ -511,7 +499,7 @@ public class Schedule extends Activity {
 	    }
 	    
 		if(id >= 1) {
-			//submenu id starts at 1 when days start at 0
+			//submenu id starts at 1 when days start at 0 hence "id-1"
 	    	setDay(DAYS.get(id-1));
 	    	return true;
 		}
@@ -1180,20 +1168,7 @@ public class Schedule extends Activity {
   	}
 	
   	
-  	
-  	
-//  	public static Event getScheduleHandler(Context context, String title){
-//  		//db = new DataBaseHandler(context);
-//  		
-//  		return db.getScheduleRow(title);
-//  	}
-//  	
-//  	public static Speaker getSpeakersHandler(Context context, String fullname){
-//  		//db = new DataBaseHandler(context);
-//  		
-//  		return db.getSpeakersRow(fullname);
-//  	}
-  	
+
   	
 
 }

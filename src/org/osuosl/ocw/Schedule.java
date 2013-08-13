@@ -63,22 +63,22 @@ public class Schedule extends Activity {
 //	private Date open_date;
 //	private Date close_date;
 //	private int num_days;
-	private static final Date DAY1 = new Date(113, 6, 25); //wdcnz date
+//	private static final Date DAY1 = new Date(113, 6, 25); //wdcnz date
 //	private static final Date DAY2 = new Date(113, 6, 27);
 //	private static final Date DAY3 = new Date(113, 6, 28);
 //	private static final Date DAY4 = new Date(113, 6, 29);
 
 	// TODO Generate menu items from dates fetched from OCW.
-	private static final int MENU_DAY1 = 1;
-	private static final int MENU_DAY2 = 2;
-	private static final int MENU_DAY3 = 3;
-	private static final int MENU_DAY4 = 4;
+//	private static final int MENU_DAY1 = 1;
+//	private static final int MENU_DAY2 = 2;
+//	private static final int MENU_DAY3 = 3;
+//	private static final int MENU_DAY4 = 4;
 
-	private static final int MENU_NEXT = 5;
-	private static final int MENU_PREV = 6;
-	private static final int MENU_ABOUT = 7;
-	private static final int MENU_NOW = 8;
-	private static final int MENU_REFRESH = 9;
+	private static final int MENU_NEXT = -5;
+	private static final int MENU_PREV = -6;
+	private static final int MENU_ABOUT = -7;
+	private static final int MENU_NOW = -8;
+	private static final int MENU_REFRESH = -9;
 	
 	// state
 	Date mCurrentDate;
@@ -465,8 +465,8 @@ public class Schedule extends Activity {
 //	    dayMenu.add(0, MENU_DAY4, 0, this.getDayAsString(DAY4));
 	    
 	    for(int i = 0; i < DAYS.size(); i++){
-	    	
-	    	dayMenu.add(0, i, 0, this.getDayAsString(DAYS.get(i)));
+	    	//i+1 because zero is the days sub menu so start id at 1
+	    	dayMenu.add(0, i+1, 0, this.getDayAsString(DAYS.get(i)));
 	    	
 	    }
 	    
@@ -482,22 +482,13 @@ public class Schedule extends Activity {
 	/* Handles item selections */
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// TODO Manage per-day schedules dynamically, rather than hard coding them in.
-	    switch (item.getItemId()) {
+	    
+		int id = item.getItemId();
+		
+		switch (id) {
 	    case MENU_NOW:
 	        now();
 	        return true;
-	    case MENU_DAY1:
-	    	setDay(DAY1);
-	        return true;
-//    	case MENU_DAY2:
-//    		setDay(DAY2);
-//	        return true;
-//		case MENU_DAY3:
-//			setDay(DAY3);
-//    		return true;
-//		case MENU_DAY4:
-//			setDay(DAY4);
-//			return true;
 		case MENU_PREV:
 			previous();
 			return true;
@@ -518,6 +509,13 @@ public class Schedule extends Activity {
 			}); 
 			return true;
 	    }
+	    
+		if(id >= 1) {
+			//submenu id starts at 1 when days start at 0
+	    	setDay(DAYS.get(id-1));
+	    	return true;
+		}
+	    
 	    return false;
 	}
 

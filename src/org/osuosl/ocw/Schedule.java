@@ -60,7 +60,7 @@ public class Schedule extends Activity {
 	// TODO Fetch dates from OCW.
 	// TODO Refactor dates as array.
 	private ArrayList<Date> DAYS;
-
+	private ICal calendar;
 
 	//Global Toast object
 	private Toast toast;
@@ -120,13 +120,10 @@ public class Schedule extends Activity {
         
         toast = Toast.makeText(getBaseContext(), "", Toast.LENGTH_SHORT);
         
-        mSpeakers = new HashMap<Integer, Speaker>();
-        mTracks = new HashMap<Integer, Track>();
-        DAYS = new ArrayList<Date>();
-        
+        mFlipper = (ViewFlipper) findViewById(R.id.flipper);
         mDate = (TextView) findViewById(R.id.date);
         mEvents = (ListView) findViewById(R.id.events);
-        mFlipper = (ViewFlipper) findViewById(R.id.flipper);
+        
         Context context = getApplicationContext();
         mInLeft = AnimationUtils.loadAnimation(context, R.anim.slide_in_left);
         mInRight = AnimationUtils.loadAnimation(context, R.anim.slide_in_right);
@@ -149,6 +146,65 @@ public class Schedule extends Activity {
         mShare = (Button) findViewById(R.id.share);
         mShowDescription = (Button) findViewById(R.id.show_description);
         mShowBio = (Button) findViewById(R.id.show_bio);
+        
+        
+        // Get saved data if destroyed
+        final StateChangeData data = (StateChangeData) getLastNonConfigurationInstance();
+        
+        // No saved data, run app as normal
+        if( data == null){
+        	
+        	mSpeakers = new HashMap<Integer, Speaker>();
+        	mTracks = new HashMap<Integer, Track>();
+        	DAYS = new ArrayList<Date>();
+        	calendar = new ICal();
+        	mCurrentDate = null;
+        
+        // Saved data available, load it instead of from json/db
+        } else {
+        	mSpeakers = data.getmSpeakers();
+        	mTracks = data.getmTracks();
+        	DAYS = data.getDAYS();
+        	calendar = new ICal();
+        	calendar.setEvents(data.getmEvents());
+        	mCurrentDate = data.getmCurrentData();
+        	mDetail = data.getmDetail();
+        	
+        	int flipperTab = data.getFlipperTab();
+        	Event event = data.getmEvent();
+        	
+        	// Was looking at an event when destroyed so load it.
+        	if(mDetail) {
+        		mHeader.setBackgroundColor(Color.parseColor(mTracks.get(event.getTrack_id()).getColor()));
+        		mTitle.setText(event.getEvent_title());
+        		mRoom_title.setText(event.getRoom_title());
+        		DateFormat startFormat = new SimpleDateFormat("E, h:mm");
+        		DateFormat endFormat = new SimpleDateFormat("h:mm a");
+        		String timeString = startFormat.format(event.getStart_time()) + " - " + endFormat.format(event.getEnd_time());
+        		mTime.setText(timeString);
+        		
+        		//TODO Fix for multiple speakers
+        		if(mSpeakers.get(Integer.parseInt(event.getSpeaker_ids()[0])) == null);
+        		Speaker sp = loadBio(Integer.parseInt(event.getSpeaker_ids()[0]));
+
+        		if(sp!=null){
+        			mSpeaker.setText(sp.getFullname());
+        			mTimeLocation.setBackgroundColor(Color.parseColor(mTracks.get(event.getTrack_id()).getColor()));
+        			mDescription.setText(event.getDescription());
+        			mEvent = event;
+        		}
+        		
+        		mFlipper.setDisplayedChild(flipperTab);
+        		
+        		// Depending on which view was visible on destroy, show that view.
+        		if(data.getmDescriptionVisibility() == View.VISIBLE)
+        			show_description();
+        		if(data.getmBioVisibility() == View.VISIBLE)
+        			show_bio();
+        	}
+        }
+        
+        
         
         mEvents.setOnItemClickListener(new ListView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapterview, View view, int position, long id) {
@@ -177,7 +233,9 @@ public class Schedule extends Activity {
 				//TODO Fix for multiple speakers
 				Log.d("SPEAKERID",event.getSpeaker_ids()[0]);
 				
-				Speaker sp = loadBio(Integer.parseInt(event.getSpeaker_ids()[0]));
+				if(mSpeakers.get(Integer.parseInt(event.getSpeaker_ids()[0])) == null);
+					Speaker sp = loadBio(Integer.parseInt(event.getSpeaker_ids()[0]));
+				
 				if(sp!=null){
 					mSpeaker.setText(sp.getFullname());
 					mTimeLocation.setBackgroundColor(Color.parseColor(mTracks.get(event.getTrack_id()).getColor()));
@@ -210,39 +268,9 @@ public class Schedule extends Activity {
 				//Remove toast if showing
 				toast.cancel();
 				
-				boolean display = true;
-				String error = "";
-				mBio.removeAllViews();
-				String[] speaker_ids = mEvent.getSpeaker_ids();
-				if (speaker_ids != null) {
-					for (int i=0; i<speaker_ids.length; i++) {
-//						try {
-							View view = loadBioView(Integer.parseInt(speaker_ids[i]));
-							if (view != null) {
-								if (i>0){
-									view.setPadding(0, 30, 0, 0);
-								}
-								mBio.addView(view);
-							} else {
-								//bio not yet downloaded
-								display = false;
-								error = "The speakers for this event haven't been downloaded yet";
-								
-							}
-//						} catch (JSONException e) {
-//							e.printStackTrace();
-//						}
-					}
-				} else { 
-					// Event doesn't have any speakers
-					display = false;
-					error = "This event doesn't have any speakers";
-					
-				}
-				if(display){
-					mDescription.setVisibility(View.GONE);
-					mBio.setVisibility(View.VISIBLE);
-				} else { 
+				String error = show_bio();
+				
+				if(!error.equals("none")) { 
 					//TODO remove hardcoded string
 					toast.setText(error);
 					toast.show();
@@ -270,16 +298,39 @@ public class Schedule extends Activity {
         
         // spawn loading into separate thread
         mHandler.post(new Runnable() {
-		    public void run() { 
-		    	loadSchedule(true);
-		    	//have number of days
-		    	now();
-		    	}
+        	public void run() { 
+        		
+        		loadSchedule(true);
+        		// If not on an event 
+        		if(!mDetail){
+        			// When first launch date is set an impossible date
+        			// in order to force refresh, here we check if it is that date
+        			if(mCurrentDate.equals(new Date(1900, 0, 0)))
+        				now();
+        			// Otherwise our current date was destroyed so we load it
+        			else {
+        				mAdapter.filterDay(mCurrentDate);
+        				mDate.setText(date_formatter.format(mCurrentDate));
+        				showList();
+        			}
+        		}
+        	}
 		});
     
         db = new DataBaseHandler(context);
     
     }//end onCreate
+	
+	
+	// Save the app state when destroyed
+	@Override
+	public Object onRetainNonConfigurationInstance() {
+		final StateChangeData data = new StateChangeData(DAYS, calendar.getEvents(),
+				mSpeakers, mTracks, mCurrentDate, mDescription.getVisibility(),
+				mBio.getVisibility(), mDetail, mFlipper.getDisplayedChild(),
+				mEvent);
+		return data;
+	}
 	
 	public Speaker loadBio(int id){
 		
@@ -446,10 +497,54 @@ public class Schedule extends Activity {
 	}
 	
 	/**
+	 * Shows the session bio, hides all other subviews
+	 */
+	private String show_bio(){
+		boolean display = true;
+		String error = "none";
+		mBio.removeAllViews();
+		String[] speaker_ids = mEvent.getSpeaker_ids();
+		if (speaker_ids != null) {
+			for (int i=0; i<speaker_ids.length; i++) {
+//				try {
+					View view = loadBioView(Integer.parseInt(speaker_ids[i]));
+					if (view != null) {
+						if (i>0){
+							view.setPadding(0, 30, 0, 0);
+						}
+						mBio.addView(view);
+					} else {
+						//bio not yet downloaded
+						display = false;
+						error = "The speakers for this event haven't been downloaded yet";
+						
+					}
+//				} catch (JSONException e) {
+//					e.printStackTrace();
+//				}
+			}
+		} else { 
+			// Event doesn't have any speakers
+			display = false;
+			error = "This event doesn't have any speakers";
+			
+		}
+		if(display){
+			mDescription.setVisibility(View.GONE);
+			mBio.setVisibility(View.VISIBLE);
+		}
+		
+		return error;
+	}
+	
+	/**
 	 * overridden to hook back button when on the detail page
 	 */
 	public boolean onKeyDown(int keyCode, KeyEvent  event){
 		if (mDetail && keyCode == KeyEvent.KEYCODE_BACK){
+			showList();
+			mAdapter.filterDay(mCurrentDate);
+			mDate.setText(date_formatter.format(mCurrentDate));
 			showList();
 			return true;
 		}
@@ -470,13 +565,7 @@ public class Schedule extends Activity {
 		menu.add(0, MENU_PREV, 0, "Previous Day").setIcon(R.drawable.ic_menu_back);
 		SubMenu dayMenu = menu.addSubMenu("Day").setIcon(android.R.drawable.ic_menu_today);
 
-		// TODO Generate days menu from data fetched from OCW.
-//	    dayMenu.add(0, MENU_DAY1, 0, this.getDayAsString(DAY1));
-//	    dayMenu.add(0, MENU_DAY2, 0, this.getDayAsString(DAY2));
-//	    dayMenu.add(0, MENU_DAY3, 0, this.getDayAsString(DAY3));
-//	    dayMenu.add(0, MENU_DAY4, 0, this.getDayAsString(DAY4));
-	    
-	    for(int i = 0; i < DAYS.size(); i++){
+		for(int i = 0; i < DAYS.size(); i++){
 	    	//i+1 because zero is the days sub menu so start id at 1
 	    	dayMenu.add(0, i+1, 0, this.getDayAsString(DAYS.get(i)));
 	    	
@@ -588,14 +677,7 @@ public class Schedule extends Activity {
 	 * Jumps to the next day, if not already at the end
 	 */
 	public void next() {
-//		if (isSameDay(mCurrentDate, DAY1)) {
-//			setDay(DAY2);
-//		} else if (isSameDay(mCurrentDate, DAY2)) {
-//			setDay(DAY3);
-//		} else if (isSameDay(mCurrentDate, DAY3)) {
-//			setDay(DAY4);
-//		}
-		
+
 		//Find the index of the current day and then set to the next
 		boolean found = false;
 		for(int i = 0; i < DAYS.size() - 1 && !found; i++){
@@ -617,13 +699,7 @@ public class Schedule extends Activity {
 	 * Jumps to the previous day if now already at the beginning
 	 */
 	public void previous() {
-//		if (isSameDay(mCurrentDate, DAY4)) {
-//			setDay(DAY3);
-//		} else if (isSameDay(mCurrentDate, DAY3)) {
-//			setDay(DAY2);
-//		} else if (isSameDay(mCurrentDate, DAY2)) {
-//			setDay(DAY1);
-//		}
+
 		boolean found = false;
 		for(int i = DAYS.size() - 1; i > 0 && !found; i--){
 			if(mCurrentDate == DAYS.get(i)){
@@ -658,14 +734,14 @@ public class Schedule extends Activity {
 	private void loadSchedule(boolean force) {
 		//XXX set date to a day that is definitely, not now.  
 		//    This will cause it to update the list immediately.
-		mCurrentDate = new Date(1900, 0, 0);
-		ICal calendar = new ICal();
-		loadTracks(force);
-		parseProposals(calendar, force);
+		if(mCurrentDate == null)
+			mCurrentDate = new Date(1900, 0, 0);
+		if(mTracks.size() == 0) {
+			loadTracks(force);
+			parseProposals(calendar, force);
+		}
 		//Days available here
 		Log.d("DAYS", DAYS.toString());
-		
-		
 		
 		mAdapter = new EventAdapter(this, R.layout.listevent, calendar.getEvents());
         mEvents.setAdapter(mAdapter);

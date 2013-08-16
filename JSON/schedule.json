@@ -248,6 +248,19 @@
       "end_time": "2013-07-28T21:00:00-07:00",
       "description": "",
       "room_title": ""
+    },
+    {
+      "event_id": 21,
+      "event_title": "Better templates from the ground up with Node.js",
+      "start_time": "2013-07-26T17:10:00-07:00",
+      "end_time": "2013-07-26T18:00:00-07:00",
+      "description": "Garann is a JavaScript developer from Austin, Texas, USA. She works at Editorially, where she tries to use front-end technologies to make it easier for people around the world to buy and sell handmade and vintage treasures. She's the author of Node for Front-End Developers, the organizer of Austin All-Girl Hack Night and Girl Develop It Austin, and one of the co-hosts of the Fripfrap podcast.",
+      "room_title": "Auditorium",
+      "track_id": 0,
+      "speaker_ids": [
+        11
+      ],
+      "presenter": null
     }
   ],
   "is_admin": false

@@ -184,11 +184,23 @@ public class Schedule extends Activity {
         		mTime.setText(timeString);
         		
         		//TODO Fix for multiple speakers
-        		if(mSpeakers.get(Integer.parseInt(event.getSpeaker_ids()[0])) == null);
-        		Speaker sp = loadBio(Integer.parseInt(event.getSpeaker_ids()[0]));
+//        		if(mSpeakers.get(Integer.parseInt(event.getSpeaker_ids()[0])) == null)
+//        			Speaker sp = loadBio(Integer.parseInt(event.getSpeaker_ids()[0]));
+//        			
+        		Speaker sp = null;
+        		//go through all event speakers
+        		for(int i = 0; i < event.getSpeaker_ids().length; i++){
+        			if(mSpeakers.get(Integer.parseInt(event.getSpeaker_ids()[i])) == null);
+        			sp = loadBio(Integer.parseInt(event.getSpeaker_ids()[i]));
+        			
+        		}
+        			
 
         		if(sp!=null){
-        			mSpeaker.setText(sp.getFullname());
+        			if(!event.getPresenter().equals(""))
+        				mSpeaker.setText(event.getPresenter());
+        			else
+        				mSpeaker.setText(sp.getFullname());
         			mTimeLocation.setBackgroundColor(Color.parseColor(mTracks.get(event.getTrack_id()).getColor()));
         			mDescription.setText(event.getDescription());
         			mEvent = event;
@@ -233,14 +245,23 @@ public class Schedule extends Activity {
 				//TODO Fix for multiple speakers
 				Log.d("SPEAKERID",event.getSpeaker_ids()[0]);
 				
-				if(mSpeakers.get(Integer.parseInt(event.getSpeaker_ids()[0])) == null);
-					Speaker sp = loadBio(Integer.parseInt(event.getSpeaker_ids()[0]));
-				
-				if(sp!=null){
-					mSpeaker.setText(sp.getFullname());
-					mTimeLocation.setBackgroundColor(Color.parseColor(mTracks.get(event.getTrack_id()).getColor()));
-					mDescription.setText(event.getDescription());
-					show_description();
+				Speaker sp = null;
+        		//go through all event speakers
+        		for(int i = 0; i < event.getSpeaker_ids().length; i++){
+        			if(mSpeakers.get(Integer.parseInt(event.getSpeaker_ids()[i])) == null);
+        			sp = loadBio(Integer.parseInt(event.getSpeaker_ids()[i]));
+        			
+        		}
+        			
+
+        		if(sp!=null){
+        			if(!event.getPresenter().equals(""))
+        				mSpeaker.setText(event.getPresenter());
+        			else
+        				mSpeaker.setText(sp.getFullname());
+        			mTimeLocation.setBackgroundColor(Color.parseColor(mTracks.get(event.getTrack_id()).getColor()));
+        			mDescription.setText(event.getDescription());
+        			show_description();
 					mDescriptionScroller.scrollTo(0, 0);
 					mFlipper.setInAnimation(mInRight);
 					mFlipper.setOutAnimation(mOutLeft);
@@ -1009,18 +1030,16 @@ public class Schedule extends Activity {
 						JSONArray speaker_ids = json.getJSONArray("speaker_ids");
 						String [] stringArray = new String[speaker_ids.length()];
 						for(int j = 0; j < speaker_ids.length(); j++)
-						{
-						    try {
-						        int in = speaker_ids.getInt(j);
-//						        String aux = jsonObject.toString();
-//						        aux = aux.replace("[", "");
-//						        aux = aux.replace("]", "");
-						        stringArray[j] = (""+in);
-						        Log.d("STRINGARRAY", stringArray[j]);
-						    }
-						    catch (JSONException e) {
-						        e.printStackTrace();
-						    }
+						{						    
+							//int in = speaker_ids.getInt(j);
+							String aux = speaker_ids.toString();
+							aux = aux.replace("\"", "");
+							aux = aux.replace("\"", "");
+							aux = aux.replace("[", "");
+							aux = aux.replace("]", "");
+							stringArray = aux.split(",");
+							Log.d("STRINGARRAY", stringArray[j]);
+
 						}
 						event.setSpeaker_ids(stringArray);
 					}

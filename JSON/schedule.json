@@ -115,11 +115,14 @@
       "event_title": "The Accessibility Panel",
       "start_time": "2013-07-25T13:50:00-07:00",
       "end_time": "2013-07-25T14:30:00-07:00",
-      "description": "",
+      "description": "Lynn Hamilton is the Mobile API Developer at Xero. She writes the API framework used by Xero's iOS and Android applications. She's interested in all things mobile related, and has a passion for business intelligence and user analytics. She's been writing code since she was six and likes kittens. She presents the Aceesibility panel putting forward her own questions while also taking questions form the audience for the panel.",
       "room_title": "Auditorium",
       "track_id": 0,
       "speaker_ids": [
-        0
+        "0",
+        "5",
+        "6",
+        "11"
       ],
       "presenter": "Lynn Hamilton"
     },

@@ -199,7 +199,7 @@ public class Schedule extends Activity {
         			
 
         		if(sp!=null){
-        			if(!event.getPresenter().equals(""))
+        			if(!event.getPresenter().equals("null"))
         				mSpeaker.setText(event.getPresenter());
         			else
         				mSpeaker.setText(sp.getFullname());
@@ -257,7 +257,7 @@ public class Schedule extends Activity {
         			
 
         		if(sp!=null){
-        			if(!event.getPresenter().equals(""))
+        			if(!event.getPresenter().equals("null"))
         				mSpeaker.setText(event.getPresenter());
         			else
         				mSpeaker.setText(sp.getFullname());
@@ -512,6 +512,7 @@ public class Schedule extends Activity {
 		} else {
 			// different day, update the list
 			mCurrentDate = date;
+			
 			mAdapter.filterDay(date);
 			mDate.setText(this.getDayAsString(mCurrentDate));
 		} 
@@ -554,7 +555,7 @@ public class Schedule extends Activity {
 	 * Jumps to the next day, if not already at the end
 	 */
 	public void next() {
-
+		
 		//Find the index of the current day and then set to the next
 		boolean found = false;
 		for(int i = 0; i < DAYS.size() - 1 && !found; i++){
@@ -576,7 +577,7 @@ public class Schedule extends Activity {
 	 * Jumps to the previous day if now already at the beginning
 	 */
 	public void previous() {
-
+		
 		boolean found = false;
 		for(int i = DAYS.size() - 1; i > 0 && !found; i--){
 			if(mCurrentDate == DAYS.get(i)){
@@ -1229,8 +1230,7 @@ public class Schedule extends Activity {
 			}
 			
 			// no current event was found, jump to the next day
-			Log.d("HERE","HERE4");
-			//next();
+			next();
 		}
 		
 		public int getCount(){

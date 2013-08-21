@@ -250,8 +250,8 @@ public class Schedule extends Activity {
 				Speaker sp = null;
         		//go through all event speakers
         		for(int i = 0; i < event.getSpeaker_ids().length; i++){
-        			if(mSpeakers.get(Integer.parseInt(event.getSpeaker_ids()[i])) == null);
-        			sp = loadBio(Integer.parseInt(event.getSpeaker_ids()[i]));
+        			//if(mSpeakers.get(Integer.parseInt(event.getSpeaker_ids()[i])) == null);
+        			sp = mSpeakers.get(Integer.parseInt(event.getSpeaker_ids()[i]));
         			
         		}
         			
@@ -771,7 +771,7 @@ public class Schedule extends Activity {
 		try {
 			String raw_json = getURL(SPEAKER_URI_BASE + id + ".json", "SPEAKERS", id, false);
 
-			Log.d("CHECK DATABASE",raw_json);
+			//Log.d("CHECK DATABASE",raw_json);
 			if (raw_json.equals("database")){
 
 				long size = db.numRows("SPEAKERS");
@@ -1038,7 +1038,13 @@ public class Schedule extends Activity {
 						if(event.getStart_time().getDate() > (DAYS.get(DAYS.size() - 1).getDate())){
 							DAYS.add(event.getStart_time());
 						}
+						String[] stringArray = event.getSpeaker_ids();
+						for(int k = 0; k < stringArray.length; k++){
+							if(!mSpeakers.containsKey(Integer.parseInt(stringArray[k])))
+								loadBio(Integer.parseInt(stringArray[k]));
+						}
 					}
+					
 				}
 			
 			} else {
@@ -1119,7 +1125,13 @@ public class Schedule extends Activity {
 
 						}
 						event.setSpeaker_ids(stringArray);
+						for(int k = 0; k < stringArray.length; k++){
+							if(!mSpeakers.containsKey(Integer.parseInt(stringArray[k])))
+								loadBio(Integer.parseInt(stringArray[k]));
+						}
 					}
+					
+					
 					
 					if(json.has("presenter")){
 						event.setPresenter(json.getString("presenter"));

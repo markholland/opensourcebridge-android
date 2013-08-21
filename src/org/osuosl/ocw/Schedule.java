@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -321,7 +322,14 @@ public class Schedule extends Activity {
         mHandler.post(new Runnable() {
         	public void run() { 
         		
-        		loadSchedule(true);
+        		if(mCurrentDate == null){
+        			loadSchedule(true);
+        			setAdapter();
+        		} else {
+        			loadSchedule(false);
+        			setAdapter();
+        		}
+        		
         		// If not on an event 
         		if(!mDetail){
         			// When first launch date is set an impossible date
@@ -353,84 +361,12 @@ public class Schedule extends Activity {
 		return data;
 	}
 	
-	public Speaker loadBio(int id){
-		
-		Speaker speaker = null;
-		
-		try {
-			String raw_json = getURL(SPEAKER_URI_BASE + id + ".json", "SPEAKERS", id, false);
-			
-			Log.d("CHECK DATABASE",raw_json);
-			if (raw_json.equals("database")){
-
-				long size = db.numRows("SPEAKERS");
-				for(int i=0; i<size; i++) {
-					speaker = new Speaker();
-					speaker = db.getSpeakersRow(""+id);
-					mSpeakers.put(id, speaker);
-					}
-			} else {
-
-				JSONObject json = new JSONObject(raw_json);
-				speaker = new Speaker();
-				
-				speaker.setSpeaker_id(json.getInt("speaker_id"));
-				speaker.setFullname(json.getString("fullname"));
-				
-				//Optional fields
-				if (json.has("biography")) {
-					speaker.setBiography(json.getString("biography").replace("\r",""));
-				}
-				if (json.has("affiliation")) {
-					speaker.setAffiliation(json.getString("affiliation"));
-				}
-				if (json.has("twitter")) {
-					speaker.setTwitter(json.getString("twitter"));
-				}
-				if (json.has("email")){
-					speaker.setEmail(json.getString("email"));
-				}
-				if (json.has("website")) {
-					speaker.setWebsite(json.getString("website"));
-				}
-				if (json.has("blog")) {
-					speaker.setBlog(json.getString("blog"));
-				}
-				if (json.has("linkedin")) {
-					speaker.setLinkedin(json.getString("linkedin"));
-				}
-				
-
-				mSpeakers.put(id, speaker);
-				// TODO
-				// dont touch database if no internet, database is already loaded
-
-				Log.d("CURRENT SPEAKER ROW", speaker.getFullname());
-
-				if(speakerExists(""+speaker.getSpeaker_id()) == 0){
-					addSpeaker(speaker);
-					Log.d("ADDED ROW", "ADDED ROW");
-				}
-				else if(speakerExists(""+speaker.getSpeaker_id()) == 1) {
-					updateSpeaker(speaker);
-					Log.d("UPDATED SPEAKER ROW", "UPDATED SPEAKER ROW");
-				}
-				else if(speakerExists(""+speaker.getSpeaker_id()) == -1) {
-					//error checking if exists
-				}
-			}
-		
-
-			} catch (JSONException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				// file couldn't be loaded
-			}
-		Log.d("SPEAKER NULL", ""+speaker);
-		return speaker;
-		
-	}
 	
+	
+	
+	//																		//
+	// 								LOAD VIEWS 								//
+	//																		//
 	
 	/**
 	 * loads a view populated with the speakers info
@@ -509,6 +445,13 @@ public class Schedule extends Activity {
 		return view;
 	}
 	
+	
+	//																		//
+	// 							MANIPULATE VIEWS 							//
+	//																		//
+	
+	
+	
 	/**
 	 * Shows the session description, hides all other subviews
 	 */
@@ -558,98 +501,10 @@ public class Schedule extends Activity {
 		return error;
 	}
 	
-	/**
-	 * overridden to hook back button when on the detail page
-	 */
-	public boolean onKeyDown(int keyCode, KeyEvent  event){
-		if (mDetail && keyCode == KeyEvent.KEYCODE_BACK){
-			showList();
-			mAdapter.filterDay(mCurrentDate);
-			mDate.setText(date_formatter.format(mCurrentDate));
-			showList();
-			return true;
-		}
-		
-		switch (keyCode) {
-		case KeyEvent.KEYCODE_MENU:
-			//Cancel any toasts when pressing the menu button
-			toast.cancel();
-		}
-		
-		return super.onKeyDown(keyCode, event);
-		
-		
-	}
-	
-	/* Creates the menu items */
-	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0, MENU_PREV, 0, "Previous Day").setIcon(R.drawable.ic_menu_back);
-		SubMenu dayMenu = menu.addSubMenu("Day").setIcon(android.R.drawable.ic_menu_today);
-
-		for(int i = 0; i < DAYS.size(); i++){
-	    	//i+1 because zero is the days sub menu so start id at 1
-	    	dayMenu.add(0, i+1, 0, this.getDayAsString(DAYS.get(i)));
-	    	
-	    }
-	    
-	    
-
-		menu.add(0, MENU_NEXT, 0, "Next Day").setIcon(R.drawable.ic_menu_forward);
-	    menu.add(0, MENU_NOW, 0, "Now").setIcon(android.R.drawable.ic_menu_mylocation);
-	    menu.add(0, MENU_REFRESH, 0, "Refresh").setIcon(R.drawable.ic_menu_refresh);
-	    menu.add(0, MENU_ABOUT, 0, "About").setIcon(android.R.drawable.ic_menu_info_details);
-	    return true;
-	}
-
-	/* Handles item selections */
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// TODO Manage per-day schedules dynamically, rather than hard coding them in.
-	    
-		int id = item.getItemId();
-		
-		switch (id) {
-	    case MENU_NOW:
-	        now();
-	        return true;
-		case MENU_PREV:
-			previous();
-			return true;
-		case MENU_NEXT:
-			next();
-			return true;
-		case MENU_ABOUT:
-			showDialog(0);
-			return true;
-		case MENU_REFRESH:
-			mHandler.post(new Runnable() {
-			    public void run() { 
-			    	loadSchedule(true);
-			    	//have number of days
-			    	
-			    	now();
-			    	}
-			}); 
-			return true;
-	    }
-	    
-		if(id >= 1) {
-			//submenu id starts at 1 when days start at 0 hence "id-1"
-	    	setDay(DAYS.get(id-1));
-	    	return true;
-		}
-	    
-	    return false;
-	}
-
-	public static final DateFormat date_formatter = new SimpleDateFormat("E, MMMM d");
-
-	/* Returns string with date formatted like "Friday, June 24". */
-	public String getDayAsString(Date date) {
-		return date_formatter.format(date);
-	}
-
 	/* sets the current day, filtering the list if need be */
 	public void setDay(Date date) {
+		Log.d("DATE", ""+date);
+		Log.d("MCURRENTDATE", ""+mCurrentDate);
 		if (isSameDay(mCurrentDate, date)) {
 			// same day, just jump to current time
 			mAdapter.now(date);
@@ -749,6 +604,130 @@ public class Schedule extends Activity {
 	}
 	
 	/**
+	 * overridden to hook back button when on the detail page
+	 */
+	public boolean onKeyDown(int keyCode, KeyEvent  event){
+		if (mDetail && keyCode == KeyEvent.KEYCODE_BACK){
+			showList();
+			mAdapter.filterDay(mCurrentDate);
+			mDate.setText(date_formatter.format(mCurrentDate));
+			showList();
+			return true;
+		}
+		
+		switch (keyCode) {
+		case KeyEvent.KEYCODE_MENU:
+			//Cancel any toasts when pressing the menu button
+			toast.cancel();
+		}
+		
+		return super.onKeyDown(keyCode, event);
+		
+		
+	}
+	
+	/* Creates the menu items */
+	public boolean onCreateOptionsMenu(Menu menu) {
+		menu.add(0, MENU_PREV, 0, "Previous Day").setIcon(R.drawable.ic_menu_back);
+		SubMenu dayMenu = menu.addSubMenu("Day").setIcon(android.R.drawable.ic_menu_today);
+
+		for(int i = 0; i < DAYS.size(); i++){
+	    	//i+1 because zero is the days sub menu so start id at 1
+	    	dayMenu.add(0, i+1, 0, this.getDayAsString(DAYS.get(i)));
+	    	
+	    }
+	    
+	    
+
+		menu.add(0, MENU_NEXT, 0, "Next Day").setIcon(R.drawable.ic_menu_forward);
+	    menu.add(0, MENU_NOW, 0, "Now").setIcon(android.R.drawable.ic_menu_mylocation);
+	    menu.add(0, MENU_REFRESH, 0, "Refresh").setIcon(R.drawable.ic_menu_refresh);
+	    menu.add(0, MENU_ABOUT, 0, "About").setIcon(android.R.drawable.ic_menu_info_details);
+	    return true;
+	}
+
+	/* Handles item selections */
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// TODO Manage per-day schedules dynamically, rather than hard coding them in.
+	    
+		int id = item.getItemId();
+		
+		switch (id) {
+	    case MENU_NOW:
+	        now();
+	        return true;
+		case MENU_PREV:
+			previous();
+			return true;
+		case MENU_NEXT:
+			next();
+			return true;
+		case MENU_ABOUT:
+			showDialog(0);
+			return true;
+		case MENU_REFRESH:
+			refreshOperation ro = new refreshOperation();
+			ro.execute();
+			
+			return true;
+	    }
+	    
+		if(id >= 1) {
+			//submenu id starts at 1 when days start at 0 hence "id-1"
+	    	setDay(DAYS.get(id-1));
+	    	return true;
+		}
+	    
+	    return false;
+	}
+	
+	
+	private class refreshOperation extends AsyncTask<Void, Void, Integer> {
+
+        @Override
+        protected Integer doInBackground(Void... params) {
+                loadSchedule(true);
+                return 1;
+        }        
+
+        @Override
+        protected void onPostExecute(Integer uselessResult) {
+        	setAdapter();
+        	//now();
+        	mAdapter.filterDay(mCurrentDate);
+			mDate.setText(date_formatter.format(mCurrentDate));
+			showList();
+        }
+	}
+	
+	
+	protected Dialog onCreateDialog(int id){
+        Context context = getApplicationContext();
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
+        View v = inflater.inflate(R.layout.about, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("About");
+        builder.setCancelable(true);
+        builder.setView(v);
+        builder.setIcon(android.R.drawable.ic_dialog_info);
+        final AlertDialog alert = builder.create();
+        return alert;
+    }
+
+	public static final DateFormat date_formatter = new SimpleDateFormat("E, MMMM d");
+
+	/* Returns string with date formatted like "Friday, June 24". */
+	public String getDayAsString(Date date) {
+		return date_formatter.format(date);
+	}
+
+	//																		//
+	// 								LOAD DATA 								//
+	//																		//
+
+	
+	
+	/**
 	 * Loads the osbridge schedule from a combination of ICal and json data
 	 * @param force - force reload
 	 */
@@ -757,16 +736,167 @@ public class Schedule extends Activity {
 		//    This will cause it to update the list immediately.
 		if(mCurrentDate == null)
 			mCurrentDate = new Date(1900, 0, 0);
-		if(mTracks.size() == 0) {
+		if(mTracks.size() == 0 || force) {
 			loadTracks(force);
 			parseProposals(calendar, force);
 		}
 		//Days available here
 		Log.d("DAYS", DAYS.toString());
 		
+	}
+	
+	//Must be executed following loadSchedule when back on the ui thread
+	private void setAdapter(){
 		mAdapter = new EventAdapter(this, R.layout.listevent, calendar.getEvents());
         mEvents.setAdapter(mAdapter);
 	}
+	
+	
+	public Speaker loadBio(int id){
+
+		Speaker speaker = null;
+
+		try {
+			String raw_json = getURL(SPEAKER_URI_BASE + id + ".json", "SPEAKERS", id, false);
+
+			Log.d("CHECK DATABASE",raw_json);
+			if (raw_json.equals("database")){
+
+				long size = db.numRows("SPEAKERS");
+				for(int i=0; i<size; i++) {
+					speaker = new Speaker();
+					speaker = db.getSpeakersRow(""+id);
+					mSpeakers.put(id, speaker);
+				}
+			} else {
+
+				JSONObject json = new JSONObject(raw_json);
+				speaker = new Speaker();
+
+				speaker.setSpeaker_id(json.getInt("speaker_id"));
+				speaker.setFullname(json.getString("fullname"));
+
+				//Optional fields
+				if (json.has("biography")) {
+					speaker.setBiography(json.getString("biography").replace("\r",""));
+				}
+				if (json.has("affiliation")) {
+					speaker.setAffiliation(json.getString("affiliation"));
+				}
+				if (json.has("twitter")) {
+					speaker.setTwitter(json.getString("twitter"));
+				}
+				if (json.has("email")){
+					speaker.setEmail(json.getString("email"));
+				}
+				if (json.has("website")) {
+					speaker.setWebsite(json.getString("website"));
+				}
+				if (json.has("blog")) {
+					speaker.setBlog(json.getString("blog"));
+				}
+				if (json.has("linkedin")) {
+					speaker.setLinkedin(json.getString("linkedin"));
+				}
+
+
+				mSpeakers.put(id, speaker);
+				// TODO
+				// dont touch database if no internet, database is already loaded
+
+				Log.d("CURRENT SPEAKER ROW", speaker.getFullname());
+
+				if(speakerExists(""+speaker.getSpeaker_id()) == 0){
+					addSpeaker(speaker);
+					Log.d("ADDED ROW", "ADDED ROW");
+				}
+				else if(speakerExists(""+speaker.getSpeaker_id()) == 1) {
+					updateSpeaker(speaker);
+					Log.d("UPDATED SPEAKER ROW", "UPDATED SPEAKER ROW");
+				}
+				else if(speakerExists(""+speaker.getSpeaker_id()) == -1) {
+					//error checking if exists
+				}
+			}
+
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			// file couldn't be loaded
+		}
+		Log.d("SPEAKER NULL", ""+speaker);
+		return speaker;
+
+	}
+	
+	private void loadTracks(boolean force){
+		try{
+			//TODO
+			String raw_json = getURL(TRACKS_URI, "TRACKS", 0, force);
+			
+			if (raw_json.equals("database")){
+				
+				long size = db.numRows("TRACKS");
+				for(int i=0; i<size; i++){
+					Track track = new Track();
+
+					track = db.getTracksRow(""+i);
+					
+					mTracks.put(track.getTrack_id(), track);
+				}
+			
+			} else {
+				JSONObject tracks = new JSONObject(raw_json);
+				JSONArray json_tracks = tracks.getJSONArray("tracks");
+				int size = json_tracks.length();
+				for(int i=0; i<size; i++){
+					JSONObject json = json_tracks.getJSONObject(i);
+					Track track = new Track();
+
+					track.setTrack_id(json.getInt("track_id"));
+					track.setTrack_title(json.getString("track_title"));
+					
+					if (json.has("color")){
+						track.setColor(json.getString("color"));
+					} else {
+						track.setColor("");
+					}
+					
+					if (json.has("color_text")){
+						track.setColor_text(json.getString("color_text"));
+					} else {
+						track.setColor_text("");
+					}
+					
+					// TODO
+					// dont touch database if no internet, database is already loaded
+
+					Log.d("CURRENT ROW", track.getTrack_title());
+
+					if(trackExists(""+track.getTrack_id()) == 0){
+						addTrack(track);
+						Log.d("ADDED ROW", "ADDED ROW");
+					}
+					else if(trackExists(""+track.getTrack_id()) == 1) {
+						updateTrack(track);
+						Log.d("UPDATED ROW", "UPDATED ROW");
+					}
+					else if(trackExists(""+track.getTrack_id()) == -1) {
+						//error checking if exists
+					}
+					
+					mTracks.put(track.getTrack_id(), track);
+				}
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			// unable to get file, show error to user
+			// TODO
+		}
+	}
+	
 
 	/**
 	 * fetches a url and returns it as a string.  This method will cache the
@@ -863,72 +993,7 @@ public class Schedule extends Activity {
 		return sb.toString();
 	}
 	
-	private void loadTracks(boolean force){
-		try{
-			//TODO
-			String raw_json = getURL(TRACKS_URI, "TRACKS", 0, force);
-			
-			if (raw_json.equals("database")){
-				
-				long size = db.numRows("TRACKS");
-				for(int i=0; i<size; i++){
-					Track track = new Track();
-
-					track = db.getTracksRow(""+i);
-					
-					mTracks.put(track.getTrack_id(), track);
-				}
-			
-			} else {
-				JSONObject tracks = new JSONObject(raw_json);
-				JSONArray json_tracks = tracks.getJSONArray("tracks");
-				int size = json_tracks.length();
-				for(int i=0; i<size; i++){
-					JSONObject json = json_tracks.getJSONObject(i);
-					Track track = new Track();
-
-					track.setTrack_id(json.getInt("track_id"));
-					track.setTrack_title(json.getString("track_title"));
-					
-					if (json.has("color")){
-						track.setColor(json.getString("color"));
-					} else {
-						track.setColor("");
-					}
-					
-					if (json.has("color_text")){
-						track.setColor_text(json.getString("color_text"));
-					} else {
-						track.setColor_text("");
-					}
-					
-					// TODO
-					// dont touch database if no internet, database is already loaded
-
-					Log.d("CURRENT ROW", track.getTrack_title());
-
-					if(trackExists(""+track.getTrack_id()) == 0){
-						addTrack(track);
-						Log.d("ADDED ROW", "ADDED ROW");
-					}
-					else if(trackExists(""+track.getTrack_id()) == 1) {
-						updateTrack(track);
-						Log.d("UPDATED ROW", "UPDATED ROW");
-					}
-					else if(trackExists(""+track.getTrack_id()) == -1) {
-						//error checking if exists
-					}
-					
-					mTracks.put(track.getTrack_id(), track);
-				}
-			}
-		} catch (JSONException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			// unable to get file, show error to user
-			// TODO
-		}
-	}
+	
 	
 	/**
 	 * parse events from json file and update the given calendar
@@ -1082,18 +1147,7 @@ public class Schedule extends Activity {
 		calendar.setEvents(events);
 	}
 	
-	protected Dialog onCreateDialog(int id){
-        Context context = getApplicationContext();
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
-        View v = inflater.inflate(R.layout.about, null);
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("About");
-        builder.setCancelable(true);
-        builder.setView(v);
-        builder.setIcon(android.R.drawable.ic_dialog_info);
-        final AlertDialog alert = builder.create();
-        return alert;
-    }	
+		
 	
 	/**
 	 * EventAdapter used for displaying a list of events
@@ -1145,7 +1199,7 @@ public class Schedule extends Activity {
 				Object item = filtered.get(i);
 				
 				// find either the first session that hasn't ended yet
-				// or the first time marker that hasn't occured yet.
+				// or the first time marker that hasn't occurred yet.
 				if (item instanceof Date ){
 					Date slot = (Date) item;
 					if (date.before(slot)) {
@@ -1164,7 +1218,8 @@ public class Schedule extends Activity {
 			}
 			
 			// no current event was found, jump to the next day
-			next();
+			Log.d("HERE","HERE4");
+			//next();
 		}
 		
 		public int getCount(){
@@ -1190,7 +1245,7 @@ public class Schedule extends Activity {
 					TextView room_title = (TextView) v.findViewById(R.id.room_title);
 					TextView time = (TextView) v.findViewById(R.id.time);
 					if (event.getTrack_id() != -1) {
-						Context context = getApplicationContext();
+						//Context context = getApplicationContext();
 						TextView track = (TextView) v.findViewById(R.id.track);
 						track.setTextColor(Color.parseColor(mTracks.get(event.getTrack_id()).getColor_text()));
 						track.setText(mTracks.get(event.getTrack_id()).getTrack_title());
@@ -1246,8 +1301,9 @@ public class Schedule extends Activity {
     }
 	
 	
-	
-	/////////////////////////////////////////////////////////////
+	//																//
+	//						DATABASE HANDLERS						//
+	//																//
 	
 	
   	public static void addSchedule(Event ev){

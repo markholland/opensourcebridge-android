@@ -22,6 +22,7 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -681,9 +682,18 @@ public class Schedule extends Activity {
 	    return false;
 	}
 	
+	private ProgressDialog pdia;
 	
 	private class refreshOperation extends AsyncTask<Void, Void, Integer> {
 
+		@Override
+		protected void onPreExecute(){
+			super.onPreExecute();
+			pdia = new ProgressDialog(Schedule.this);
+			pdia.setMessage("Refreshing...");
+			pdia.show();
+		}
+		
         @Override
         protected Integer doInBackground(Void... params) {
                 loadSchedule(true);
@@ -692,6 +702,7 @@ public class Schedule extends Activity {
 
         @Override
         protected void onPostExecute(Integer uselessResult) {
+        	pdia.dismiss();
         	setAdapter();
         	//now();
         	mAdapter.filterDay(mCurrentDate);

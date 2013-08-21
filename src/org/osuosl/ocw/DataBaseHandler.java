@@ -373,8 +373,9 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 					String presenter = cursor.getString(8);
 					cursor.close();
 					// TODO
-					String[] speakerids = new String[1];
-					speakerids[0] = sIds;//.split(",");
+					String[] speakerids = {};
+					if(sIds != null)
+						speakerids  = sIds.split(",");
 
 					event = new Event(
 							id, event_title, start_time, end_time, description, room_title, track_id, speakerids, presenter);

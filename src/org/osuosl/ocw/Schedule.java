@@ -1341,6 +1341,10 @@ public class Schedule extends Activity {
   		db.addTrackRow(tr);
   	}
   	
+  	public static void initStatus(String table, String time){
+  		db.initStatusTable(table, time);
+  	}
+  	
   	public static void updateSchedule(Event ev){
   		db.updateScheduleRow(ev);
   	}
@@ -1353,6 +1357,10 @@ public class Schedule extends Activity {
   		db.updateTracksRow(tr);
   	}
   	
+  	public static void tableUpdated(String table, String time){
+  		db.tableUpdated(table, time);
+  	}
+  	
   	public static Event getSchedule(String event_id){
   		return db.getScheduleRow(event_id);
   	}
@@ -1363,6 +1371,10 @@ public class Schedule extends Activity {
   		
   	public static Track getTrack(String track_id){
   		return db.getTracksRow(track_id);
+  	}
+  	
+  	public static Long getTableUpdated(String table){
+  		return db.getTableUpdated(table);
   	}
   	
   	public static int eventExists(String event_id){

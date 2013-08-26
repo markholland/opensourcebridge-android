@@ -829,6 +829,8 @@ public class Schedule extends Activity {
 				else if(speakerExists(""+speaker.getSpeaker_id()) == -1) {
 					//error checking if exists
 				}
+				
+				
 			}
 
 
@@ -1331,14 +1333,29 @@ public class Schedule extends Activity {
 	
   	public static void addSchedule(Event ev){
   		db.addScheduleRow(ev);
+  		if(statusExists("schedule") == 0){
+			initStatus("schedule", ""+System.currentTimeMillis());
+		} else if(statusExists("schedule") == 1){
+			tableUpdated("schedule", ""+System.currentTimeMillis());
+		}
   	}
   	
   	public static void addSpeaker(Speaker sp){
   		db.addSpeakersRow(sp);
+  		if(statusExists("speakers") == 0){
+			initStatus("speakers", ""+System.currentTimeMillis());
+		} else if(statusExists("speakers") == 1){
+			tableUpdated("speakers", ""+System.currentTimeMillis());
+		}
   	}
   	
   	public static void addTrack(Track tr){
   		db.addTrackRow(tr);
+  		if(statusExists("tracks") == 0){
+			initStatus("tracks", ""+System.currentTimeMillis());
+		} else if(statusExists("tracks") == 1){
+			tableUpdated("tracks", ""+System.currentTimeMillis());
+		}
   	}
   	
   	public static void initStatus(String table, String time){
@@ -1347,14 +1364,29 @@ public class Schedule extends Activity {
   	
   	public static void updateSchedule(Event ev){
   		db.updateScheduleRow(ev);
+  		if(statusExists("schedule") == 0){
+			initStatus("schedule", ""+System.currentTimeMillis());
+		} else if(statusExists("schedule") == 1){
+			tableUpdated("schedule", ""+System.currentTimeMillis());
+		}
   	}
   	
   	public static void updateSpeaker(Speaker sp){
   		db.updateSpeakersRow(sp);
+  		if(statusExists("speakers") == 0){
+			initStatus("speakers", ""+System.currentTimeMillis());
+		} else if(statusExists("speakers") == 1){
+			tableUpdated("speakers", ""+System.currentTimeMillis());
+		}
   	}
   	
   	public static void updateTrack(Track tr){
   		db.updateTracksRow(tr);
+  		if(statusExists("tracks") == 0){
+			initStatus("tracks", ""+System.currentTimeMillis());
+		} else if(statusExists("tracks") == 1){
+			tableUpdated("tracks", ""+System.currentTimeMillis());
+		}
   	}
   	
   	public static void tableUpdated(String table, String time){

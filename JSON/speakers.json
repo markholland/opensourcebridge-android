@@ -1,0 +1,137 @@
+{
+  "timeout": "4800000",
+  "items": [
+    {
+      "speaker_id": 0,
+      "fullname": "Julia Grace",
+      "biography": "",
+      "affiliation": "Tindle",
+      "twitter": "jewelia",
+      "email": "",
+      "website": "",
+      "blog": "",
+      "linkedin": ""
+    },
+    {
+      "speaker_id": 1,
+      "fullname": "Zach Holman",
+      "biography": "",
+      "affiliation": "Github",
+      "twitter": "holman",
+      "email": "",
+      "website": "",
+      "blog": "",
+      "linkedin": ""
+    },
+    {
+      "speaker_id": 2,
+      "fullname": "François Marier",
+      "biography": "",
+      "affiliation": "Mozilla",
+      "twitter": "fmarier",
+      "email": "",
+      "website": "",
+      "blog": "",
+      "linkedin": ""
+    },
+    {
+      "speaker_id": 3,
+      "fullname": "Walter Rumsby",
+      "biography": "",
+      "affiliation": "Xero",
+      "twitter": "wrumsby",
+      "email": "",
+      "website": "",
+      "blog": "",
+      "linkedin": ""
+    },
+    {
+      "speaker_id": 4,
+      "fullname": "Ryan Seddon",
+      "biography": "",
+      "affiliation": "",
+      "twitter": "ryanseddon",
+      "email": "",
+      "website": "",
+      "blog": "http://www.thecssninja.com",
+      "linkedin": ""
+    },
+    {
+      "speaker_id": 5,
+      "fullname": "Jason Kiss",
+      "biography": "",
+      "affiliation": "New Zealand Government",
+      "twitter": "jkiss",
+      "email": "",
+      "website": "http://www.accessibleculture.org",
+      "blog": "",
+      "linkedin": ""
+    },
+    {
+      "speaker_id": 6,
+      "fullname": "Nicolas Steenhout",
+      "biography": "",
+      "affiliation": "",
+      "twitter": "vavroom",
+      "email": "",
+      "website": "",
+      "blog": "",
+      "linkedin": ""
+    },
+    {
+      "fullname": "Alex Gibson",
+      "speaker_id": 7,
+      "biography": "",
+      "affiliation": "",
+      "twitter": "prototypealex",
+      "email": "",
+      "website": "",
+      "blog": "",
+      "linkedin": ""
+    },
+    {
+      "fullname": "Amy Palamountain",
+      "speaker_id": 8,
+      "biography": "",
+      "affiliation": "Greenbutton",
+      "twitter": "ammeep",
+      "email": "",
+      "website": "",
+      "blog": "",
+      "linkedin": ""
+    },
+    {
+      "speaker_id": 9,
+      "fullname": "Donald Gordon",
+      "biography": "",
+      "affiliation": "Xero",
+      "twitter": "deadlyllama",
+      "email": "",
+      "website": "",
+      "blog": "",
+      "linkedin": ""
+    },
+    {
+      "speaker_id": 10,
+      "fullname": "Rob Conery",
+      "biography": "",
+      "affiliation": "Tekpub",
+      "twitter": "robconery",
+      "email": "",
+      "website": "",
+      "blog": "",
+      "linkedin": ""
+    },
+    {
+      "speaker_id": 11,
+      "fullname": "Garann Means",
+      "biography": "",
+      "affiliation": "Editorially",
+      "twitter": "garannm",
+      "email": "",
+      "website": "",
+      "blog": "",
+      "linkedin": ""
+    }
+  ]
+}

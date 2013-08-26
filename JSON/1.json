@@ -7,5 +7,6 @@
   "email": "",
   "website": "",
   "blog": "",
-  "linkedin": ""
+  "linkedin": "",
+  "cache_timeout": 1800000
 }

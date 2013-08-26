@@ -211,7 +211,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 	 * @param value
 	 * @return
 	 */
-	public Long initStatusTable(String table, String value){
+	public Long addStatusRow(String name, String value){
 		SQLiteDatabase db = null;
 		Long i = 0l;
 
@@ -221,7 +221,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			
 			try{
 				ContentValues values = new ContentValues();
-				values.put(KEY_STATUS_NAME, table+"_updated");
+				values.put(KEY_STATUS_NAME, name);
 				values.put(KEY_STATUS_VALUE, value);
 
 				// adding row
@@ -397,7 +397,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 	 * @param value
 	 * @return
 	 */
-	public int tableUpdated(String table, String value){
+	public int updateStatusRow(String name, String value){
 		SQLiteDatabase db = null;
 		int i = 0;
 		
@@ -406,12 +406,12 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			db.beginTransaction();
 			try{
 				ContentValues values = new ContentValues();
-				values.put(KEY_STATUS_NAME, table+"_updated");
+				values.put(KEY_STATUS_NAME, name+"_updated");
 				values.put(KEY_STATUS_VALUE, value);
 				
 				// updating row
 				i = db.update(STATUS_TABLE_NAME, values, KEY_STATUS_NAME + " = ?",
-						new String[] { table+"_updated" });
+						new String[] { name });
 
 				db.setTransactionSuccessful();
 
@@ -580,7 +580,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 	/**
 	 * Returns when a table was last updated.
 	 */
-	public Long getTableUpdated(String table) {
+	public Long getStatusRow(String name) {
 		Long value = -1l;
 		SQLiteDatabase db = null;
 		
@@ -590,7 +590,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			db.beginTransaction();
 			try{
 
-				Cursor cursor = db.rawQuery("SELECT * FROM STATUS WHERE name = '"+table+"_updated'", null);
+				Cursor cursor = db.rawQuery("SELECT * FROM STATUS WHERE name = '"+name+"_updated'", null);
 
 				if (cursor != null){
 					cursor.moveToFirst();

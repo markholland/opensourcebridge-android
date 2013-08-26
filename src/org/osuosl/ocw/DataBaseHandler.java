@@ -18,6 +18,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 	private static final String SCHEDULE_TABLE_NAME = "SCHEDULE";
 	private static final String SPEAKERS_TABLE_NAME = "SPEAKERS";
 	private static final String TRACKS_TABLE_NAME = "TRACKS";
+	private static final String STATUS_TABLE_NAME = "STATUS";
 
 	// Schedule table column names
 	private static final String KEY_EVENT_ID = "event_id";
@@ -46,6 +47,10 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 	private static final String KEY_TRACK_TITLE = "track_title";
 	private static final String KEY_COLOR = "color";
 	private static final String KEY_COLOR_TEXT = "color_text";
+	
+	// Status table column names
+	private static final String KEY_STATUS_NAME = "name";
+	private static final String KEY_STATUS_VALUE = "value";
 	
 	// Queries
 	private static final String[] GET_SCHEDULE_ROW = new String[]{KEY_EVENT_ID, KEY_TITLE, KEY_START, KEY_END, KEY_DESCRIPTION, KEY_ROOM_TITLE, KEY_TRACK_ID, KEY_SPEAKER_IDS, KEY_PRESENTER};
@@ -199,6 +204,48 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 		}
 		return i;
 	}
+	
+	/**
+	 * Initialize a status table value
+	 * @param table
+	 * @param value
+	 * @return
+	 */
+	public Long initStatusTable(String table, String value){
+		SQLiteDatabase db = null;
+		Long i = 0l;
+
+		try {
+			db = this.getWritableDatabase();
+			db.beginTransaction();
+			
+			try{
+				ContentValues values = new ContentValues();
+				values.put(KEY_STATUS_NAME, table+"_updated");
+				values.put(KEY_STATUS_VALUE, value);
+
+				// adding row
+				i = db.insert(STATUS_TABLE_NAME, null, values);
+
+				db.setTransactionSuccessful();
+
+			} catch(Exception e){
+				db.endTransaction();
+				throw e;
+			}
+
+			db.endTransaction();
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		finally{
+			db.close();
+		}
+		return i;
+	}
 
 	/**
 	 * Updates an existing row(Event) in the schedule database table.
@@ -320,7 +367,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 				values.put(KEY_COLOR_TEXT, track.getColor_text());
 				
 
-				//adding row
+				// updating row
 				i = db.update(TRACKS_TABLE_NAME, values, KEY_TRACK_ID + " = ?",
 						new String[] { String.valueOf(track.getTrack_id())});
 
@@ -341,6 +388,51 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 		}
 		return i;
 	}
+	
+	
+	
+	/**
+	 * Update the current time in ms that the table was last updated
+	 * @param table
+	 * @param value
+	 * @return
+	 */
+	public int tableUpdated(String table, String value){
+		SQLiteDatabase db = null;
+		int i = 0;
+		
+		try {
+			db = this.getWritableDatabase();
+			db.beginTransaction();
+			try{
+				ContentValues values = new ContentValues();
+				values.put(KEY_STATUS_NAME, table+"_updated");
+				values.put(KEY_STATUS_VALUE, value);
+				
+				// updating row
+				i = db.update(STATUS_TABLE_NAME, values, KEY_STATUS_NAME + " = ?",
+						new String[] { table+"_updated" });
+
+				db.setTransactionSuccessful();
+
+			} catch(Exception e){
+				db.endTransaction();
+				throw e;
+			}
+			db.endTransaction();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		finally{
+			db.close();
+		}
+		return i;
+		
+	}
+	
+	
 
 	/**
 	 * Retrieve a single row(Event) from the schedule database table.
@@ -484,6 +576,47 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 
 		return track;
 	}
+	
+	/**
+	 * Returns when a table was last updated.
+	 */
+	public Long getTableUpdated(String table) {
+		Long value = -1l;
+		SQLiteDatabase db = null;
+		
+		try {
+			db = this.getReadableDatabase();
+
+			db.beginTransaction();
+			try{
+
+				Cursor cursor = db.rawQuery("SELECT * FROM STATUS WHERE name = '"+table+"_updated'", null);
+
+				if (cursor != null){
+					cursor.moveToFirst();
+
+					value = Long.parseLong(cursor.getString(2));
+					
+					cursor.close();
+				}
+				db.setTransactionSuccessful();
+			} catch(Exception e){
+				db.endTransaction();
+				throw e;
+			}
+			db.endTransaction();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		finally{
+			db.close();
+		}
+
+		return value;
+	}
+	
 	
 	/**
 	 * Returns the number of rows a table has.

@@ -1364,27 +1364,21 @@ public class Schedule extends Activity {
   	
   	public static void updateSchedule(Event ev){
   		db.updateScheduleRow(ev);
-  		if(statusExists("schedule") == 0){
-			initStatus("schedule", ""+System.currentTimeMillis());
-		} else if(statusExists("schedule") == 1){
+  		if(statusExists("schedule") == 1){
 			tableUpdated("schedule", ""+System.currentTimeMillis());
 		}
   	}
   	
   	public static void updateSpeaker(Speaker sp){
   		db.updateSpeakersRow(sp);
-  		if(statusExists("speakers") == 0){
-			initStatus("speakers", ""+System.currentTimeMillis());
-		} else if(statusExists("speakers") == 1){
+  		if(statusExists("speakers") == 1){
 			tableUpdated("speakers", ""+System.currentTimeMillis());
 		}
   	}
   	
   	public static void updateTrack(Track tr){
   		db.updateTracksRow(tr);
-  		if(statusExists("tracks") == 0){
-			initStatus("tracks", ""+System.currentTimeMillis());
-		} else if(statusExists("tracks") == 1){
+  		if(statusExists("tracks") == 1){
 			tableUpdated("tracks", ""+System.currentTimeMillis());
 		}
   	}

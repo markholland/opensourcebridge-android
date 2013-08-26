@@ -764,6 +764,44 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 	}
 	
 	/**
+	 * Returns whether a last updated time exists for a table
+	 * @param table
+	 * @return 1 if exists, 0 if doesn't exist, -1 if error checking if exists.
+	 */
+	public int existsStatusRow(String table) {
+		int exists = -1;
+		SQLiteDatabase db = null;
+		try {
+			db = this.getReadableDatabase();
+
+			db.beginTransaction();
+
+			try{
+				Cursor cursor = db.rawQuery("select 1 from STATUS where name=?", 
+						new String[] { table+"_updated" });
+				Boolean b = (cursor.getCount() > 0);
+				exists = b? 1 : 0;
+				cursor.close();
+				db.setTransactionSuccessful();
+			} catch(Exception e){
+				db.endTransaction();
+				throw e;
+			}
+			db.endTransaction();
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		finally{
+			db.close();
+		}
+
+		return exists;
+	}
+	
+	/**
 	 * Converts an array of Strings to a comma separated string
 	 * @param array
 	 * @return 

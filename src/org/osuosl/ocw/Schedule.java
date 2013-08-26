@@ -1389,7 +1389,9 @@ public class Schedule extends Activity {
   		return db.existsTrack(track_id);
   	}
 	
-  	
+  	public static int statusExists(String table){
+  		return db.existsStatusRow(table);
+  	}
 
   	
 

@@ -938,14 +938,13 @@ public class Schedule extends Activity {
 			// Retrieve from database instead of raw file
 			
 			
-			if (table.equals("SCHEDULE") && (db.numRows("SCHEDULE") != 0) && /*file.lastModified()+CACHE_TIMEOUT > System.currentTimeMillis() &&*/ !force){
+			if (table.equals("SCHEDULE") && (db.numRows("SCHEDULE") != 0) && getTableUpdated("schedule")+CACHE_TIMEOUT < System.currentTimeMillis() && !force){
 				return "database";
 			}
-			else if(table.equals("SPEAKERS") && (db.existsSpeaker(""+id) == 1) && /*file.lastModified()+CACHE_TIMEOUT > System.currentTimeMillis() &&*/ !force){
+			else if(table.equals("SPEAKERS") && (db.existsSpeaker(""+id) == 1) && getTableUpdated("speakers")+CACHE_TIMEOUT < System.currentTimeMillis() && !force){
 				return "database";	
-			
 			}
-			else if(table.equals("TRACKS") && (db.existsTrack(""+id) == 1) && /*file.lastModified()+CACHE_TIMEOUT > System.currentTimeMillis() &&*/ !force){
+			else if(table.equals("TRACKS") && (db.existsTrack(""+id) == 1) && getTableUpdated("tracks")+CACHE_TIMEOUT < System.currentTimeMillis() && !force){
 				return "database";	
 			
 			} else {
@@ -961,7 +960,12 @@ public class Schedule extends Activity {
 					// fall back to local file if exists, regardless of age
 					if ((db.numRows("SCHEDULE") != 0)) {
 						return "database";
-					} else {
+					} else if(db.existsSpeaker(""+id) == 1) {
+						return "database";
+					} else if(db.existsTrack(""+id) == 1){
+						return "database";
+					}
+					else {
 						throw e;
 					}
 				}

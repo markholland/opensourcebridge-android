@@ -56,8 +56,10 @@ public class Schedule extends Activity {
 	static DataBaseHandler db;
 	
 	
-	// Cache files for 2 hours (in milliseconds)
-	private static final long CACHE_TIMEOUT = 7200000;
+	// By default cache files for 2 hours (in milliseconds)
+	private static long SCHEDULE_CACHE_TIMEOUT = 7200000;
+	private static long SPEAKERS_CACHE_TIMEOUT = 7200000;
+	private static long TRACKS_CACHE_TIMEOUT = 7200000;
 	
 	// TODO Fetch dates from OCW.
 	// TODO Refactor dates as array.
@@ -810,7 +812,8 @@ public class Schedule extends Activity {
 				if (json.has("linkedin")) {
 					speaker.setLinkedin(json.getString("linkedin"));
 				}
-
+				
+				
 
 				mSpeakers.put(id, speaker);
 				// TODO
@@ -938,13 +941,13 @@ public class Schedule extends Activity {
 			// Retrieve from database instead of raw file
 			
 			
-			if (table.equals("SCHEDULE") && (db.numRows("SCHEDULE") != 0) && getTableUpdated("schedule")+CACHE_TIMEOUT < System.currentTimeMillis() && !force){
+			if (table.equals("SCHEDULE") && (db.numRows("SCHEDULE") != 0) && getStatus("schedule_updated")+SCHEDULE_CACHE_TIMEOUT < System.currentTimeMillis() && !force){
 				return "database";
 			}
-			else if(table.equals("SPEAKERS") && (db.existsSpeaker(""+id) == 1) && getTableUpdated("speakers")+CACHE_TIMEOUT < System.currentTimeMillis() && !force){
+			else if(table.equals("SPEAKERS") && (db.existsSpeaker(""+id) == 1) && getStatus("speakers_updated")+SPEAKERS_CACHE_TIMEOUT < System.currentTimeMillis() && !force){
 				return "database";	
 			}
-			else if(table.equals("TRACKS") && (db.existsTrack(""+id) == 1) && getTableUpdated("tracks")+CACHE_TIMEOUT < System.currentTimeMillis() && !force){
+			else if(table.equals("TRACKS") && (db.existsTrack(""+id) == 1) && getStatus("tracks_updated")+TRACKS_CACHE_TIMEOUT < System.currentTimeMillis() && !force){
 				return "database";	
 			
 			} else {
@@ -1165,6 +1168,19 @@ public class Schedule extends Activity {
 
 					events.add(event);
 				}
+				
+				if(schedule.has("schedule_cache_timeout")) {
+					SCHEDULE_CACHE_TIMEOUT = Long.parseLong(schedule.getString("schedule_cache_timeout"));
+				}
+				
+				if(schedule.has("speakers_cache_timeout")) {
+					SPEAKERS_CACHE_TIMEOUT = Long.parseLong(schedule.getString("speakers_cache_timeout"));
+				}
+
+				if(schedule.has("tracks_cache_timeout")) {
+					TRACKS_CACHE_TIMEOUT = Long.parseLong(schedule.getString("tracks_cache_timeout"));
+				}
+
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -1337,58 +1353,58 @@ public class Schedule extends Activity {
 	
   	public static void addSchedule(Event ev){
   		db.addScheduleRow(ev);
-  		if(statusExists("schedule") == 0){
-			initStatus("schedule", ""+System.currentTimeMillis());
-		} else if(statusExists("schedule") == 1){
-			tableUpdated("schedule", ""+System.currentTimeMillis());
+  		if(statusExists("schedule_updated") == 0){
+			addStatusRow("schedule_updated", ""+System.currentTimeMillis());
+		} else if(statusExists("schedule_updated") == 1){
+			updateStatusRow("schedule_updated", ""+System.currentTimeMillis());
 		}
   	}
   	
   	public static void addSpeaker(Speaker sp){
   		db.addSpeakersRow(sp);
-  		if(statusExists("speakers") == 0){
-			initStatus("speakers", ""+System.currentTimeMillis());
-		} else if(statusExists("speakers") == 1){
-			tableUpdated("speakers", ""+System.currentTimeMillis());
+  		if(statusExists("speakers_updated") == 0){
+  			addStatusRow("speakers_updated", ""+System.currentTimeMillis());
+		} else if(statusExists("speakers_updated") == 1){
+			updateStatusRow("speakers_updated", ""+System.currentTimeMillis());
 		}
   	}
   	
   	public static void addTrack(Track tr){
   		db.addTrackRow(tr);
-  		if(statusExists("tracks") == 0){
-			initStatus("tracks", ""+System.currentTimeMillis());
-		} else if(statusExists("tracks") == 1){
-			tableUpdated("tracks", ""+System.currentTimeMillis());
+  		if(statusExists("tracks_updated") == 0){
+			addStatusRow("tracks_updated", ""+System.currentTimeMillis());
+		} else if(statusExists("tracks_updated") == 1){
+			updateStatusRow("tracks_updated", ""+System.currentTimeMillis());
 		}
   	}
   	
-  	public static void initStatus(String table, String time){
-  		db.initStatusTable(table, time);
+  	public static void addStatusRow(String table, String time){
+  		db.addStatusRow(table, time);
   	}
   	
   	public static void updateSchedule(Event ev){
   		db.updateScheduleRow(ev);
-  		if(statusExists("schedule") == 1){
-			tableUpdated("schedule", ""+System.currentTimeMillis());
+  		if(statusExists("schedule_updated") == 1){
+  			updateStatusRow("schedule_updated", ""+System.currentTimeMillis());
 		}
   	}
   	
   	public static void updateSpeaker(Speaker sp){
   		db.updateSpeakersRow(sp);
-  		if(statusExists("speakers") == 1){
-			tableUpdated("speakers", ""+System.currentTimeMillis());
+  		if(statusExists("speakers_updated") == 1){
+  			updateStatusRow("speakers_updated", ""+System.currentTimeMillis());
 		}
   	}
   	
   	public static void updateTrack(Track tr){
   		db.updateTracksRow(tr);
-  		if(statusExists("tracks") == 1){
-			tableUpdated("tracks", ""+System.currentTimeMillis());
+  		if(statusExists("tracks_updated") == 1){
+  			updateStatusRow("tracks_updated", ""+System.currentTimeMillis());
 		}
   	}
   	
-  	public static void tableUpdated(String table, String time){
-  		db.tableUpdated(table, time);
+  	public static void updateStatusRow(String table, String time){
+  		db.updateStatusRow(table, time);
   	}
   	
   	public static Event getSchedule(String event_id){
@@ -1403,8 +1419,8 @@ public class Schedule extends Activity {
   		return db.getTracksRow(track_id);
   	}
   	
-  	public static Long getTableUpdated(String table){
-  		return db.getTableUpdated(table);
+  	public static Long getStatus(String table){
+  		return db.getStatusRow(table);
   	}
   	
   	public static int eventExists(String event_id){

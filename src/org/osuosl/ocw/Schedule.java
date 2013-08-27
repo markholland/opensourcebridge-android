@@ -375,11 +375,9 @@ public class Schedule extends Activity {
 		View view = null;
 		// check memory to see if speaker had already been loaded
 		// else load the speaker from persistent storage
-		if (mSpeakers.containsKey(id)){
+		if (mSpeakers.containsKey(id))
 			speaker = mSpeakers.get(id);
-		} else {
-			loadSpeakers(true);
-		}
+		
 		// create view
 		if (speaker != null) {
 			LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -464,6 +462,8 @@ public class Schedule extends Activity {
 		String error = "none";
 		mBio.removeAllViews();
 		String[] speaker_ids = mEvent.getSpeaker_ids();
+		
+		
 		if (speaker_ids != null) {
 			for (int i=0; i<speaker_ids.length; i++) {
 //				try {

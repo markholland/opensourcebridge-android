@@ -505,7 +505,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			db.beginTransaction();
 			try{
 
-				Cursor cursor = db.rawQuery("SELECT * FROM SPEAKERS WHERE speaker_id = "+id, null);
+				Cursor cursor = db.rawQuery("SELECT * FROM SPEAKERS WHERE _id = "+id, null);
 
 				if (cursor != null){
 					cursor.moveToFirst();

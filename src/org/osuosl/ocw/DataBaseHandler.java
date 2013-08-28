@@ -406,7 +406,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			db.beginTransaction();
 			try{
 				ContentValues values = new ContentValues();
-				values.put(KEY_STATUS_NAME, name+"_updated");
+				values.put(KEY_STATUS_NAME, name);
 				values.put(KEY_STATUS_VALUE, value);
 				
 				// updating row

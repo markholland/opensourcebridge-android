@@ -555,7 +555,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 					cursor.moveToFirst();
 
 					track = new Track(
-							cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4) 
+							cursor.getString(1), cursor.getString(2), cursor.getInt(3), cursor.getInt(4) 
 							);
 					cursor.close();
 				}
@@ -590,7 +590,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			db.beginTransaction();
 			try{
 
-				Cursor cursor = db.rawQuery("SELECT * FROM STATUS WHERE name = '"+name+"_updated'", null);
+				Cursor cursor = db.rawQuery("SELECT * FROM STATUS WHERE name = '"+name+"'", null);
 
 				if (cursor != null){
 					cursor.moveToFirst();

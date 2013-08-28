@@ -179,7 +179,10 @@ public class Schedule extends Activity {
         	
         	// Was looking at an event when destroyed so load it.
         	if(mDetail) {
-        		mHeader.setBackgroundColor(Color.parseColor(mTracks.get(event.getTrack_id()).getColor()));
+        		if(mTracks.containsKey(event.getTrack_id()))
+        			mHeader.setBackgroundColor(mTracks.get(event.getTrack_id()).getColor());
+        		else //Use default track
+        			mHeader.setBackgroundColor(new Track().getColor());
         		mTitle.setText(event.getEvent_title());
         		mRoom_title.setText(event.getRoom_title());
         		DateFormat startFormat = new SimpleDateFormat("E, h:mm");
@@ -192,7 +195,10 @@ public class Schedule extends Activity {
 //        			Speaker sp = loadBio(Integer.parseInt(event.getSpeaker_ids()[0]));
 //        			
         		Speaker sp = new Speaker();
-        		sp = mSpeakers.get(Integer.parseInt(event.getSpeaker_ids()[0]));
+        		if(mSpeakers.containsKey(Integer.parseInt(event.getSpeaker_ids()[0])))
+        			sp = mSpeakers.get(Integer.parseInt(event.getSpeaker_ids()[0]));
+        		else //Use default speaker
+        			sp = new Speaker();
         			
 
         		if(sp!=null){
@@ -200,7 +206,10 @@ public class Schedule extends Activity {
         				mSpeaker.setText(event.getPresenter());
         			else
         				mSpeaker.setText(sp.getFullname());
-        			mTimeLocation.setBackgroundColor(Color.parseColor(mTracks.get(event.getTrack_id()).getColor()));
+        			if(mTracks.containsKey(event.getTrack_id()))
+        				mTimeLocation.setBackgroundColor(mTracks.get(event.getTrack_id()).getColor());
+        			else //Use default track
+        				mTimeLocation.setBackgroundColor(new Track().getColor());
         			mDescription.setText(event.getDescription());
         			mEvent = event;
         		}
@@ -234,7 +243,10 @@ public class Schedule extends Activity {
 				Context context = getApplicationContext();
 				//only set color if event has track_id
 				if(event.getTrack_id() != -1)
-					mHeader.setBackgroundColor(Color.parseColor(mTracks.get(event.getTrack_id()).getColor()));
+					if(mTracks.containsKey(event.getTrack_id()))
+						mHeader.setBackgroundColor(mTracks.get(event.getTrack_id()).getColor());
+					else //Use default track
+						mHeader.setBackgroundColor(new Track().getColor());
 				mTitle.setText(event.getEvent_title());
 				mRoom_title.setText(event.getRoom_title());
 				DateFormat startFormat = new SimpleDateFormat("E, h:mm");
@@ -246,8 +258,10 @@ public class Schedule extends Activity {
 				Speaker sp = new Speaker();
 				Log.d("EVENT NULL", ""+event.getEvent_id());
 				
-        		sp = mSpeakers.get(Integer.parseInt(event.getSpeaker_ids()[0]));
-        			
+				if(mSpeakers.containsKey(Integer.parseInt(event.getSpeaker_ids()[0])))
+					sp = mSpeakers.get(Integer.parseInt(event.getSpeaker_ids()[0]));
+				else //Use default speaker
+					sp = new Speaker();
         		
         			
 
@@ -256,7 +270,10 @@ public class Schedule extends Activity {
         				mSpeaker.setText(event.getPresenter());
         			else
         				mSpeaker.setText(sp.getFullname());
-        			mTimeLocation.setBackgroundColor(Color.parseColor(mTracks.get(event.getTrack_id()).getColor()));
+        			if(mTracks.containsKey(event.getTrack_id()))
+        				mTimeLocation.setBackgroundColor(mTracks.get(event.getTrack_id()).getColor());
+        			else //Use default track
+        				mTimeLocation.setBackgroundColor(new Track().getColor());
         			mDescription.setText(event.getDescription());
         			show_description();
 					mDescriptionScroller.scrollTo(0, 0);
@@ -377,6 +394,8 @@ public class Schedule extends Activity {
 		// else load the speaker from persistent storage
 		if (mSpeakers.containsKey(id))
 			speaker = mSpeakers.get(id);
+		else
+			speaker = new Speaker();
 		
 		// create view
 		if (speaker != null) {
@@ -873,17 +892,12 @@ public class Schedule extends Activity {
 					track.setTrack_id(json.getInt("track_id"));
 					track.setTrack_title(json.getString("track_title"));
 					
-					if (json.has("color")){
-						track.setColor(json.getString("color"));
-					} else {
-						track.setColor("");
-					}
+					if (json.has("color"))
+						track.setColor(Color.parseColor(json.getString("color")));
+				
+					if (json.has("color_text"))
+						track.setColor_text(Color.parseColor(json.getString("color_text")));
 					
-					if (json.has("color_text")){
-						track.setColor_text(json.getString("color_text"));
-					} else {
-						track.setColor_text("");
-					}
 					
 					// TODO
 					// dont touch database if no internet, database is already loaded
@@ -1283,8 +1297,13 @@ public class Schedule extends Activity {
 					if (event.getTrack_id() != -1) {
 						//Context context = getApplicationContext();
 						TextView track = (TextView) v.findViewById(R.id.track);
-						track.setTextColor(Color.parseColor(mTracks.get(event.getTrack_id()).getColor_text()));
-						track.setText(mTracks.get(event.getTrack_id()).getTrack_title());
+						if(mTracks.containsKey(event.getTrack_id())) {
+							track.setTextColor(mTracks.get(event.getTrack_id()).getColor_text());
+							track.setText(mTracks.get(event.getTrack_id()).getTrack_title());
+						} else { //Fall back on default track at -1
+							track.setTextColor(new Track().getColor_text());
+							track.setText(new Track().getTrack_title());
+						}
 					
 					}
 					if (event_title != null) {

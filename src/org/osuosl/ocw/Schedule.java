@@ -75,6 +75,16 @@ public class Schedule extends Activity {
 	private static final int MENU_NOW = -8;
 	private static final int MENU_REFRESH = -9;
 	
+	
+	private static final String SCHEDULE_TIMEOUT = "schedule_timeout";
+	private static final String SPEAKERS_TIMEOUT = "speakers_timeout";
+	private static final String TRACKS_TIMEOUT = "tracks_timeout";
+	
+	private static final String SCHEDULE_UPDATED = "schedule_updated";
+	private static final String SPEAKERS_UPDATED = "speakers_updated";
+	private static final String TRACKS_UPDATED = "tracks_updated";
+	
+	
 	// state
 	Date mCurrentDate;
 	TextView mDate;
@@ -335,13 +345,10 @@ public class Schedule extends Activity {
         mHandler.post(new Runnable() {
         	public void run() { 
         		
-        		if(mCurrentDate == null){
-        			loadSchedule(true);
-        			setAdapter();
-        		} else {
+        		
         			loadSchedule(false);
         			setAdapter();
-        		}
+        		
         		
         		// If not on an event 
         		if(!mDetail){
@@ -791,18 +798,30 @@ public class Schedule extends Activity {
 
 				Long size = db.numRows("SPEAKERS");
 				
-				for(int i = 0; i < size; i++){
+				for(int i = 1; i <= size; i++){
 					speaker = db.getSpeakersRow(""+i);
 					if(speaker == null)
 						speaker = new Speaker();
 					mSpeakers.put(speaker.getSpeaker_id(), speaker);
 				}
 				
-				
-			
 			} else {
 
 				JSONObject speakers = new JSONObject(raw_json);
+				
+				String timeout = speakers.getString("timeout");
+				if(statusExists(SPEAKERS_TIMEOUT) == 0){
+					addStatus(SPEAKERS_TIMEOUT, timeout);
+					Log.d("ADDED STATUS", "ADDED STATUS");
+				}
+				else if(statusExists(SPEAKERS_TIMEOUT) == 1) {
+					updateStatus(SPEAKERS_TIMEOUT, timeout);
+					Log.d("UPDATED STATUS", "UPDATED STATUS");
+				}
+				else if(statusExists(SPEAKERS_TIMEOUT) == -1) {
+					//error checking if exists
+				}
+				
 				JSONArray json_speakers = speakers.getJSONArray("items");
 				int size = json_speakers.length();
 				for(int i=0; i<size; i++){
@@ -852,7 +871,11 @@ public class Schedule extends Activity {
 						//error checking if exists
 					}
 				}
-
+				if(statusExists("speakers_updated") == 0){
+		  			addStatus("speakers_updated", ""+System.currentTimeMillis());
+				} else if(statusExists("speakers_updated") == 1){
+					updateStatus("speakers_updated", ""+System.currentTimeMillis());
+				}
 			}
 
 
@@ -883,6 +906,20 @@ public class Schedule extends Activity {
 			
 			} else {
 				JSONObject tracks = new JSONObject(raw_json);
+				
+				String timeout = tracks.getString("timeout");
+				if(statusExists(TRACKS_TIMEOUT) == 0){
+					addStatus(TRACKS_TIMEOUT, timeout);
+					Log.d("ADDED STATUS", "ADDED STATUS");
+				}
+				else if(statusExists(TRACKS_TIMEOUT) == 1) {
+					updateStatus(TRACKS_TIMEOUT, timeout);
+					Log.d("UPDATED STATUS", "UPDATED STATUS");
+				}
+				else if(statusExists(TRACKS_TIMEOUT) == -1) {
+					//error checking if exists
+				}
+				
 				JSONArray json_tracks = tracks.getJSONArray("tracks");
 				int size = json_tracks.length();
 				for(int i=0; i<size; i++){
@@ -918,6 +955,12 @@ public class Schedule extends Activity {
 					
 					mTracks.put(track.getTrack_id(), track);
 				}
+				
+				if(statusExists("tracks_updated") == 0){
+					addStatus("tracks_updated", ""+System.currentTimeMillis());
+				} else if(statusExists("tracks_updated") == 1){
+					updateStatus("tracks_updated", ""+System.currentTimeMillis());
+				}
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -952,16 +995,21 @@ public class Schedule extends Activity {
 		try {
 			// determine whether to open local file or remote file
 			// Retrieve from database instead of raw file
+			Log.d("LAST UPDATED+TIMEOUT", ""+(getStatus("schedule_updated")+getStatus(SCHEDULE_TIMEOUT)));
+			Log.d("CURRENT TIME", ""+System.currentTimeMillis());
 			
 			
-			if (table.equals("SCHEDULE") && (db.numRows("SCHEDULE") != 0) && getStatus("schedule_updated")+SCHEDULE_CACHE_TIMEOUT < System.currentTimeMillis() && !force){
-				return "database";
+			if (table.equals("SCHEDULE") && (db.numRows("SCHEDULE") != 0) && !force){
+				if ((getStatus(SCHEDULE_UPDATED)+getStatus(SCHEDULE_TIMEOUT)) > System.currentTimeMillis())
+					return "database";
 			}
-			else if(table.equals("SPEAKERS") && (db.numRows("SPEAKERS") != 0) && getStatus("speakers_updated")+SPEAKERS_CACHE_TIMEOUT < System.currentTimeMillis() && !force){
-				return "database";	
+			else if(table.equals("SPEAKERS") && (db.numRows("SPEAKERS") != 0) && !force){
+				if ((getStatus(SPEAKERS_UPDATED)+getStatus(SPEAKERS_TIMEOUT)) > System.currentTimeMillis())
+					return "database";
 			}
-			else if(table.equals("TRACKS") && (db.numRows("TRACKS") != 0) && getStatus("tracks_updated")+TRACKS_CACHE_TIMEOUT < System.currentTimeMillis() && !force){
-				return "database";	
+			else if(table.equals("TRACKS") && (db.numRows("TRACKS") != 0) && !force){
+				if ((getStatus(TRACKS_UPDATED)+getStatus(TRACKS_TIMEOUT)) > System.currentTimeMillis())
+					return "database";
 			
 			} else {
 				URL url = new URL(uri);
@@ -988,21 +1036,17 @@ public class Schedule extends Activity {
 			}
 		
 			// read entire file, write cache at same time if we are fetching from the remote uri
-			BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"), 8192);
-			//OutputStreamWriter bw = null;
-//			if (os != null) {
-//				bw = new OutputStreamWriter(os);
-//			}
-			while ((line = br.readLine()) != null) {
-				sb.append(line);
-//				if (bw != null) {
-//					bw.append(line);
-//				}
+			BufferedReader br;
+			if (is!=null){ 
+				br = new BufferedReader(new InputStreamReader(is, "UTF-8"), 8192);
+
+				while ((line = br.readLine()) != null) {
+					sb.append(line);
+
+				}
+			} else {
+				return "database";
 			}
-//			if (bw != null) {
-//				bw.flush();
-//			}
-			
 		} catch (IOException e) {
 			// failure to get file, throw this higher
 			throw e;
@@ -1071,9 +1115,20 @@ public class Schedule extends Activity {
 				DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss-'07:00'");
 				JSONObject schedule = new JSONObject(raw_json);
 				
-//				open_date = formatter.parse(schedule.getString("open_date"));
-//				close_date = formatter.parse(schedule.getString("close_date"));
-//				num_days = schedule.getInt("num_days");
+
+				String timeout = schedule.getString("timeout");
+				if(statusExists(SCHEDULE_TIMEOUT) == 0){
+					addStatus(SCHEDULE_TIMEOUT, timeout);
+					Log.d("ADDED STATUS", "ADDED STATUS");
+				}
+				else if(statusExists(SCHEDULE_TIMEOUT) == 1) {
+					updateStatus(SCHEDULE_TIMEOUT, timeout);
+					Log.d("UPDATED STATUS", "UPDATED STATUS");
+				}
+				else if(statusExists(SCHEDULE_TIMEOUT) == -1) {
+					//error checking if exists
+				}
+				
 				
 				JSONArray json_events = schedule.getJSONArray("items");
 				int size = json_events.length();
@@ -1185,7 +1240,12 @@ public class Schedule extends Activity {
 				if(schedule.has("tracks_cache_timeout")) {
 					TRACKS_CACHE_TIMEOUT = Long.parseLong(schedule.getString("tracks_cache_timeout"));
 				}
-
+				
+				if(statusExists("schedule_updated") == 0){
+					addStatus("schedule_updated", ""+System.currentTimeMillis());
+				} else if(statusExists("schedule_updated") == 1){
+					updateStatus("schedule_updated", ""+System.currentTimeMillis());
+				}
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -1196,6 +1256,8 @@ public class Schedule extends Activity {
 			// TODO
 		}
 		calendar.setEvents(events);
+		
+		
 	}
 	
 		
@@ -1363,57 +1425,39 @@ public class Schedule extends Activity {
 	
   	public static void addSchedule(Event ev){
   		db.addScheduleRow(ev);
-  		if(statusExists("schedule_updated") == 0){
-			addStatusRow("schedule_updated", ""+System.currentTimeMillis());
-		} else if(statusExists("schedule_updated") == 1){
-			updateStatusRow("schedule_updated", ""+System.currentTimeMillis());
-		}
+  		
   	}
   	
   	public static void addSpeaker(Speaker sp){
   		db.addSpeakersRow(sp);
-  		if(statusExists("speakers_updated") == 0){
-  			addStatusRow("speakers_updated", ""+System.currentTimeMillis());
-		} else if(statusExists("speakers_updated") == 1){
-			updateStatusRow("speakers_updated", ""+System.currentTimeMillis());
-		}
+  		
   	}
   	
   	public static void addTrack(Track tr){
   		db.addTrackRow(tr);
-  		if(statusExists("tracks_updated") == 0){
-			addStatusRow("tracks_updated", ""+System.currentTimeMillis());
-		} else if(statusExists("tracks_updated") == 1){
-			updateStatusRow("tracks_updated", ""+System.currentTimeMillis());
-		}
+  		
   	}
   	
-  	public static void addStatusRow(String table, String time){
+  	public static void addStatus(String table, String time){
   		db.addStatusRow(table, time);
   	}
   	
   	public static void updateSchedule(Event ev){
   		db.updateScheduleRow(ev);
-  		if(statusExists("schedule_updated") == 1){
-  			updateStatusRow("schedule_updated", ""+System.currentTimeMillis());
-		}
+  		
   	}
   	
   	public static void updateSpeaker(Speaker sp){
   		db.updateSpeakersRow(sp);
-  		if(statusExists("speakers_updated") == 1){
-  			updateStatusRow("speakers_updated", ""+System.currentTimeMillis());
-		}
+  		
   	}
   	
   	public static void updateTrack(Track tr){
   		db.updateTracksRow(tr);
-  		if(statusExists("tracks_updated") == 1){
-  			updateStatusRow("tracks_updated", ""+System.currentTimeMillis());
-		}
+  		
   	}
   	
-  	public static void updateStatusRow(String table, String time){
+  	public static void updateStatus(String table, String time){
   		db.updateStatusRow(table, time);
   	}
   	

@@ -2,6 +2,10 @@
   "timeout": "3600000",
   "tracks": [
     {
+      "track_id": 1,
+      "track_title": "Other"
+    },
+    {
       "track_id": 0,
       "track_title": "Talk",
       "color": "red",

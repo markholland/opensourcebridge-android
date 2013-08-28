@@ -778,7 +778,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 
 			try{
 				Cursor cursor = db.rawQuery("select 1 from STATUS where name=?", 
-						new String[] { table+"_updated" });
+						new String[] { table });
 				Boolean b = (cursor.getCount() > 0);
 				exists = b? 1 : 0;
 				cursor.close();

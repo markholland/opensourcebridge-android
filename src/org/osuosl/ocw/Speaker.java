@@ -15,7 +15,7 @@ public class Speaker {
 	public Speaker(){
 
 		this.speaker_id = -1;
-		this.fullname = null;
+		this.fullname = "Not available";
 		this.biography = null;
 		this.affiliation = null;
 		this.twitter = null;

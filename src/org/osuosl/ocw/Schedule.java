@@ -980,13 +980,7 @@ public class Schedule extends Activity {
 	 */
 	private String getURL(String uri, String table, boolean force) throws IOException{
 		InputStream is = null;
-		OutputStream os = null;
-		Context context = getApplicationContext();
 		
-		// get file path for cached file
-		String dir = context.getFilesDir().getAbsolutePath();
-		String path = uri.substring(uri.lastIndexOf("/")+1);
-		//File file = new File(dir+"/"+path);
 		String line;
 		StringBuilder sb = new StringBuilder();
 		
@@ -999,17 +993,14 @@ public class Schedule extends Activity {
 			Log.d("CURRENT TIME", ""+System.currentTimeMillis());
 			
 			
-			if (table.equals("SCHEDULE") && (db.numRows("SCHEDULE") != 0) && !force){
-				if ((getStatus(SCHEDULE_UPDATED)+getStatus(SCHEDULE_TIMEOUT)) > System.currentTimeMillis())
-					return "database";
+			if (table.equals("SCHEDULE") && (db.numRows("SCHEDULE") != 0) && !force && ((getStatus(SCHEDULE_UPDATED)+getStatus(SCHEDULE_TIMEOUT)) > System.currentTimeMillis())){
+				return "database";
 			}
-			else if(table.equals("SPEAKERS") && (db.numRows("SPEAKERS") != 0) && !force){
-				if ((getStatus(SPEAKERS_UPDATED)+getStatus(SPEAKERS_TIMEOUT)) > System.currentTimeMillis())
-					return "database";
+			else if(table.equals("SPEAKERS") && (db.numRows("SPEAKERS") != 0) && !force && ((getStatus(SPEAKERS_UPDATED)+getStatus(SPEAKERS_TIMEOUT)) > System.currentTimeMillis())){
+				return "database";
 			}
-			else if(table.equals("TRACKS") && (db.numRows("TRACKS") != 0) && !force){
-				if ((getStatus(TRACKS_UPDATED)+getStatus(TRACKS_TIMEOUT)) > System.currentTimeMillis())
-					return "database";
+			else if(table.equals("TRACKS") && (db.numRows("TRACKS") != 0) && !force && ((getStatus(TRACKS_UPDATED)+getStatus(TRACKS_TIMEOUT)) > System.currentTimeMillis())){
+				return "database";
 			
 			} else {
 				URL url = new URL(uri);
@@ -1018,8 +1009,9 @@ public class Schedule extends Activity {
 					conn = url.openConnection(); 
 					conn.setDoInput(true); 
 					conn.setUseCaches(false);
+					Log.d("HERE","HERE");
 					is = conn.getInputStream();
-					os = context.openFileOutput(path, Context.MODE_PRIVATE);
+					
 				} catch (IOException e) {
 					// fall back to local file if exists, regardless of age
 					if ((db.numRows("SCHEDULE") != 0)) {
@@ -1045,6 +1037,7 @@ public class Schedule extends Activity {
 
 				}
 			} else {
+				
 				return "database";
 			}
 		} catch (IOException e) {
@@ -1059,13 +1052,7 @@ public class Schedule extends Activity {
 					e.printStackTrace();
 				}
 			}
-			if (os!=null) {
-				try {
-					os.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
+			
 		}
 		
 		return sb.toString();

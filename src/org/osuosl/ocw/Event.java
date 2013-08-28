@@ -27,7 +27,7 @@ public class Event {
     private String presenter;
 	
 	public Event(){
-		this.event_id = -1;
+		this.event_id = -1; //important
 		this.event_title = null;
 		this.start_time = null;
 		this.end_time = null;

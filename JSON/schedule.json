@@ -24,7 +24,7 @@
       "end_time": "2013-07-25T09:50:00-07:00",
       "description": "Julia is the engineering lead at Tindie (tindie.com, \"Etsy for electronics\") where she writes Python every day. In her prior life she was CTO of WeddingLovely, product manager at a mid-stage startup, and a research engineer as part of one of the world's top User Experience Research groups at IBM Almaden Research.",
       "room_title": "Auditorium",
-      "track_id": 0,
+      "track_id": 1,
       "speaker_ids": [
         0
       ],
@@ -37,7 +37,7 @@
       "end_time": "2013-07-25T10:40:00-07:00",
       "description": "Zach joined GitHub in 2010 as one of their first engineering hires. Initially working on what would become GitHub Enterprise, he now hacks on new features and frequently gives talks about building products and growing startups. He lives in San Francisco.",
       "room_title": "Auditorium",
-      "track_id": 0,
+      "track_id": 2,
       "speaker_ids": [
         1
       ],

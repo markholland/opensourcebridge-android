@@ -14,6 +14,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -56,6 +60,8 @@ public class Schedule extends Activity {
 	static DataBaseHandler db;
 	
 	private StateChangeData data = null;
+	
+	SimpleDateFormat httpHeaderFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
 	
 	// By default cache files for 2 hours (in milliseconds)
 	private static long SCHEDULE_CACHE_TIMEOUT = 7200000;
@@ -124,7 +130,7 @@ public class Schedule extends Activity {
     
     private static final String SCHEDULE_URI = "http://www.partiallogic.com/gsoc2013/schedule.json";
     private static final String TRACKS_URI = "http://www.partiallogic.com/gsoc2013/tracks.json";
-    private static final String SPEAKER_URI_BASE = "http://www.partiallogic.com/gsoc2013/speakers.json";
+    private static final String SPEAKER_URI = "http://www.partiallogic.com/gsoc2013/speakers.json";
     
     /** Called when the activity is first created. */
 	@Override
@@ -391,6 +397,10 @@ public class Schedule extends Activity {
 				if((Long.parseLong(getPref(SCHEDULE_UPDATED))
 						+Long.parseLong(getPref(SCHEDULE_TIMEOUT))) < System.currentTimeMillis()){
 					parseProposals(true);
+					setAdapter();
+					mAdapter.filterDay(mCurrentDate);
+					mDate.setText(date_formatter.format(mCurrentDate));
+					showList();
 				}
 			}
 
@@ -399,14 +409,22 @@ public class Schedule extends Activity {
 						+Long.parseLong(getPref(SPEAKERS_TIMEOUT))) < System.currentTimeMillis()){
 					Log.d("HERE","HERE");
 					loadSpeakers(true);
+					setAdapter();
+					mAdapter.filterDay(mCurrentDate);
+					mDate.setText(date_formatter.format(mCurrentDate));
+					showList();
 				}
 
 			if(!getPref(TRACKS_UPDATED).equals("") && !getPref(TRACKS_TIMEOUT).equals(""))
 				if((Long.parseLong(getPref(TRACKS_UPDATED))
 						+Long.parseLong(getPref(TRACKS_TIMEOUT))) < System.currentTimeMillis()){
 					loadTracks(true);
+					setAdapter();
+					mAdapter.filterDay(mCurrentDate);
+					mDate.setText(date_formatter.format(mCurrentDate));
+					showList();
 				}
-
+			
 		}
 	}
 	
@@ -839,7 +857,7 @@ public class Schedule extends Activity {
 		Speaker speaker = null;
 
 		try {
-			String raw_json = getURL(SPEAKER_URI_BASE, "SPEAKERS", force);
+			String raw_json = getURL(SPEAKER_URI, "SPEAKERS", force);
 
 			//Log.d("CHECK DATABASE",raw_json);
 			if (raw_json.equals("database")){
@@ -852,6 +870,8 @@ public class Schedule extends Activity {
 						speaker = new Speaker();
 					mSpeakers.put(speaker.getSpeaker_id(), speaker);
 				}
+				
+			} else if(raw_json.equals("doNothing")) {
 				
 			} else {
 
@@ -939,6 +959,8 @@ public class Schedule extends Activity {
 					mTracks.put(track.getTrack_id(), track);
 				}
 			
+			} else if(raw_json.equals("doNothing")) {
+				
 			} else {
 				JSONObject tracks = new JSONObject(raw_json);
 				
@@ -1049,18 +1071,26 @@ public class Schedule extends Activity {
 				}
 			}
 		
-			// read entire file, write cache at same time if we are fetching from the remote uri
-			BufferedReader br;
-			if (is!=null){ 
-				br = new BufferedReader(new InputStreamReader(is, "UTF-8"), 8192);
+			
+			//check json http header here
+			Boolean jsonModified = jsonModified(table);
 
-				while ((line = br.readLine()) != null) {
-					sb.append(line);
+			if(jsonModified){
 
+				// read entire file, write cache at same time if we are fetching from the remote uri
+				BufferedReader br;
+				if (is!=null){ 
+					br = new BufferedReader(new InputStreamReader(is, "UTF-8"), 8192);
+
+					while ((line = br.readLine()) != null) {
+						sb.append(line);
+
+					}
+				} else {
+					return "database";
 				}
-			} else {
-				
-				return "database";
+			} else { 
+				return "doNothing";
 			}
 		} catch (IOException e) {
 			// failure to get file, throw this higher
@@ -1076,6 +1106,7 @@ public class Schedule extends Activity {
 			}
 			
 		}
+		
 		
 		return sb.toString();
 	}
@@ -1118,6 +1149,8 @@ public class Schedule extends Activity {
 					
 				}
 			
+			} else if(raw_json.equals("doNothing")) {
+				
 			} else {
 				
 			
@@ -1256,6 +1289,64 @@ public class Schedule extends Activity {
 		
 	}
 	
+	
+	private boolean jsonModified(String json){
+		
+		try{
+			
+			HttpClient client = new DefaultHttpClient();
+			HttpGet request = null;
+			
+			
+			if(json.equals("SCHEDULE")){
+				request = new HttpGet(SCHEDULE_URI);
+			
+			}
+			if(json.equals("SPEAKERS")){
+				 request = new HttpGet(SPEAKER_URI);
+				
+				}
+			if(json.equals("TRACKS")){
+				 request = new HttpGet(TRACKS_URI);
+				
+			}
+			HttpResponse response = null;
+			if(request != null)
+				response = client.execute(request);
+
+			String server = ""+response.getFirstHeader("Last-Modified");
+			Log.d("SERVERMODIFIED", server);
+			server = server.substring(15,server.length());
+			Log.d("SERVERMODIFIED", server);
+			httpHeaderFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
+			Date current = httpHeaderFormat.parse(server);
+			
+			
+			String lm = getPref(json+"lastModified");
+			Log.d("LASTMODIFIED", lm);
+			if(!lm.equals("")){
+				Date lastModified = new Date(lm);
+				if(current.after(lastModified)){
+					putPref(json+"lastModified",lm);
+					
+					return true;
+				}
+			} else { //lastModified doesn't exist so still need to load from json
+				putPref(json+"lastModified", server);
+				return true;
+			}
+
+
+
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+
+		
+
+		return false;
+		
+	}
 		
 	
 	/**

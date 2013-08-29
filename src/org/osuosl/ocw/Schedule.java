@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.DateFormat;
@@ -25,6 +24,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -1403,6 +1403,26 @@ public class Schedule extends Activity {
                 cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
                 cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR));
     }
+	
+	
+	//																//
+	//                     SHARED  PREFERENCES                      //
+	//																//
+	
+	private void putPref(String key, String value){
+		 SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+	     SharedPreferences.Editor editor = sharedPreferences.edit();
+	     editor.putString(key, value);
+	     editor.commit();
+	}
+	
+	private String getPref(String key, String value){
+		SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+        String savedPref = sharedPreferences.getString(key, "");
+        return savedPref;
+	}
+	
+	
 	
 	
 	//																//

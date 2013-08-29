@@ -349,8 +349,8 @@ public class Schedule extends Activity {
         	public void run() { 
         		
         		
-        			loadSchedule(false);
-        			setAdapter();
+        		loadSchedule(false);
+        		setAdapter();
         		
         		
         		// If not on an event 
@@ -390,7 +390,7 @@ public class Schedule extends Activity {
 				Log.d("CURRENTTIME",""+System.currentTimeMillis());
 				if((Long.parseLong(getPref(SCHEDULE_UPDATED))
 						+Long.parseLong(getPref(SCHEDULE_TIMEOUT))) < System.currentTimeMillis()){
-					parseProposals(calendar, true);
+					parseProposals(true);
 				}
 			}
 
@@ -809,7 +809,7 @@ public class Schedule extends Activity {
 	
 	
 	/**
-	 * Loads the osbridge schedule from a combination of ICal and json data
+	 * Loads the schedule from a combination of ICal and json data
 	 * @param force - force reload
 	 */
 	private void loadSchedule(boolean force) {
@@ -820,7 +820,7 @@ public class Schedule extends Activity {
 		if(mTracks.size() == 0 || mSpeakers.size() == 0 || force) {
 			loadSpeakers(force);
 			loadTracks(force);
-			parseProposals(calendar, force);
+			parseProposals(force);
 		}
 		//Days available here
 		Log.d("DAYS", DAYS.toString());
@@ -1087,7 +1087,7 @@ public class Schedule extends Activity {
 	 * @param calendar
 	 * @param force - force refresh
 	 */
-	private void parseProposals(ICal calendar, boolean force){
+	private void parseProposals(boolean force){
 		ArrayList<Event> events = new ArrayList<Event>();
 		try{
 			//TODO

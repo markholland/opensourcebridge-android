@@ -375,7 +375,17 @@ public class Schedule extends Activity {
     public void onResume() {
 		super.onResume();
 		
+		if((Long.parseLong(getPref(SCHEDULE_UPDATED))
+				+Long.parseLong(getPref(SCHEDULE_TIMEOUT))) > System.currentTimeMillis()){
+			
+		}
 		
+		if((Long.parseLong(getPref(SPEAKERS_UPDATED))
+				+Long.parseLong(getPref(SPEAKERS_TIMEOUT))) > System.currentTimeMillis()){
+					
+		}
+		
+		if
 		
 	}
 	

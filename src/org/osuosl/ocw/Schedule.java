@@ -973,17 +973,18 @@ public class Schedule extends Activity {
 		try {
 			// determine whether to open local file or remote file
 			// Retrieve from database instead of raw file
-			Log.d("LAST UPDATED+TIMEOUT", ""+(getStatus("schedule_updated")+getStatus(SCHEDULE_TIMEOUT)));
-			Log.d("CURRENT TIME", ""+System.currentTimeMillis());
 			
 			
-			if (table.equals("SCHEDULE") && (db.numRows("SCHEDULE") != 0) && !force && ((getStatus(SCHEDULE_UPDATED)+getStatus(SCHEDULE_TIMEOUT)) > System.currentTimeMillis())){
+			if (table.equals("SCHEDULE") && (db.numRows("SCHEDULE") != 0) && !force && ((Long.parseLong(getPref(SCHEDULE_UPDATED))
+					+Long.parseLong(getPref(SCHEDULE_TIMEOUT))) > System.currentTimeMillis())){
 				return "database";
 			}
-			else if(table.equals("SPEAKERS") && (db.numRows("SPEAKERS") != 0) && !force && ((getStatus(SPEAKERS_UPDATED)+getStatus(SPEAKERS_TIMEOUT)) > System.currentTimeMillis())){
+			else if(table.equals("SPEAKERS") && (db.numRows("SPEAKERS") != 0) && !force && ((Long.parseLong(getPref(SPEAKERS_UPDATED))
+					+Long.parseLong(getPref(SPEAKERS_TIMEOUT))) > System.currentTimeMillis())){
 				return "database";
 			}
-			else if(table.equals("TRACKS") && (db.numRows("TRACKS") != 0) && !force && ((getStatus(TRACKS_UPDATED)+getStatus(TRACKS_TIMEOUT)) > System.currentTimeMillis())){
+			else if(table.equals("TRACKS") && (db.numRows("TRACKS") != 0) && !force && ((Long.parseLong(getPref(TRACKS_UPDATED))
+					+Long.parseLong(getPref(TRACKS_TIMEOUT))) > System.currentTimeMillis())){
 				return "database";
 			
 			} else {
@@ -1387,7 +1388,7 @@ public class Schedule extends Activity {
 	     editor.commit();
 	}
 	
-	private String getPref(String key, String value){
+	private String getPref(String key){
 		SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
         String savedPref = sharedPreferences.getString(key, "");
         return savedPref;
@@ -1451,9 +1452,9 @@ public class Schedule extends Activity {
   		return db.getTracksRow(track_id);
   	}
   	
-  	public static Long getStatus(String table){
-  		return db.getStatusRow(table);
-  	}
+//  	public static Long getStatus(String table){
+//  		return db.getStatusRow(table);
+//  	}
   	
   	public static int eventExists(String event_id){
   		return db.existsEvent(event_id);

@@ -371,6 +371,16 @@ public class Schedule extends Activity {
     }//end onCreate
 	
 	
+	@Override
+    public void onResume() {
+		super.onResume();
+		
+		
+		
+	}
+	
+	
+	
 	// Save the app state when destroyed
 	@Override
 	public Object onRetainNonConfigurationInstance() {

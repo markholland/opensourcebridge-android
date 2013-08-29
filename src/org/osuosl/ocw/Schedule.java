@@ -820,17 +820,7 @@ public class Schedule extends Activity {
 				JSONObject speakers = new JSONObject(raw_json);
 				
 				String timeout = speakers.getString("timeout");
-				if(statusExists(SPEAKERS_TIMEOUT) == 0){
-					addStatus(SPEAKERS_TIMEOUT, timeout);
-					Log.d("ADDED STATUS", "ADDED STATUS");
-				}
-				else if(statusExists(SPEAKERS_TIMEOUT) == 1) {
-					updateStatus(SPEAKERS_TIMEOUT, timeout);
-					Log.d("UPDATED STATUS", "UPDATED STATUS");
-				}
-				else if(statusExists(SPEAKERS_TIMEOUT) == -1) {
-					//error checking if exists
-				}
+				putPref(SPEAKERS_TIMEOUT, timeout);
 				
 				JSONArray json_speakers = speakers.getJSONArray("items");
 				int size = json_speakers.length();
@@ -881,11 +871,8 @@ public class Schedule extends Activity {
 						//error checking if exists
 					}
 				}
-				if(statusExists("speakers_updated") == 0){
-		  			addStatus("speakers_updated", ""+System.currentTimeMillis());
-				} else if(statusExists("speakers_updated") == 1){
-					updateStatus("speakers_updated", ""+System.currentTimeMillis());
-				}
+				putPref(SPEAKERS_UPDATED,""+System.currentTimeMillis());
+				
 			}
 
 
@@ -918,17 +905,7 @@ public class Schedule extends Activity {
 				JSONObject tracks = new JSONObject(raw_json);
 				
 				String timeout = tracks.getString("timeout");
-				if(statusExists(TRACKS_TIMEOUT) == 0){
-					addStatus(TRACKS_TIMEOUT, timeout);
-					Log.d("ADDED STATUS", "ADDED STATUS");
-				}
-				else if(statusExists(TRACKS_TIMEOUT) == 1) {
-					updateStatus(TRACKS_TIMEOUT, timeout);
-					Log.d("UPDATED STATUS", "UPDATED STATUS");
-				}
-				else if(statusExists(TRACKS_TIMEOUT) == -1) {
-					//error checking if exists
-				}
+				putPref(TRACKS_TIMEOUT, timeout);
 				
 				JSONArray json_tracks = tracks.getJSONArray("tracks");
 				int size = json_tracks.length();
@@ -966,11 +943,8 @@ public class Schedule extends Activity {
 					mTracks.put(track.getTrack_id(), track);
 				}
 				
-				if(statusExists("tracks_updated") == 0){
-					addStatus("tracks_updated", ""+System.currentTimeMillis());
-				} else if(statusExists("tracks_updated") == 1){
-					updateStatus("tracks_updated", ""+System.currentTimeMillis());
-				}
+				putPref(TRACKS_UPDATED, ""+System.currentTimeMillis());
+				
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -1114,17 +1088,7 @@ public class Schedule extends Activity {
 				
 
 				String timeout = schedule.getString("timeout");
-				if(statusExists(SCHEDULE_TIMEOUT) == 0){
-					addStatus(SCHEDULE_TIMEOUT, timeout);
-					Log.d("ADDED STATUS", "ADDED STATUS");
-				}
-				else if(statusExists(SCHEDULE_TIMEOUT) == 1) {
-					updateStatus(SCHEDULE_TIMEOUT, timeout);
-					Log.d("UPDATED STATUS", "UPDATED STATUS");
-				}
-				else if(statusExists(SCHEDULE_TIMEOUT) == -1) {
-					//error checking if exists
-				}
+				putPref(SCHEDULE_TIMEOUT, timeout);
 				
 				
 				JSONArray json_events = schedule.getJSONArray("items");
@@ -1238,11 +1202,8 @@ public class Schedule extends Activity {
 					TRACKS_CACHE_TIMEOUT = Long.parseLong(schedule.getString("tracks_cache_timeout"));
 				}
 				
-				if(statusExists("schedule_updated") == 0){
-					addStatus("schedule_updated", ""+System.currentTimeMillis());
-				} else if(statusExists("schedule_updated") == 1){
-					updateStatus("schedule_updated", ""+System.currentTimeMillis());
-				}
+				putPref(SCHEDULE_UPDATED, ""+System.currentTimeMillis());
+				
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -1455,9 +1416,9 @@ public class Schedule extends Activity {
   		
   	}
   	
-  	public static void addStatus(String table, String time){
-  		db.addStatusRow(table, time);
-  	}
+//  	public static void addStatus(String table, String time){
+//  		db.addStatusRow(table, time);
+//  	}
   	
   	public static void updateSchedule(Event ev){
   		db.updateScheduleRow(ev);
@@ -1474,9 +1435,9 @@ public class Schedule extends Activity {
   		
   	}
   	
-  	public static void updateStatus(String table, String time){
-  		db.updateStatusRow(table, time);
-  	}
+//  	public static void updateStatus(String table, String time){
+//  		db.updateStatusRow(table, time);
+//  	}
   	
   	public static Event getSchedule(String event_id){
   		return db.getScheduleRow(event_id);

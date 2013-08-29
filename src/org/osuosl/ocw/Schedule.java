@@ -55,6 +55,7 @@ public class Schedule extends Activity {
 
 	static DataBaseHandler db;
 	
+	private StateChangeData data = null;
 	
 	// By default cache files for 2 hours (in milliseconds)
 	private static long SCHEDULE_CACHE_TIMEOUT = 7200000;
@@ -163,7 +164,7 @@ public class Schedule extends Activity {
         
         
         // Get saved data if destroyed
-        final StateChangeData data = (StateChangeData) getLastNonConfigurationInstance();
+        data = (StateChangeData) getLastNonConfigurationInstance();
         
         // No saved data, run app as normal
         if( data == null){
@@ -232,6 +233,8 @@ public class Schedule extends Activity {
         		if(data.getmBioVisibility() == View.VISIBLE)
         			show_bio();
         	}
+        	
+        	
         }
         
         
@@ -375,18 +378,43 @@ public class Schedule extends Activity {
     public void onResume() {
 		super.onResume();
 		
-		if((Long.parseLong(getPref(SCHEDULE_UPDATED))
-				+Long.parseLong(getPref(SCHEDULE_TIMEOUT))) > System.currentTimeMillis()){
+		// if not an orientation switch
+		if(data == null){
 			
+			
+
+			if(!getPref(SCHEDULE_UPDATED).equals("") && !getPref(SCHEDULE_TIMEOUT).equals("")){
+				
+				Log.d("LASTUPDATED+TIMEOUT",""+(Long.parseLong(getPref(SCHEDULE_UPDATED))
+						+Long.parseLong(getPref(SCHEDULE_TIMEOUT))));
+				Log.d("CURRENTTIME",""+System.currentTimeMillis());
+				if((Long.parseLong(getPref(SCHEDULE_UPDATED))
+						+Long.parseLong(getPref(SCHEDULE_TIMEOUT))) < System.currentTimeMillis()){
+					parseProposals(calendar, true);
+				}
+			}
+
+			if(!getPref(SPEAKERS_UPDATED).equals("") && !getPref(SPEAKERS_TIMEOUT).equals(""))
+				if((Long.parseLong(getPref(SPEAKERS_UPDATED))
+						+Long.parseLong(getPref(SPEAKERS_TIMEOUT))) < System.currentTimeMillis()){
+					Log.d("HERE","HERE");
+					loadSpeakers(true);
+				}
+
+			if(!getPref(TRACKS_UPDATED).equals("") && !getPref(TRACKS_TIMEOUT).equals(""))
+				if((Long.parseLong(getPref(TRACKS_UPDATED))
+						+Long.parseLong(getPref(TRACKS_TIMEOUT))) < System.currentTimeMillis()){
+					loadTracks(true);
+				}
+
 		}
+	}
+	
+	@Override
+	public void onPause(){
+		super.onPause();
 		
-		if((Long.parseLong(getPref(SPEAKERS_UPDATED))
-				+Long.parseLong(getPref(SPEAKERS_TIMEOUT))) > System.currentTimeMillis()){
-					
-		}
-		
-		if
-		
+		data = null;
 	}
 	
 	
@@ -1004,7 +1032,6 @@ public class Schedule extends Activity {
 					conn = url.openConnection(); 
 					conn.setDoInput(true); 
 					conn.setUseCaches(false);
-					Log.d("HERE","HERE");
 					is = conn.getInputStream();
 					
 				} catch (IOException e) {

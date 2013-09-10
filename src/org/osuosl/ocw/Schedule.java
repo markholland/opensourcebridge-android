@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.DateFormat;
@@ -15,6 +14,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,6 +28,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -55,6 +59,9 @@ public class Schedule extends Activity {
 
 	static DataBaseHandler db;
 	
+	private StateChangeData data = null;
+	
+	SimpleDateFormat httpHeaderFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
 	
 	// By default cache files for 2 hours (in milliseconds)
 	private static long SCHEDULE_CACHE_TIMEOUT = 7200000;
@@ -121,9 +128,19 @@ public class Schedule extends Activity {
     Button mShowDescription;
     Button mShowBio;
     
+<<<<<<< Updated upstream
     private static final String SCHEDULE_URI = "http://www.partiallogic.com/gsoc2013/schedule.json";
     private static final String TRACKS_URI = "http://www.partiallogic.com/gsoc2013/tracks.json";
+<<<<<<< Updated upstream
+    private static final String SPEAKER_URI = "http://www.partiallogic.com/gsoc2013/speakers.json";
+=======
     private static final String SPEAKER_URI_BASE = "http://www.partiallogic.com/gsoc2013/speakers.json";
+=======
+    private static final String SCHEDULE_URI = "http://www.partiallogic.com/gsoc2013/OSCON/schedule.json";
+    private static final String TRACKS_URI = "http://www.partiallogic.com/gsoc2013/OSCON/tracks.json";
+    private static final String SPEAKER_URI = "http://www.partiallogic.com/gsoc2013/OSCON/speakers.json";
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
     
     /** Called when the activity is first created. */
 	@Override
@@ -163,7 +180,7 @@ public class Schedule extends Activity {
         
         
         // Get saved data if destroyed
-        final StateChangeData data = (StateChangeData) getLastNonConfigurationInstance();
+        data = (StateChangeData) getLastNonConfigurationInstance();
         
         // No saved data, run app as normal
         if( data == null){
@@ -232,6 +249,8 @@ public class Schedule extends Activity {
         		if(data.getmBioVisibility() == View.VISIBLE)
         			show_bio();
         	}
+        	
+        	
         }
         
         
@@ -346,8 +365,8 @@ public class Schedule extends Activity {
         	public void run() { 
         		
         		
-        			loadSchedule(false);
-        			setAdapter();
+        		loadSchedule(false);
+        		setAdapter();
         		
         		
         		// If not on an event 
@@ -371,6 +390,102 @@ public class Schedule extends Activity {
     }//end onCreate
 	
 	
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
+	@Override
+    public void onResume() {
+		super.onResume();
+		
+		// if not an orientation switch
+		if(data == null){
+			
+<<<<<<< Updated upstream
+			
+
+=======
+>>>>>>> Stashed changes
+			if(!getPref(SCHEDULE_UPDATED).equals("") && !getPref(SCHEDULE_TIMEOUT).equals("")){
+				
+				Log.d("LASTUPDATED+TIMEOUT",""+(Long.parseLong(getPref(SCHEDULE_UPDATED))
+						+Long.parseLong(getPref(SCHEDULE_TIMEOUT))));
+				Log.d("CURRENTTIME",""+System.currentTimeMillis());
+				if((Long.parseLong(getPref(SCHEDULE_UPDATED))
+						+Long.parseLong(getPref(SCHEDULE_TIMEOUT))) < System.currentTimeMillis()){
+					parseProposals(true);
+<<<<<<< Updated upstream
+=======
+					if(mCurrentDate == null)
+						mCurrentDate = new Date(1900, 0, 0);
+>>>>>>> Stashed changes
+					setAdapter();
+					mAdapter.filterDay(mCurrentDate);
+					mDate.setText(date_formatter.format(mCurrentDate));
+					showList();
+<<<<<<< Updated upstream
+=======
+					
+>>>>>>> Stashed changes
+				}
+			}
+
+			if(!getPref(SPEAKERS_UPDATED).equals("") && !getPref(SPEAKERS_TIMEOUT).equals(""))
+				if((Long.parseLong(getPref(SPEAKERS_UPDATED))
+						+Long.parseLong(getPref(SPEAKERS_TIMEOUT))) < System.currentTimeMillis()){
+<<<<<<< Updated upstream
+					Log.d("HERE","HERE");
+					loadSpeakers(true);
+=======
+					loadSpeakers(true);
+					if(mCurrentDate == null)
+						mCurrentDate = new Date(1900, 0, 0);
+					
+>>>>>>> Stashed changes
+					setAdapter();
+					mAdapter.filterDay(mCurrentDate);
+					mDate.setText(date_formatter.format(mCurrentDate));
+					showList();
+				}
+
+			if(!getPref(TRACKS_UPDATED).equals("") && !getPref(TRACKS_TIMEOUT).equals(""))
+				if((Long.parseLong(getPref(TRACKS_UPDATED))
+						+Long.parseLong(getPref(TRACKS_TIMEOUT))) < System.currentTimeMillis()){
+					loadTracks(true);
+<<<<<<< Updated upstream
+=======
+					if(mCurrentDate == null)
+						mCurrentDate = new Date(1900, 0, 0);
+					
+>>>>>>> Stashed changes
+					setAdapter();
+					mAdapter.filterDay(mCurrentDate);
+					mDate.setText(date_formatter.format(mCurrentDate));
+					showList();
+				}
+			
+		}
+	}
+	
+	@Override
+	public void onPause(){
+		super.onPause();
+		
+<<<<<<< Updated upstream
+=======
+		//So that when onCreate or onResume is called it won't think there was an orientation switch
+		//and ignore checking whether to update data
+>>>>>>> Stashed changes
+		data = null;
+	}
+	
+	
+	
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 	// Save the app state when destroyed
 	@Override
 	public Object onRetainNonConfigurationInstance() {
@@ -725,8 +840,9 @@ public class Schedule extends Activity {
         @Override
         protected void onPostExecute(Integer uselessResult) {
         	pdia.dismiss();
-        	setAdapter();
+        	//setAdapter();
         	//now();
+        	mAdapter.notifyDataSetChanged();
         	mAdapter.filterDay(mCurrentDate);
 			mDate.setText(date_formatter.format(mCurrentDate));
 			showList();
@@ -761,7 +877,7 @@ public class Schedule extends Activity {
 	
 	
 	/**
-	 * Loads the osbridge schedule from a combination of ICal and json data
+	 * Loads the schedule from a combination of ICal and json data
 	 * @param force - force reload
 	 */
 	private void loadSchedule(boolean force) {
@@ -772,7 +888,17 @@ public class Schedule extends Activity {
 		if(mTracks.size() == 0 || mSpeakers.size() == 0 || force) {
 			loadSpeakers(force);
 			loadTracks(force);
+<<<<<<< Updated upstream
+			parseProposals(force);
+=======
+<<<<<<< Updated upstream
 			parseProposals(calendar, force);
+=======
+			parseProposals(force);
+		} if(!force) { //needs to be fixed, schedule loaded twice
+			//parseProposals(force);
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 		}
 		//Days available here
 		Log.d("DAYS", DAYS.toString());
@@ -791,7 +917,7 @@ public class Schedule extends Activity {
 		Speaker speaker = null;
 
 		try {
-			String raw_json = getURL(SPEAKER_URI_BASE, "SPEAKERS", force);
+			String raw_json = getURL(SPEAKER_URI, "SPEAKERS", force);
 
 			//Log.d("CHECK DATABASE",raw_json);
 			if (raw_json.equals("database")){
@@ -805,22 +931,14 @@ public class Schedule extends Activity {
 					mSpeakers.put(speaker.getSpeaker_id(), speaker);
 				}
 				
+			} else if(raw_json.equals("doNothing")) {
+				
 			} else {
 
 				JSONObject speakers = new JSONObject(raw_json);
 				
 				String timeout = speakers.getString("timeout");
-				if(statusExists(SPEAKERS_TIMEOUT) == 0){
-					addStatus(SPEAKERS_TIMEOUT, timeout);
-					Log.d("ADDED STATUS", "ADDED STATUS");
-				}
-				else if(statusExists(SPEAKERS_TIMEOUT) == 1) {
-					updateStatus(SPEAKERS_TIMEOUT, timeout);
-					Log.d("UPDATED STATUS", "UPDATED STATUS");
-				}
-				else if(statusExists(SPEAKERS_TIMEOUT) == -1) {
-					//error checking if exists
-				}
+				putPref(SPEAKERS_TIMEOUT, timeout);
 				
 				JSONArray json_speakers = speakers.getJSONArray("items");
 				int size = json_speakers.length();
@@ -871,11 +989,8 @@ public class Schedule extends Activity {
 						//error checking if exists
 					}
 				}
-				if(statusExists("speakers_updated") == 0){
-		  			addStatus("speakers_updated", ""+System.currentTimeMillis());
-				} else if(statusExists("speakers_updated") == 1){
-					updateStatus("speakers_updated", ""+System.currentTimeMillis());
-				}
+				putPref(SPEAKERS_UPDATED,""+System.currentTimeMillis());
+				
 			}
 
 
@@ -904,21 +1019,13 @@ public class Schedule extends Activity {
 					mTracks.put(track.getTrack_id(), track);
 				}
 			
+			} else if(raw_json.equals("doNothing")) {
+				
 			} else {
 				JSONObject tracks = new JSONObject(raw_json);
 				
 				String timeout = tracks.getString("timeout");
-				if(statusExists(TRACKS_TIMEOUT) == 0){
-					addStatus(TRACKS_TIMEOUT, timeout);
-					Log.d("ADDED STATUS", "ADDED STATUS");
-				}
-				else if(statusExists(TRACKS_TIMEOUT) == 1) {
-					updateStatus(TRACKS_TIMEOUT, timeout);
-					Log.d("UPDATED STATUS", "UPDATED STATUS");
-				}
-				else if(statusExists(TRACKS_TIMEOUT) == -1) {
-					//error checking if exists
-				}
+				putPref(TRACKS_TIMEOUT, timeout);
 				
 				JSONArray json_tracks = tracks.getJSONArray("tracks");
 				int size = json_tracks.length();
@@ -929,8 +1036,10 @@ public class Schedule extends Activity {
 					track.setTrack_id(json.getInt("track_id"));
 					track.setTrack_title(json.getString("track_title"));
 					
+					
 					if (json.has("color"))
 						track.setColor(Color.parseColor(json.getString("color")));
+					
 				
 					if (json.has("color_text"))
 						track.setColor_text(Color.parseColor(json.getString("color_text")));
@@ -956,11 +1065,8 @@ public class Schedule extends Activity {
 					mTracks.put(track.getTrack_id(), track);
 				}
 				
-				if(statusExists("tracks_updated") == 0){
-					addStatus("tracks_updated", ""+System.currentTimeMillis());
-				} else if(statusExists("tracks_updated") == 1){
-					updateStatus("tracks_updated", ""+System.currentTimeMillis());
-				}
+				putPref(TRACKS_UPDATED, ""+System.currentTimeMillis());
+				
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -989,17 +1095,18 @@ public class Schedule extends Activity {
 		try {
 			// determine whether to open local file or remote file
 			// Retrieve from database instead of raw file
-			Log.d("LAST UPDATED+TIMEOUT", ""+(getStatus("schedule_updated")+getStatus(SCHEDULE_TIMEOUT)));
-			Log.d("CURRENT TIME", ""+System.currentTimeMillis());
 			
 			
-			if (table.equals("SCHEDULE") && (db.numRows("SCHEDULE") != 0) && !force && ((getStatus(SCHEDULE_UPDATED)+getStatus(SCHEDULE_TIMEOUT)) > System.currentTimeMillis())){
+			if (table.equals("SCHEDULE") && (db.numRows("SCHEDULE") != 0) && !force && ((Long.parseLong(getPref(SCHEDULE_UPDATED))
+					+Long.parseLong(getPref(SCHEDULE_TIMEOUT))) > System.currentTimeMillis())){
 				return "database";
 			}
-			else if(table.equals("SPEAKERS") && (db.numRows("SPEAKERS") != 0) && !force && ((getStatus(SPEAKERS_UPDATED)+getStatus(SPEAKERS_TIMEOUT)) > System.currentTimeMillis())){
+			else if(table.equals("SPEAKERS") && (db.numRows("SPEAKERS") != 0) && !force && ((Long.parseLong(getPref(SPEAKERS_UPDATED))
+					+Long.parseLong(getPref(SPEAKERS_TIMEOUT))) > System.currentTimeMillis())){
 				return "database";
 			}
-			else if(table.equals("TRACKS") && (db.numRows("TRACKS") != 0) && !force && ((getStatus(TRACKS_UPDATED)+getStatus(TRACKS_TIMEOUT)) > System.currentTimeMillis())){
+			else if(table.equals("TRACKS") && (db.numRows("TRACKS") != 0) && !force && ((Long.parseLong(getPref(TRACKS_UPDATED))
+					+Long.parseLong(getPref(TRACKS_TIMEOUT))) > System.currentTimeMillis())){
 				return "database";
 			
 			} else {
@@ -1009,7 +1116,6 @@ public class Schedule extends Activity {
 					conn = url.openConnection(); 
 					conn.setDoInput(true); 
 					conn.setUseCaches(false);
-					Log.d("HERE","HERE");
 					is = conn.getInputStream();
 					
 				} catch (IOException e) {
@@ -1027,24 +1133,49 @@ public class Schedule extends Activity {
 				}
 			}
 		
-			// read entire file, write cache at same time if we are fetching from the remote uri
-			BufferedReader br;
-			if (is!=null){ 
-				br = new BufferedReader(new InputStreamReader(is, "UTF-8"), 8192);
+			
+			//check json http header here
+			Boolean jsonModified = jsonModified(table);
 
-				while ((line = br.readLine()) != null) {
-					sb.append(line);
+			if(jsonModified){
 
+				// read entire file, write cache at same time if we are fetching from the remote uri
+				BufferedReader br;
+				if (is!=null){ 
+					br = new BufferedReader(new InputStreamReader(is, "UTF-8"), 8192);
+
+					while ((line = br.readLine()) != null) {
+						sb.append(line);
+
+					}
+				} else {
+					return "database";
 				}
+<<<<<<< Updated upstream
+			} else { 
+				return "doNothing";
+=======
+<<<<<<< Updated upstream
 			} else {
 				
 				return "database";
+=======
+			} else if(mCurrentDate == null || mCurrentDate.equals(new Date(1900, 0, 0))){
+				return "database";}
+			else{
+				return "doNothing";
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 			}
+			
+		} catch (NumberFormatException e){
+			throw e;
+			
 		} catch (IOException e) {
 			// failure to get file, throw this higher
 			throw e;
 			
-		} finally {
+		 } finally {
 			if (is!=null) {
 				try {
 					is.close();
@@ -1054,6 +1185,7 @@ public class Schedule extends Activity {
 			}
 			
 		}
+		
 		
 		return sb.toString();
 	}
@@ -1065,11 +1197,12 @@ public class Schedule extends Activity {
 	 * @param calendar
 	 * @param force - force refresh
 	 */
-	private void parseProposals(ICal calendar, boolean force){
+	private void parseProposals(boolean force){
 		ArrayList<Event> events = new ArrayList<Event>();
 		try{
 			//TODO
 			String raw_json = getURL(SCHEDULE_URI, "SCHEDULE", force);
+			Log.d("RAW_JSON",raw_json);
 			
 			if (raw_json.equals("database")){
 				
@@ -1096,6 +1229,8 @@ public class Schedule extends Activity {
 					
 				}
 			
+			} else if(raw_json.equals("doNothing")) {
+				
 			} else {
 				
 			
@@ -1104,17 +1239,7 @@ public class Schedule extends Activity {
 				
 
 				String timeout = schedule.getString("timeout");
-				if(statusExists(SCHEDULE_TIMEOUT) == 0){
-					addStatus(SCHEDULE_TIMEOUT, timeout);
-					Log.d("ADDED STATUS", "ADDED STATUS");
-				}
-				else if(statusExists(SCHEDULE_TIMEOUT) == 1) {
-					updateStatus(SCHEDULE_TIMEOUT, timeout);
-					Log.d("UPDATED STATUS", "UPDATED STATUS");
-				}
-				else if(statusExists(SCHEDULE_TIMEOUT) == -1) {
-					//error checking if exists
-				}
+				putPref(SCHEDULE_TIMEOUT, timeout);
 				
 				
 				JSONArray json_events = schedule.getJSONArray("items");
@@ -1228,11 +1353,8 @@ public class Schedule extends Activity {
 					TRACKS_CACHE_TIMEOUT = Long.parseLong(schedule.getString("tracks_cache_timeout"));
 				}
 				
-				if(statusExists("schedule_updated") == 0){
-					addStatus("schedule_updated", ""+System.currentTimeMillis());
-				} else if(statusExists("schedule_updated") == 1){
-					updateStatus("schedule_updated", ""+System.currentTimeMillis());
-				}
+				putPref(SCHEDULE_UPDATED, ""+System.currentTimeMillis());
+				
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -1247,6 +1369,64 @@ public class Schedule extends Activity {
 		
 	}
 	
+	
+	private boolean jsonModified(String json){
+		
+		try{
+			
+			HttpClient client = new DefaultHttpClient();
+			HttpGet request = null;
+			
+			
+			if(json.equals("SCHEDULE")){
+				request = new HttpGet(SCHEDULE_URI);
+			
+			}
+			if(json.equals("SPEAKERS")){
+				 request = new HttpGet(SPEAKER_URI);
+				
+				}
+			if(json.equals("TRACKS")){
+				 request = new HttpGet(TRACKS_URI);
+				
+			}
+			HttpResponse response = null;
+			if(request != null)
+				response = client.execute(request);
+
+			String server = ""+response.getFirstHeader("Last-Modified");
+			Log.d("SERVERMODIFIED", server);
+			server = server.substring(15,server.length());
+			Log.d("SERVERMODIFIED", server);
+			httpHeaderFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
+			Date current = httpHeaderFormat.parse(server);
+			
+			
+			String lm = getPref(json+"lastModified");
+			Log.d("LASTMODIFIED", lm);
+			if(!lm.equals("")){
+				Date lastModified = new Date(lm);
+				if(current.after(lastModified)){
+					putPref(json+"lastModified",lm);
+					
+					return true;
+				}
+			} else { //lastModified doesn't exist so still need to load from json
+				putPref(json+"lastModified", server);
+				return true;
+			}
+
+
+
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+
+		
+
+		return false;
+		
+	}
 		
 	
 	/**
@@ -1406,6 +1586,26 @@ public class Schedule extends Activity {
 	
 	
 	//																//
+	//                     SHARED  PREFERENCES                      //
+	//																//
+	
+	private void putPref(String key, String value){
+		 SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+	     SharedPreferences.Editor editor = sharedPreferences.edit();
+	     editor.putString(key, value);
+	     editor.commit();
+	}
+	
+	private String getPref(String key){
+		SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+        String savedPref = sharedPreferences.getString(key, "");
+        return savedPref;
+	}
+	
+	
+	
+	
+	//																//
 	//						DATABASE HANDLERS						//
 	//																//
 	
@@ -1425,10 +1625,19 @@ public class Schedule extends Activity {
   		
   	}
   	
+<<<<<<< Updated upstream
+//  	public static void addStatus(String table, String time){
+//  		db.addStatusRow(table, time);
+//  	}
+=======
+<<<<<<< Updated upstream
   	public static void addStatus(String table, String time){
   		db.addStatusRow(table, time);
   	}
+>>>>>>> Stashed changes
   	
+=======
+>>>>>>> Stashed changes
   	public static void updateSchedule(Event ev){
   		db.updateScheduleRow(ev);
   		
@@ -1444,10 +1653,19 @@ public class Schedule extends Activity {
   		
   	}
   	
+<<<<<<< Updated upstream
+//  	public static void updateStatus(String table, String time){
+//  		db.updateStatusRow(table, time);
+//  	}
+=======
+<<<<<<< Updated upstream
   	public static void updateStatus(String table, String time){
   		db.updateStatusRow(table, time);
   	}
+>>>>>>> Stashed changes
   	
+=======
+>>>>>>> Stashed changes
   	public static Event getSchedule(String event_id){
   		return db.getScheduleRow(event_id);
   	}
@@ -1460,10 +1678,19 @@ public class Schedule extends Activity {
   		return db.getTracksRow(track_id);
   	}
   	
+<<<<<<< Updated upstream
+//  	public static Long getStatus(String table){
+//  		return db.getStatusRow(table);
+//  	}
+=======
+<<<<<<< Updated upstream
   	public static Long getStatus(String table){
   		return db.getStatusRow(table);
   	}
+>>>>>>> Stashed changes
   	
+=======
+>>>>>>> Stashed changes
   	public static int eventExists(String event_id){
   		return db.existsEvent(event_id);
   	}
@@ -1476,9 +1703,7 @@ public class Schedule extends Activity {
   		return db.existsTrack(track_id);
   	}
 	
-  	public static int statusExists(String table){
-  		return db.existsStatusRow(table);
-  	}
+  	
 
   	
 

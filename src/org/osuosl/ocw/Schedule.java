@@ -128,9 +128,19 @@ public class Schedule extends Activity {
     Button mShowDescription;
     Button mShowBio;
     
+<<<<<<< Updated upstream
     private static final String SCHEDULE_URI = "http://www.partiallogic.com/gsoc2013/schedule.json";
     private static final String TRACKS_URI = "http://www.partiallogic.com/gsoc2013/tracks.json";
+<<<<<<< Updated upstream
     private static final String SPEAKER_URI = "http://www.partiallogic.com/gsoc2013/speakers.json";
+=======
+    private static final String SPEAKER_URI_BASE = "http://www.partiallogic.com/gsoc2013/speakers.json";
+=======
+    private static final String SCHEDULE_URI = "http://www.partiallogic.com/gsoc2013/OSCON/schedule.json";
+    private static final String TRACKS_URI = "http://www.partiallogic.com/gsoc2013/OSCON/tracks.json";
+    private static final String SPEAKER_URI = "http://www.partiallogic.com/gsoc2013/OSCON/speakers.json";
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
     
     /** Called when the activity is first created. */
 	@Override
@@ -380,6 +390,11 @@ public class Schedule extends Activity {
     }//end onCreate
 	
 	
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
 	@Override
     public void onResume() {
 		super.onResume();
@@ -387,8 +402,11 @@ public class Schedule extends Activity {
 		// if not an orientation switch
 		if(data == null){
 			
+<<<<<<< Updated upstream
 			
 
+=======
+>>>>>>> Stashed changes
 			if(!getPref(SCHEDULE_UPDATED).equals("") && !getPref(SCHEDULE_TIMEOUT).equals("")){
 				
 				Log.d("LASTUPDATED+TIMEOUT",""+(Long.parseLong(getPref(SCHEDULE_UPDATED))
@@ -397,18 +415,34 @@ public class Schedule extends Activity {
 				if((Long.parseLong(getPref(SCHEDULE_UPDATED))
 						+Long.parseLong(getPref(SCHEDULE_TIMEOUT))) < System.currentTimeMillis()){
 					parseProposals(true);
+<<<<<<< Updated upstream
+=======
+					if(mCurrentDate == null)
+						mCurrentDate = new Date(1900, 0, 0);
+>>>>>>> Stashed changes
 					setAdapter();
 					mAdapter.filterDay(mCurrentDate);
 					mDate.setText(date_formatter.format(mCurrentDate));
 					showList();
+<<<<<<< Updated upstream
+=======
+					
+>>>>>>> Stashed changes
 				}
 			}
 
 			if(!getPref(SPEAKERS_UPDATED).equals("") && !getPref(SPEAKERS_TIMEOUT).equals(""))
 				if((Long.parseLong(getPref(SPEAKERS_UPDATED))
 						+Long.parseLong(getPref(SPEAKERS_TIMEOUT))) < System.currentTimeMillis()){
+<<<<<<< Updated upstream
 					Log.d("HERE","HERE");
 					loadSpeakers(true);
+=======
+					loadSpeakers(true);
+					if(mCurrentDate == null)
+						mCurrentDate = new Date(1900, 0, 0);
+					
+>>>>>>> Stashed changes
 					setAdapter();
 					mAdapter.filterDay(mCurrentDate);
 					mDate.setText(date_formatter.format(mCurrentDate));
@@ -419,6 +453,12 @@ public class Schedule extends Activity {
 				if((Long.parseLong(getPref(TRACKS_UPDATED))
 						+Long.parseLong(getPref(TRACKS_TIMEOUT))) < System.currentTimeMillis()){
 					loadTracks(true);
+<<<<<<< Updated upstream
+=======
+					if(mCurrentDate == null)
+						mCurrentDate = new Date(1900, 0, 0);
+					
+>>>>>>> Stashed changes
 					setAdapter();
 					mAdapter.filterDay(mCurrentDate);
 					mDate.setText(date_formatter.format(mCurrentDate));
@@ -432,11 +472,20 @@ public class Schedule extends Activity {
 	public void onPause(){
 		super.onPause();
 		
+<<<<<<< Updated upstream
+=======
+		//So that when onCreate or onResume is called it won't think there was an orientation switch
+		//and ignore checking whether to update data
+>>>>>>> Stashed changes
 		data = null;
 	}
 	
 	
 	
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 	// Save the app state when destroyed
 	@Override
 	public Object onRetainNonConfigurationInstance() {
@@ -791,8 +840,9 @@ public class Schedule extends Activity {
         @Override
         protected void onPostExecute(Integer uselessResult) {
         	pdia.dismiss();
-        	setAdapter();
+        	//setAdapter();
         	//now();
+        	mAdapter.notifyDataSetChanged();
         	mAdapter.filterDay(mCurrentDate);
 			mDate.setText(date_formatter.format(mCurrentDate));
 			showList();
@@ -838,7 +888,17 @@ public class Schedule extends Activity {
 		if(mTracks.size() == 0 || mSpeakers.size() == 0 || force) {
 			loadSpeakers(force);
 			loadTracks(force);
+<<<<<<< Updated upstream
 			parseProposals(force);
+=======
+<<<<<<< Updated upstream
+			parseProposals(calendar, force);
+=======
+			parseProposals(force);
+		} if(!force) { //needs to be fixed, schedule loaded twice
+			//parseProposals(force);
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 		}
 		//Days available here
 		Log.d("DAYS", DAYS.toString());
@@ -976,8 +1036,10 @@ public class Schedule extends Activity {
 					track.setTrack_id(json.getInt("track_id"));
 					track.setTrack_title(json.getString("track_title"));
 					
+					
 					if (json.has("color"))
 						track.setColor(Color.parseColor(json.getString("color")));
+					
 				
 					if (json.has("color_text"))
 						track.setColor_text(Color.parseColor(json.getString("color_text")));
@@ -1089,14 +1151,31 @@ public class Schedule extends Activity {
 				} else {
 					return "database";
 				}
+<<<<<<< Updated upstream
 			} else { 
 				return "doNothing";
+=======
+<<<<<<< Updated upstream
+			} else {
+				
+				return "database";
+=======
+			} else if(mCurrentDate == null || mCurrentDate.equals(new Date(1900, 0, 0))){
+				return "database";}
+			else{
+				return "doNothing";
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 			}
+			
+		} catch (NumberFormatException e){
+			throw e;
+			
 		} catch (IOException e) {
 			// failure to get file, throw this higher
 			throw e;
 			
-		} finally {
+		 } finally {
 			if (is!=null) {
 				try {
 					is.close();
@@ -1123,6 +1202,7 @@ public class Schedule extends Activity {
 		try{
 			//TODO
 			String raw_json = getURL(SCHEDULE_URI, "SCHEDULE", force);
+			Log.d("RAW_JSON",raw_json);
 			
 			if (raw_json.equals("database")){
 				
@@ -1545,10 +1625,19 @@ public class Schedule extends Activity {
   		
   	}
   	
+<<<<<<< Updated upstream
 //  	public static void addStatus(String table, String time){
 //  		db.addStatusRow(table, time);
 //  	}
+=======
+<<<<<<< Updated upstream
+  	public static void addStatus(String table, String time){
+  		db.addStatusRow(table, time);
+  	}
+>>>>>>> Stashed changes
   	
+=======
+>>>>>>> Stashed changes
   	public static void updateSchedule(Event ev){
   		db.updateScheduleRow(ev);
   		
@@ -1564,10 +1653,19 @@ public class Schedule extends Activity {
   		
   	}
   	
+<<<<<<< Updated upstream
 //  	public static void updateStatus(String table, String time){
 //  		db.updateStatusRow(table, time);
 //  	}
+=======
+<<<<<<< Updated upstream
+  	public static void updateStatus(String table, String time){
+  		db.updateStatusRow(table, time);
+  	}
+>>>>>>> Stashed changes
   	
+=======
+>>>>>>> Stashed changes
   	public static Event getSchedule(String event_id){
   		return db.getScheduleRow(event_id);
   	}
@@ -1580,10 +1678,19 @@ public class Schedule extends Activity {
   		return db.getTracksRow(track_id);
   	}
   	
+<<<<<<< Updated upstream
 //  	public static Long getStatus(String table){
 //  		return db.getStatusRow(table);
 //  	}
+=======
+<<<<<<< Updated upstream
+  	public static Long getStatus(String table){
+  		return db.getStatusRow(table);
+  	}
+>>>>>>> Stashed changes
   	
+=======
+>>>>>>> Stashed changes
   	public static int eventExists(String event_id){
   		return db.existsEvent(event_id);
   	}
@@ -1596,9 +1703,7 @@ public class Schedule extends Activity {
   		return db.existsTrack(track_id);
   	}
 	
-  	public static int statusExists(String table){
-  		return db.existsStatusRow(table);
-  	}
+  	
 
   	
 

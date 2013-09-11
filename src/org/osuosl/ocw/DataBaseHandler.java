@@ -11,8 +11,8 @@ import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
 public class DataBaseHandler extends SQLiteAssetHelper {
 
-	private static final String DATABASE_NAME = "ocw";
-	private static final int DATABASE_VERSION = 1;
+	private static final String DATABASE_NAME = "ocw";     //Name of the .db file stored on the device
+	private static final int DATABASE_VERSION = 1;		   
 
 	// Table names
 	private static final String SCHEDULE_TABLE_NAME = "SCHEDULE";
@@ -89,7 +89,6 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 					speakerIds = convertArrayToString(event.getSpeaker_ids());
 					values.put(KEY_SPEAKER_IDS, speakerIds);
 				}
-				
 				
 				values.put(KEY_PRESENTER, event.getPresenter());
 				
@@ -184,7 +183,6 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 				values.put(KEY_COLOR, track.getColor());
 				values.put(KEY_COLOR_TEXT, track.getColor_text());
 				
-
 				//adding row
 				i = db.insert(TRACKS_TABLE_NAME, null, values);
 

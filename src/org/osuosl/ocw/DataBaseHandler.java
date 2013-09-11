@@ -20,6 +20,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 	private static final String TRACKS_TABLE_NAME = "TRACKS";
 	private static final String STATUS_TABLE_NAME = "STATUS";
 
+	private static final String KEY_ID = "_id";
 	// Schedule table column names
 	private static final String KEY_EVENT_ID = "event_id";
 	private static final String KEY_TITLE = "event_title";
@@ -436,8 +437,8 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 
 	/**
 	 * Retrieve a single row(Event) from the schedule database table.
-	 * @param id event_id of the Event to be retrieved.
-	 * @return Event with event_id == id.
+	 * @param id row to be retrieved.
+	 * @return Event at row == id.
 	 */
 	public Event getScheduleRow(String id) {
 		Event event = null;
@@ -448,7 +449,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			db.beginTransaction();
 			try{
 
-				Cursor cursor = db.query(SCHEDULE_TABLE_NAME, GET_SCHEDULE_ROW, KEY_EVENT_ID + "=?",
+				Cursor cursor = db.query(SCHEDULE_TABLE_NAME, GET_SCHEDULE_ROW, KEY_ID + "=?",
 						new String[] { id }, null, null, null, null);
 				if (cursor != null){
 					cursor.moveToFirst();
@@ -493,8 +494,8 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 
 	/**
 	 * Retrieve a single row(Speaker) from the speakers database table
-	 * @param id speaker_id of the Speaker to be retrieved.
-	 * @return Speaker with speaker_id == id.
+	 * @param id row to be retrieved.
+	 * @return Speaker at row == id.
 	 */
 	public Speaker getSpeakersRow(String id) {
 		Speaker speaker = null;
@@ -537,8 +538,8 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 	
 	/**
 	 * Retrieve a single row(Track) from the tracks database table
-	 * @param id track_id of the track to be retrieved.
-	 * @return Track with track_id == id.
+	 * @param id row of the track to be retrieved.
+	 * @return Track at row == id.
 	 */
 	public Track getTracksRow(String id) {
 		Track track = null;
@@ -549,7 +550,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			db.beginTransaction();
 			try{
 
-				Cursor cursor = db.rawQuery("SELECT * FROM TRACKS WHERE track_id = "+id, null);
+				Cursor cursor = db.rawQuery("SELECT * FROM TRACKS WHERE _id = "+id, null);
 
 				if (cursor != null){
 					cursor.moveToFirst();

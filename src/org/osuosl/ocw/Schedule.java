@@ -107,8 +107,7 @@ public class Schedule extends Activity {
     Animation mOutRight;
 	
     // session details
-    Event mEvent = null; // Used to manipulate the selected event in the list
-    String[] mSpeakerIds = null;
+    String[] mSpeakerIds = null; //Used when displaying the bio view
     HashMap<Integer, Speaker> mSpeakers;
     HashMap<Integer, Track> mTracks;
     View mHeader;

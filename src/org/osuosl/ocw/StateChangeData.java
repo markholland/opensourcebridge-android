@@ -83,9 +83,10 @@ public class StateChangeData {
 		return flipperTab;
 	}
 
-
-	public Event getmEvent() {
-		return mEvent;
+	public String[] getmSpeakerIds() {
+		return mSpeakerIds;
 	}
+
 	
+
 }

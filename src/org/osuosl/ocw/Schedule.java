@@ -389,8 +389,6 @@ public class Schedule extends Activity {
 				if((Long.parseLong(getPref(SCHEDULE_UPDATED))
 						+Long.parseLong(getPref(SCHEDULE_TIMEOUT))) < System.currentTimeMillis()){
 					parseProposals(true);
-					if(mCurrentDate == null)
-						mCurrentDate = new Date(1900, 0, 0);
 					setAdapter();
 					mAdapter.filterDay(mCurrentDate);
 					mDate.setText(date_formatter.format(mCurrentDate));
@@ -403,9 +401,6 @@ public class Schedule extends Activity {
 				if((Long.parseLong(getPref(SPEAKERS_UPDATED))
 						+Long.parseLong(getPref(SPEAKERS_TIMEOUT))) < System.currentTimeMillis()){
 					loadSpeakers(true);
-					if(mCurrentDate == null)
-						mCurrentDate = new Date(1900, 0, 0);
-					
 					setAdapter();
 					mAdapter.filterDay(mCurrentDate);
 					mDate.setText(date_formatter.format(mCurrentDate));
@@ -416,9 +411,6 @@ public class Schedule extends Activity {
 				if((Long.parseLong(getPref(TRACKS_UPDATED))
 						+Long.parseLong(getPref(TRACKS_TIMEOUT))) < System.currentTimeMillis()){
 					loadTracks(true);
-					if(mCurrentDate == null)
-						mCurrentDate = new Date(1900, 0, 0);
-					
 					setAdapter();
 					mAdapter.filterDay(mCurrentDate);
 					mDate.setText(date_formatter.format(mCurrentDate));
@@ -835,9 +827,6 @@ public class Schedule extends Activity {
 	 */
 	private void loadSchedule(boolean force) {
 		//XXX set date to a day that is definitely, not now.  
-		//    This will cause it to update the list immediately.
-		if(mCurrentDate == null)
-			mCurrentDate = new Date(1900, 0, 0);
 		if(mTracks.size() == 0 || mSpeakers.size() == 0 || force) {
 			loadSpeakers(force);
 			loadTracks(force);
@@ -1096,7 +1085,7 @@ public class Schedule extends Activity {
 				} else {
 					return "database";
 				}
-			} else if(mCurrentDate == null || mCurrentDate.equals(new Date(1900, 0, 0))){
+			} else if(mCurrentDate.equals(new Date(1900, 0, 0))){
 				return "database";}
 			else{
 				return "doNothing";

@@ -107,7 +107,7 @@ public class Schedule extends Activity {
     Animation mOutRight;
 	
     // session details
-    String[] mSpeakerIds = null; //Used when displaying the bio view
+    Event mEvent = null; // Used to manipulate the selected event in the list
     HashMap<Integer, Speaker> mSpeakers;
     HashMap<Integer, Track> mTracks;
     View mHeader;
@@ -189,43 +189,40 @@ public class Schedule extends Activity {
         	mDetail = data.getmDetail();
         	
         	int flipperTab = data.getFlipperTab();
-        	Event event = data.getmEvent();
+        	mEvent = data.getmEvent();
         	
         	// Was looking at an event when destroyed so load it.
         	if(mDetail) {
-        		if(mTracks.containsKey(event.getTrack_id()))
-        			mHeader.setBackgroundColor(mTracks.get(event.getTrack_id()).getColor());
+        		if(mTracks.containsKey(mEvent.getTrack_id()))
+        			mHeader.setBackgroundColor(mTracks.get(mEvent.getTrack_id()).getColor());
         		else //Use default track
         			mHeader.setBackgroundColor(new Track().getColor());
-        		mTitle.setText(event.getEvent_title());
-        		mRoom_title.setText(event.getRoom_title());
+        		mTitle.setText(mEvent.getEvent_title());
+        		mRoom_title.setText(mEvent.getRoom_title());
         		DateFormat startFormat = new SimpleDateFormat("E, h:mm");
         		DateFormat endFormat = new SimpleDateFormat("h:mm a");
-        		String timeString = startFormat.format(event.getStart_time()) + " - " + endFormat.format(event.getEnd_time());
+        		String timeString = startFormat.format(mEvent.getStart_time()) + " - " + endFormat.format(mEvent.getEnd_time());
         		mTime.setText(timeString);
         		
-        		//TODO Fix for multiple speakers
-//        		if(mSpeakers.get(Integer.parseInt(event.getSpeaker_ids()[0])) == null)
-//        			Speaker sp = loadBio(Integer.parseInt(event.getSpeaker_ids()[0]));
-//        			
+        			
         		Speaker sp = new Speaker();
-        		if(mSpeakers.containsKey(Integer.parseInt(event.getSpeaker_ids()[0])))
-        			sp = mSpeakers.get(Integer.parseInt(event.getSpeaker_ids()[0]));
+        		if(mSpeakers.containsKey(Integer.parseInt(mEvent.getSpeaker_ids()[0])))
+        			sp = mSpeakers.get(Integer.parseInt(mEvent.getSpeaker_ids()[0]));
         		else //Use default speaker
         			sp = new Speaker();
         			
 
         		if(sp!=null){
-        			if(!event.getPresenter().equals("null"))
-        				mSpeaker.setText(event.getPresenter());
+        			if(!mEvent.getPresenter().equals("null"))
+        				mSpeaker.setText(mEvent.getPresenter());
         			else
         				mSpeaker.setText(sp.getFullname());
-        			if(mTracks.containsKey(event.getTrack_id()))
-        				mTimeLocation.setBackgroundColor(mTracks.get(event.getTrack_id()).getColor());
+        			if(mTracks.containsKey(mEvent.getTrack_id()))
+        				mTimeLocation.setBackgroundColor(mTracks.get(mEvent.getTrack_id()).getColor());
         			else //Use default track
         				mTimeLocation.setBackgroundColor(new Track().getColor());
-        			mDescription.setText(event.getDescription());
-        			mSpeakerIds = event.getSpeaker_ids();
+        			mDescription.setText(mEvent.getDescription());
+        			
         		}
         		
         		mFlipper.setDisplayedChild(flipperTab);
@@ -252,51 +249,50 @@ public class Schedule extends Activity {
 				if (item instanceof Date) {
 					return;// ignore clicks on the dates
 				}
-				Event event = (Event) item;
-				if (event.getTrack_id() == -1){
+				mEvent = (Event) item;
+				if (mEvent.getTrack_id() == -1){
 					return;// ignore clicks on non-events
 				}
 				Context context = getApplicationContext();
 				//only set color if event has track_id
-				if(event.getTrack_id() != -1)
-					if(mTracks.containsKey(event.getTrack_id()))
-						mHeader.setBackgroundColor(mTracks.get(event.getTrack_id()).getColor());
+				if(mEvent.getTrack_id() != -1)
+					if(mTracks.containsKey(mEvent.getTrack_id()))
+						mHeader.setBackgroundColor(mTracks.get(mEvent.getTrack_id()).getColor());
 					else //Use default track
 						mHeader.setBackgroundColor(new Track().getColor());
-				mTitle.setText(event.getEvent_title());
-				mRoom_title.setText(event.getRoom_title());
+				mTitle.setText(mEvent.getEvent_title());
+				mRoom_title.setText(mEvent.getRoom_title());
 				DateFormat startFormat = new SimpleDateFormat("E, h:mm");
 				DateFormat endFormat = new SimpleDateFormat("h:mm a");
-				String timeString = startFormat.format(event.getStart_time()) + " - " + endFormat.format(event.getEnd_time());
+				String timeString = startFormat.format(mEvent.getStart_time()) + " - " + endFormat.format(mEvent.getEnd_time());
 				mTime.setText(timeString);
 				//TODO Fix for multiple speakers
 				
 				Speaker sp = new Speaker();
-				Log.d("EVENT NULL", ""+event.getEvent_id());
+				Log.d("EVENT NULL", ""+mEvent.getEvent_id());
 				
-				if(mSpeakers.containsKey(Integer.parseInt(event.getSpeaker_ids()[0])))
-					sp = mSpeakers.get(Integer.parseInt(event.getSpeaker_ids()[0]));
+				if(mSpeakers.containsKey(Integer.parseInt(mEvent.getSpeaker_ids()[0])))
+					sp = mSpeakers.get(Integer.parseInt(mEvent.getSpeaker_ids()[0]));
 				else //Use default speaker
 					sp = new Speaker();
         		
         			
 
         		if(sp!=null){
-        			if(!event.getPresenter().equals("null"))
-        				mSpeaker.setText(event.getPresenter());
+        			if(!mEvent.getPresenter().equals("null"))
+        				mSpeaker.setText(mEvent.getPresenter());
         			else
         				mSpeaker.setText(sp.getFullname());
-        			if(mTracks.containsKey(event.getTrack_id()))
-        				mTimeLocation.setBackgroundColor(mTracks.get(event.getTrack_id()).getColor());
+        			if(mTracks.containsKey(mEvent.getTrack_id()))
+        				mTimeLocation.setBackgroundColor(mTracks.get(mEvent.getTrack_id()).getColor());
         			else //Use default track
         				mTimeLocation.setBackgroundColor(new Track().getColor());
-        			mDescription.setText(event.getDescription());
+        			mDescription.setText(mEvent.getDescription());
         			show_description();
 					mDescriptionScroller.scrollTo(0, 0);
 					mFlipper.setInAnimation(mInRight);
 					mFlipper.setOutAnimation(mOutLeft);
 					mFlipper.showNext();
-					mSpeakerIds = event.getSpeaker_ids();
 					mDetail = true;
 				} else { 
 					//TODO remove hardcoded string
@@ -448,7 +444,7 @@ public class Schedule extends Activity {
 		final StateChangeData data = new StateChangeData(DAYS, calendar.getEvents(),
 				mSpeakers, mTracks, mCurrentDate, mDescription.getVisibility(),
 				mBio.getVisibility(), mDetail, mFlipper.getDisplayedChild(),
-				mSpeakerIds);
+				mEvent);
 		return data;
 	}
 	
@@ -558,7 +554,7 @@ public class Schedule extends Activity {
 		boolean display = true;
 		String error = "none";
 		mBio.removeAllViews();
-		String[] speaker_ids = mSpeakerIds;
+		String[] speaker_ids = mEvent.getSpeaker_ids();
 		
 		
 		if (speaker_ids != null) {
@@ -1145,19 +1141,19 @@ public class Schedule extends Activity {
 				DataBaseHandler db = new DataBaseHandler(getApplicationContext());
 				long size = db.numRows("SCHEDULE");
 				for(int i=0; i<size; i++){
-					Event event = getSchedule(""+i, getApplicationContext());
+					mEvent = getSchedule(""+i, getApplicationContext());
 					
-					if(event != null){
-						events.add(event);
+					if(mEvent != null){
+						events.add(mEvent);
 
 						//If no days then add the first
 						if(DAYS.isEmpty())
-							DAYS.add(event.getStart_time());
+							DAYS.add(mEvent.getStart_time());
 						//if the event date is after the last added days date then add the day
-						Log.d("event.date",""+event.getStart_time().getDate());
+						Log.d("event.date",""+mEvent.getStart_time().getDate());
 						Log.d("Last added date", ""+DAYS.get(DAYS.size() - 1).getDate());
-						if(event.getStart_time().getDate() > (DAYS.get(DAYS.size() - 1).getDate())){
-							DAYS.add(event.getStart_time());
+						if(mEvent.getStart_time().getDate() > (DAYS.get(DAYS.size() - 1).getDate())){
+							DAYS.add(mEvent.getStart_time());
 						}
 						
 					}

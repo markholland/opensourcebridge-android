@@ -17,12 +17,12 @@ public class StateChangeData {
 	private int mBioVisibility;
 	private boolean mDetail;
 	private int flipperTab;
-	private String[] mSpeakerIds;
+	private Event mEvent;
 	
 	public StateChangeData(ArrayList<Date> DAYS, ArrayList<Event> mEvents, 
 			HashMap<Integer, Speaker> mSpeakers, HashMap<Integer, Track> mTracks,
 			Date mCurrentDate, int mDescriptionVisibility, int mBioVisibility,
-			boolean mDetail, int flipperTab, String[] mSpeakerIds){
+			boolean mDetail, int flipperTab, Event mEvent){
 		
 		this.DAYS = DAYS;
 		this.mEvents = mEvents;
@@ -33,7 +33,7 @@ public class StateChangeData {
 		this.mBioVisibility = mBioVisibility;
 		this.mDetail = mDetail;
 		this.flipperTab = flipperTab;
-		this.mSpeakerIds = mSpeakerIds;
+		this.mEvent = mEvent;
 		
 	}
 
@@ -83,10 +83,9 @@ public class StateChangeData {
 		return flipperTab;
 	}
 
-	public String[] getmSpeakerIds() {
-		return mSpeakerIds;
+
+	public Event getmEvent() {
+		return mEvent;
 	}
-
 	
-
 }

@@ -33,7 +33,7 @@ public class Event {
 	}
 	
 	public Event(int event_id, String event_title, Date start_time,
-  			Date end_time, String description, String room_title, int track_id, String[] speaker_ids,
+  			Date end_time, String description, String room_title, String track_id, String[] speaker_ids,
   			String presenter){
 		
 		this.event_id = event_id;
@@ -42,7 +42,7 @@ public class Event {
 		this.start_time = start_time;
 		this.end_time = end_time;
 		this.room_title = room_title;
-		this.track_id = track_id;
+		this.track_id = Integer.parseInt(track_id);
 		this.speaker_ids = speaker_ids;
 		this.presenter = presenter;
 	}

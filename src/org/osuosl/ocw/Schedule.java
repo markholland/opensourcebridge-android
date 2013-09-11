@@ -108,8 +108,8 @@ public class Schedule extends Activity {
 	
     // session details
     Event mEvent = null; // Used to manipulate the selected event in the list
-    HashMap<Integer, Speaker> mSpeakers;
-    HashMap<Integer, Track> mTracks;
+    HashMap<Integer, Speaker> mSpeakers;  //Stores the conference speakers in memory
+    HashMap<Integer, Track> mTracks;      //Stores the tracks in memory
     View mHeader;
     TextView mTitle;
     TextView mTime;
@@ -125,6 +125,7 @@ public class Schedule extends Activity {
     Button mShowDescription;
     Button mShowBio;
     
+    // URLs for the JSON files
     private static final String SCHEDULE_URI = "http://www.partiallogic.com/gsoc2013/schedule.json";
     private static final String TRACKS_URI = "http://www.partiallogic.com/gsoc2013/tracks.json";
     private static final String SPEAKER_URI = "http://www.partiallogic.com/gsoc2013/speakers.json";
@@ -133,10 +134,10 @@ public class Schedule extends Activity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        setContentView(R.layout.main);  
         mHandler = new Handler();
         
-        toast = Toast.makeText(getBaseContext(), "", Toast.LENGTH_SHORT);
+        toast = Toast.makeText(getBaseContext(), "", Toast.LENGTH_SHORT);  // Instantiate the toast in order to change its text and show when needed.
         
         mFlipper = (ViewFlipper) findViewById(R.id.flipper);
         mDate = (TextView) findViewById(R.id.date);
@@ -169,14 +170,14 @@ public class Schedule extends Activity {
         // Get saved data if destroyed
         data = (StateChangeData) getLastNonConfigurationInstance();
         
-        // No saved data, run app as normal
+        // No saved data, run app as normal so we need to instantiate some variables that will have values assigned when data is pulled from server/database
         if( data == null){
         	
         	mSpeakers = new HashMap<Integer, Speaker>();
         	mTracks = new HashMap<Integer, Track>();
         	DAYS = new ArrayList<Date>();
         	calendar = new ICal();
-        	mCurrentDate = null;
+        	mCurrentDate = new Date(1900, 0, 0);
         
         // Saved data available, load it instead of from json/db
         } else {
@@ -955,9 +956,9 @@ public class Schedule extends Activity {
 			if (raw_json.equals("database")){
 				DataBaseHandler db = new DataBaseHandler(getApplicationContext());
 				long size = db.numRows("TRACKS");
-				for(int i=0; i<size; i++){
+				for(int i=1; i<=size; i++){
 					Track track = new Track();
-
+					Log.d("Track Row", ""+i);
 					track = getTrack(""+i, getApplicationContext());
 					
 					mTracks.put(track.getTrack_id(), track);
@@ -1140,7 +1141,7 @@ public class Schedule extends Activity {
 			if (raw_json.equals("database")){
 				DataBaseHandler db = new DataBaseHandler(getApplicationContext());
 				long size = db.numRows("SCHEDULE");
-				for(int i=0; i<size; i++){
+				for(int i=1; i<=size; i++){
 					mEvent = getSchedule(""+i, getApplicationContext());
 					
 					if(mEvent != null){

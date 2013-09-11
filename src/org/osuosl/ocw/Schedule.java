@@ -194,36 +194,34 @@ public class Schedule extends Activity {
         	
         	// Was looking at an event when destroyed so load it.
         	if(mDetail) {
-        		if(mTracks.containsKey(mEvent.getTrack_id()))
+        		if(mTracks.containsKey(mEvent.getTrack_id())) // If referenced track exists
         			mHeader.setBackgroundColor(mTracks.get(mEvent.getTrack_id()).getColor());
-        		else //Use default track
+        		else // Otherwise use default track
         			mHeader.setBackgroundColor(new Track().getColor());
         		mTitle.setText(mEvent.getEvent_title());
         		mRoom_title.setText(mEvent.getRoom_title());
+        		// Create format for displaying start/end times
         		DateFormat startFormat = new SimpleDateFormat("E, h:mm");
         		DateFormat endFormat = new SimpleDateFormat("h:mm a");
         		String timeString = startFormat.format(mEvent.getStart_time()) + " - " + endFormat.format(mEvent.getEnd_time());
         		mTime.setText(timeString);
         		
-        			
         		Speaker sp = new Speaker();
-        		if(mSpeakers.containsKey(Integer.parseInt(mEvent.getSpeaker_ids()[0])))
+        		if(mSpeakers.containsKey(Integer.parseInt(mEvent.getSpeaker_ids()[0])))  // If first speaker exists
         			sp = mSpeakers.get(Integer.parseInt(mEvent.getSpeaker_ids()[0]));
-        		else //Use default speaker
-        			sp = new Speaker();
+        		// Otherwise default speaker is used
         			
 
         		if(sp!=null){
-        			if(!mEvent.getPresenter().equals("null"))
+        			if(!mEvent.getPresenter().equals("null")) // If presenter exists
         				mSpeaker.setText(mEvent.getPresenter());
-        			else
+        			else 									  // Otherwise use speaker 
         				mSpeaker.setText(sp.getFullname());
         			if(mTracks.containsKey(mEvent.getTrack_id()))
         				mTimeLocation.setBackgroundColor(mTracks.get(mEvent.getTrack_id()).getColor());
         			else //Use default track
         				mTimeLocation.setBackgroundColor(new Track().getColor());
         			mDescription.setText(mEvent.getDescription());
-        			
         		}
         		
         		mFlipper.setDisplayedChild(flipperTab);
@@ -242,7 +240,7 @@ public class Schedule extends Activity {
         
         mEvents.setOnItemClickListener(new ListView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapterview, View view, int position, long id) {
-				//Remove toast if showing
+				//Remove toast if shown
 				toast.cancel();
 
 				
@@ -254,7 +252,6 @@ public class Schedule extends Activity {
 				if (mEvent.getTrack_id() == -1){
 					return;// ignore clicks on non-events
 				}
-				Context context = getApplicationContext();
 				//only set color if event has track_id
 				if(mEvent.getTrack_id() != -1)
 					if(mTracks.containsKey(mEvent.getTrack_id()))
@@ -270,15 +267,10 @@ public class Schedule extends Activity {
 				//TODO Fix for multiple speakers
 				
 				Speaker sp = new Speaker();
-				Log.d("EVENT NULL", ""+mEvent.getEvent_id());
-				
-				if(mSpeakers.containsKey(Integer.parseInt(mEvent.getSpeaker_ids()[0])))
+				if(mSpeakers.containsKey(Integer.parseInt(mEvent.getSpeaker_ids()[0]))) // If first speaker exists
 					sp = mSpeakers.get(Integer.parseInt(mEvent.getSpeaker_ids()[0]));
-				else //Use default speaker
-					sp = new Speaker();
-        		
-        			
-
+				//Otherwise use default speaker
+					
         		if(sp!=null){
         			if(!mEvent.getPresenter().equals("null"))
         				mSpeaker.setText(mEvent.getPresenter());
@@ -348,10 +340,9 @@ public class Schedule extends Activity {
         mHandler.post(new Runnable() {
         	public void run() { 
         		
-        		
+        		//TODO run as asynctask
         		loadSchedule(false);
         		setAdapter();
-        		
         		
         		// If not on an event 
         		if(!mDetail){
@@ -369,8 +360,7 @@ public class Schedule extends Activity {
         	}
 		});
     
-        DataBaseHandler db = new DataBaseHandler(context);
-    
+       
     }//end onCreate
 	
 	
@@ -381,11 +371,9 @@ public class Schedule extends Activity {
 		// if not an orientation switch
 		if(data == null){
 			
+			// Check that we have timeouts and last updated variables available
 			if(!getPref(SCHEDULE_UPDATED).equals("") && !getPref(SCHEDULE_TIMEOUT).equals("")){
-				
-				Log.d("LASTUPDATED+TIMEOUT",""+(Long.parseLong(getPref(SCHEDULE_UPDATED))
-						+Long.parseLong(getPref(SCHEDULE_TIMEOUT))));
-				Log.d("CURRENTTIME",""+System.currentTimeMillis());
+				//Check if the timeout has been hit
 				if((Long.parseLong(getPref(SCHEDULE_UPDATED))
 						+Long.parseLong(getPref(SCHEDULE_TIMEOUT))) < System.currentTimeMillis()){
 					parseProposals(true);
@@ -397,7 +385,9 @@ public class Schedule extends Activity {
 				}
 			}
 
+			// Check that we have timeouts and last updated variables available
 			if(!getPref(SPEAKERS_UPDATED).equals("") && !getPref(SPEAKERS_TIMEOUT).equals(""))
+				//Check if the timeout has been hit
 				if((Long.parseLong(getPref(SPEAKERS_UPDATED))
 						+Long.parseLong(getPref(SPEAKERS_TIMEOUT))) < System.currentTimeMillis()){
 					loadSpeakers(true);
@@ -407,7 +397,9 @@ public class Schedule extends Activity {
 					showList();
 				}
 
+			// Check that we have timeouts and last updated variables available
 			if(!getPref(TRACKS_UPDATED).equals("") && !getPref(TRACKS_TIMEOUT).equals(""))
+				//Check if the timeout has been hit
 				if((Long.parseLong(getPref(TRACKS_UPDATED))
 						+Long.parseLong(getPref(TRACKS_TIMEOUT))) < System.currentTimeMillis()){
 					loadTracks(true);
@@ -457,12 +449,10 @@ public class Schedule extends Activity {
 //		Integer id = new Integer(sid);
 		Speaker speaker = new Speaker();
 		View view = null;
-		// check memory to see if speaker had already been loaded
-		// else load the speaker from persistent storage
+		// Check memory to see if speaker had already been loaded
 		if (mSpeakers.containsKey(id))
 			speaker = mSpeakers.get(id);
-		else
-			speaker = new Speaker();
+		// Otherwise use default speaker
 		
 		// create view
 		if (speaker != null) {
@@ -533,7 +523,7 @@ public class Schedule extends Activity {
 	
 	
 	/**
-	 * Shows the session description, hides all other subviews
+	 * Shows the session description, hides all other sub views
 	 */
 	private void show_description(){
 		mBio.setVisibility(View.GONE);
@@ -545,6 +535,7 @@ public class Schedule extends Activity {
 	 */
 	private String show_bio(){
 		boolean display = true;
+		//TODO remove hardcoded string
 		String error = "none";
 		mBio.removeAllViews();
 		String[] speaker_ids = mEvent.getSpeaker_ids();
@@ -552,26 +543,24 @@ public class Schedule extends Activity {
 		
 		if (speaker_ids != null) {
 			for (int i=0; i<speaker_ids.length; i++) {
-//				try {
-					View view = loadBioView(Integer.parseInt(speaker_ids[i]));
-					if (view != null) {
-						if (i>0){
-							view.setPadding(0, 30, 0, 0);
-						}
-						mBio.addView(view);
-					} else {
-						//bio not yet downloaded
-						display = false;
-						error = "The speakers for this event haven't been downloaded yet";
-						
+
+				View view = loadBioView(Integer.parseInt(speaker_ids[i]));
+				if (view != null) {
+					if (i>0){
+						view.setPadding(0, 30, 0, 0);
 					}
-//				} catch (JSONException e) {
-//					e.printStackTrace();
-//				}
+					mBio.addView(view);
+				} else {
+					// bio not yet downloaded
+					display = false;
+					//TODO Remove hardcoded string
+					error = "The speakers for this event haven't been downloaded yet";
+				}
 			}
 		} else { 
 			// Event doesn't have any speakers
 			display = false;
+			//TODO Remove hardcoded string
 			error = "This event doesn't have any speakers";
 			
 		}
@@ -585,8 +574,6 @@ public class Schedule extends Activity {
 	
 	/* sets the current day, filtering the list if need be */
 	public void setDay(Date date) {
-		Log.d("DATE", ""+date);
-		Log.d("MCURRENTDATE", ""+mCurrentDate);
 		if (isSameDay(mCurrentDate, date)) {
 			// same day, just jump to current time
 			mAdapter.now(date);
@@ -598,8 +585,7 @@ public class Schedule extends Activity {
 			mDate.setText(this.getDayAsString(mCurrentDate));
 		} 
 		
-		// take user back to the listings if not already there 
-		showList();
+		
 	}
 	
 	/**
@@ -617,10 +603,12 @@ public class Schedule extends Activity {
 
 			if (now.before(DAYS.get(0)) || now.after(DAYS.get(DAYS.size() - 1))) {
 				setDay(DAYS.get(0));
+				showList();
 			} else {
 				// use now, since it will have the time of day for 
 				// jumping to the right time
 				setDay(now);
+				showList();
 			}
 			
 		} else {
@@ -651,7 +639,7 @@ public class Schedule extends Activity {
 			toast.show();
 			
 		}
-		
+		showList();
 	}
 	
 	/**
@@ -671,7 +659,7 @@ public class Schedule extends Activity {
 			toast.setText("No more days");
 			toast.show();
 		}
-		
+		showList();
 	}
 	
 	/**
@@ -758,6 +746,7 @@ public class Schedule extends Activity {
 		if(id >= 1) {
 			//submenu id starts at 1 when days start at 0 hence "id-1"
 	    	setDay(DAYS.get(id-1));
+	    	showList();
 	    	return true;
 		}
 	    

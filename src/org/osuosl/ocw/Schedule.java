@@ -177,7 +177,10 @@ public class Schedule extends Activity {
         	
         	// Was looking at an event when destroyed so load it.
         	if(mDetail) {
-        		mHeader.setBackgroundColor(mTracks.get(event.getTrack_id()).getColor());
+        		if(mTracks.containsKey(event.getTrack_id()))
+        			mHeader.setBackgroundColor(mTracks.get(event.getTrack_id()).getColor());
+        		else //Use default track
+        			mHeader.setBackgroundColor(new Track().getColor());
         		mTitle.setText(event.getEvent_title());
         		mRoom_title.setText(event.getRoom_title());
         		DateFormat startFormat = new SimpleDateFormat("E, h:mm");
@@ -189,13 +192,11 @@ public class Schedule extends Activity {
 //        		if(mSpeakers.get(Integer.parseInt(event.getSpeaker_ids()[0])) == null)
 //        			Speaker sp = loadBio(Integer.parseInt(event.getSpeaker_ids()[0]));
 //        			
-        		Speaker sp = null;
-        		//go through all event speakers
-        		for(int i = 0; i < event.getSpeaker_ids().length; i++){
-        			if(mSpeakers.get(Integer.parseInt(event.getSpeaker_ids()[i])) == null);
-        			sp = loadBio(Integer.parseInt(event.getSpeaker_ids()[i]));
-        			
-        		}
+        		Speaker sp = new Speaker();
+        		if(mSpeakers.containsKey(Integer.parseInt(event.getSpeaker_ids()[0])))
+        			sp = mSpeakers.get(Integer.parseInt(event.getSpeaker_ids()[0]));
+        		else //Use default speaker
+        			sp = new Speaker();
         			
 
         		if(sp!=null){
@@ -237,7 +238,10 @@ public class Schedule extends Activity {
 				Context context = getApplicationContext();
 				//only set color if event has track_id
 				if(event.getTrack_id() != -1)
-					mHeader.setBackgroundColor(mTracks.get(event.getTrack_id()).getColor());
+					if(mTracks.containsKey(event.getTrack_id()))
+						mHeader.setBackgroundColor(mTracks.get(event.getTrack_id()).getColor());
+					else //Use default track
+						mHeader.setBackgroundColor(new Track().getColor());
 				mTitle.setText(event.getEvent_title());
 				mRoom_title.setText(event.getRoom_title());
 				DateFormat startFormat = new SimpleDateFormat("E, h:mm");
@@ -247,13 +251,13 @@ public class Schedule extends Activity {
 				//TODO Fix for multiple speakers
 				Log.d("SPEAKERID",event.getSpeaker_ids()[0]);
 				
-				Speaker sp = null;
-        		//go through all event speakers
-        		for(int i = 0; i < event.getSpeaker_ids().length; i++){
-        			if(mSpeakers.get(Integer.parseInt(event.getSpeaker_ids()[i])) == null);
-        			sp = loadBio(Integer.parseInt(event.getSpeaker_ids()[i]));
-        			
-        		}
+				Speaker sp = new Speaker();
+				Log.d("EVENT NULL", ""+event.getEvent_id());
+
+				if(mSpeakers.containsKey(Integer.parseInt(event.getSpeaker_ids()[0])))
+					sp = mSpeakers.get(Integer.parseInt(event.getSpeaker_ids()[0]));
+				else //Use default speaker
+					sp = new Speaker();
         			
 
         		if(sp!=null){
@@ -261,7 +265,10 @@ public class Schedule extends Activity {
         				mSpeaker.setText(event.getPresenter());
         			else
         				mSpeaker.setText(sp.getFullname());
-        			mTimeLocation.setBackgroundColor(mTracks.get(event.getTrack_id()).getColor());
+        			if(mTracks.containsKey(event.getTrack_id()))
+        				mTimeLocation.setBackgroundColor(mTracks.get(event.getTrack_id()).getColor());
+        			else //Use default track
+        				mTimeLocation.setBackgroundColor(new Track().getColor());
         			mDescription.setText(event.getDescription());
         			show_description();
 					mDescriptionScroller.scrollTo(0, 0);

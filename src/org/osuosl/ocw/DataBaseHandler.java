@@ -1,11 +1,13 @@
 package org.osuosl.ocw;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
@@ -115,6 +117,56 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 		return i;
 	}
 
+	
+	public Long addEvents(ArrayList<Event> mEvents){
+		SQLiteDatabase db = null;
+		Long i = 0l;
+
+		try {
+			db = this.getWritableDatabase();
+			db.beginTransaction();
+			try{
+				for(int j = 0; j < mEvents.size(); j++){
+					ContentValues values = new ContentValues();
+					values.put(KEY_EVENT_ID, mEvents.get(j).getEvent_id());
+					values.put(KEY_TITLE, mEvents.get(j).getEvent_title());
+					values.put(KEY_START, mEvents.get(j).getStart_time().toString());
+					values.put(KEY_END, mEvents.get(j).getEnd_time().toString());
+					values.put(KEY_DESCRIPTION, mEvents.get(j).getDescription());
+					values.put(KEY_ROOM_TITLE, mEvents.get(j).getRoom_title());
+					values.put(KEY_TRACK_ID, mEvents.get(j).getTrack_id());
+
+					String speakerIds = "";
+					if(mEvents.get(j).getSpeaker_ids() != null){
+						speakerIds = convertArrayToString(mEvents.get(j).getSpeaker_ids());
+						values.put(KEY_SPEAKER_IDS, speakerIds);
+					}
+
+					values.put(KEY_PRESENTER, mEvents.get(j).getPresenter());
+
+					// adding row
+					i = db.insert(SCHEDULE_TABLE_NAME, null, values);
+				}
+				db.setTransactionSuccessful();
+
+			} catch(Exception e){
+				db.endTransaction();
+				throw e;
+			}
+
+			db.endTransaction();
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		finally{
+			db.close();
+		}
+		return i;
+	}
+	
 	/**
 	 * Adds a new row(Speaker) to the speakers database table.
 	 * @param speaker Speaker to add.
@@ -162,6 +214,51 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 		return i;
 	}
 	
+	
+	
+	public Long addSpeakers(ArrayList<Speaker> speakers){
+		SQLiteDatabase db = null;
+		Long i = 0l;
+
+		try {
+			db = this.getWritableDatabase();
+
+			db.beginTransaction();
+			try{
+				
+				for(int j = 0; j < speakers.size(); j++){
+					ContentValues values = new ContentValues();
+					values.put(KEY_SPEAKER_ID, speakers.get(j).getSpeaker_id());
+					values.put(KEY_NAME, speakers.get(j).getFullname());
+					values.put(KEY_BIO, speakers.get(j).getBiography());
+					values.put(KEY_AFFILIATION, speakers.get(j).getAffiliation());
+					values.put(KEY_TWITTER, speakers.get(j).getTwitter());
+					values.put(KEY_EMAIL, speakers.get(j).getEmail());
+					values.put(KEY_WEBSITE, speakers.get(j).getWebsite());
+					values.put(KEY_BLOG, speakers.get(j).getBlog());
+					values.put(KEY_LINKEDIN, speakers.get(j).getLinkedin());
+					//adding row
+					i = db.insert(SPEAKERS_TABLE_NAME, null, values);
+				}
+				
+				db.setTransactionSuccessful();
+
+			} catch(Exception e){
+				db.endTransaction();
+				throw e;
+			}
+			db.endTransaction();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		finally{
+			db.close();
+		}
+		return i;
+	}
+	
 	/**
 	 * Adds a new row(Track) to the tracks database table.
 	 * @param track Track to add.
@@ -186,6 +283,45 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 				//adding row
 				i = db.insert(TRACKS_TABLE_NAME, null, values);
 
+				db.setTransactionSuccessful();
+
+			} catch(Exception e){
+				db.endTransaction();
+				throw e;
+			}
+			db.endTransaction();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		finally{
+			db.close();
+		}
+		return i;
+	}
+	
+	public Long addTracks(ArrayList<Track> tracks){
+		SQLiteDatabase db = null;
+		Long i = 0l;
+
+		try {
+			db = this.getWritableDatabase();
+
+			db.beginTransaction();
+			
+			try{
+				for(int j = 0; j < tracks.size(); j++){
+					ContentValues values = new ContentValues();
+					values.put(KEY_TRACK_ID, tracks.get(j).getTrack_id());
+					values.put(KEY_TRACK_TITLE, tracks.get(j).getTrack_title());
+					values.put(KEY_COLOR, tracks.get(j).getColor());
+					values.put(KEY_COLOR_TEXT, tracks.get(j).getColor_text());
+
+					//adding row
+					i = db.insert(TRACKS_TABLE_NAME, null, values);
+				}
+				
 				db.setTransactionSuccessful();
 
 			} catch(Exception e){

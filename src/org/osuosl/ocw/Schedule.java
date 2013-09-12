@@ -97,7 +97,7 @@ public class Schedule extends Activity {
 	
 	// session list
 	EventAdapter mAdapter;
-	ListView mEvents;
+	ListView eventsListView;
 	
 	// screen animation
 	ViewFlipper mFlipper;
@@ -110,6 +110,7 @@ public class Schedule extends Activity {
     Event mEvent = null; // Used to manipulate the selected event in the list
     HashMap<Integer, Speaker> mSpeakers;  //Stores the conference speakers in memory
     HashMap<Integer, Track> mTracks;      //Stores the tracks in memory
+    
     View mHeader;
     TextView mTitle;
     TextView mTime;
@@ -141,7 +142,7 @@ public class Schedule extends Activity {
         
         mFlipper = (ViewFlipper) findViewById(R.id.flipper);
         mDate = (TextView) findViewById(R.id.date);
-        mEvents = (ListView) findViewById(R.id.events);
+        eventsListView = (ListView) findViewById(R.id.events);
         
         Context context = getApplicationContext();
         mInLeft = AnimationUtils.loadAnimation(context, R.anim.slide_in_left);
@@ -238,7 +239,7 @@ public class Schedule extends Activity {
         
         
         
-        mEvents.setOnItemClickListener(new ListView.OnItemClickListener() {
+        eventsListView.setOnItemClickListener(new ListView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapterview, View view, int position, long id) {
 				//Remove toast if shown
 				toast.cancel();
@@ -855,12 +856,12 @@ public class Schedule extends Activity {
 	//Must be executed following loadSchedule when back on the ui thread
 	private void setAdapter(){
 		mAdapter = new EventAdapter(this, R.layout.listevent, calendar.getEvents());
-        mEvents.setAdapter(mAdapter);
+        eventsListView.setAdapter(mAdapter);
 	}
 	
 	
 	public void loadSpeakers(boolean force){
-
+		
 		Speaker speaker = null;
 
 		try {
@@ -881,7 +882,7 @@ public class Schedule extends Activity {
 			} else if(raw_json.equals("doNothing")) {
 				
 			} else {
-
+				ArrayList<Speaker> speakersList = new ArrayList<Speaker>();
 				JSONObject speakers = new JSONObject(raw_json);
 				
 				String timeout = speakers.getString("timeout");
@@ -920,22 +921,27 @@ public class Schedule extends Activity {
 					}
 
 
-
+					speakersList.add(speaker);
 					mSpeakers.put(speaker.getSpeaker_id(), speaker);
 					// TODO
 					// dont touch database if no internet, database is already loaded
-					if(speakerExists(""+speaker.getSpeaker_id(), getApplicationContext()) == 0){
-						addSpeaker(speaker, getApplicationContext());
-						Log.d("ADDED ROW", "ADDED ROW");
-					}
-					else if(speakerExists(""+speaker.getSpeaker_id(), getApplicationContext()) == 1) {
-						updateSpeaker(speaker, getApplicationContext());
-						Log.d("UPDATED SPEAKER ROW", "UPDATED SPEAKER ROW");
-					}
-					else if(speakerExists(""+speaker.getSpeaker_id(), getApplicationContext()) == -1) {
-						//error checking if exists
-					}
+//					if(speakerExists(""+speaker.getSpeaker_id(), getApplicationContext()) == 0){
+//						addSpeaker(speaker, getApplicationContext());
+//						Log.d("ADDED ROW", "ADDED ROW");
+//					}
+//					else if(speakerExists(""+speaker.getSpeaker_id(), getApplicationContext()) == 1) {
+//						updateSpeaker(speaker, getApplicationContext());
+//						Log.d("UPDATED SPEAKER ROW", "UPDATED SPEAKER ROW");
+//					}
+//					else if(speakerExists(""+speaker.getSpeaker_id(), getApplicationContext()) == -1) {
+//						//error checking if exists
+//					}
 				}
+				
+				if(numRows("SPEAKERS",getApplicationContext()) == 0l){
+					addSpeakers(speakersList,getApplicationContext());
+				}
+				
 				putPref(SPEAKERS_UPDATED,""+System.currentTimeMillis());
 				
 			}
@@ -1260,21 +1266,24 @@ public class Schedule extends Activity {
 
 					Log.d("CURRENT ROW", event.getEvent_title());
 
-					if(eventExists(""+event.getEvent_id(), getApplicationContext()) == 0){
-						addSchedule(event, getApplicationContext());
-						Log.d("ADDED ROW", "ADDED ROW");
-					}
-					else if(eventExists(""+event.getEvent_id(), getApplicationContext()) == 1) {
-						updateSchedule(event, getApplicationContext());
-						Log.d("UPDATED ROW", "UPDATED ROW");
-					}
-					else if(eventExists(""+event.getEvent_id(), getApplicationContext()) == -1) {
-						//error checking if exists
-					}
+//					if(eventExists(""+event.getEvent_id(), getApplicationContext()) == 0){
+//						addSchedule(event, getApplicationContext());
+//						Log.d("ADDED ROW", "ADDED ROW");
+//					}
+//					else if(eventExists(""+event.getEvent_id(), getApplicationContext()) == 1) {
+//						updateSchedule(event, getApplicationContext());
+//						Log.d("UPDATED ROW", "UPDATED ROW");
+//					}
+//					else if(eventExists(""+event.getEvent_id(), getApplicationContext()) == -1) {
+//						//error checking if exists
+//					}
 
 					events.add(event);
 				}
 				
+				if(numRows("SCHEDULE",getApplicationContext()) == 0l){
+					addEvents(events,getApplicationContext());
+				}
 				
 				putPref(SCHEDULE_UPDATED, ""+System.currentTimeMillis());
 				
@@ -1408,7 +1417,7 @@ public class Schedule extends Activity {
 				if (item instanceof Date ){
 					Date slot = (Date) item;
 					if (date.before(slot)) {
-						mEvents.setSelection(i);
+						eventsListView.setSelection(i);
 						return;
 					}
 				} else {
@@ -1416,7 +1425,7 @@ public class Schedule extends Activity {
 					if (event.getEnd_time().after(date)) {
 						// should display the time marker instead of the
 						// session
-						mEvents.setSelection(i-1);
+						eventsListView.setSelection(i-1);
 						return;
 					}
 				}
@@ -1601,8 +1610,25 @@ public class Schedule extends Activity {
   		return db.existsTrack(track_id);
   	}
 	
+  	public static Long numRows(String table, Context context){
+  		DataBaseHandler db = new DataBaseHandler(context);
+  		return db.numRows(table);
+  	}
   	
+  	public static Long addEvents(ArrayList<Event> events, Context context){
+  		DataBaseHandler db = new DataBaseHandler(context);
+  		return db.addEvents(events);
+  	}
+  	
+  	public static Long addSpeakers(ArrayList<Speaker> speakersList, Context context){
+  		DataBaseHandler db = new DataBaseHandler(context);
+  		return db.addSpeakers(speakersList);
+  	}
 
+  	public static Long addTracks(ArrayList<Track> tracks, Context context){
+  		DataBaseHandler db = new DataBaseHandler(context);
+  		return db.addTracks(tracks);
+  	}
   	
 
 }

@@ -29,7 +29,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
 		>
 		 <TextView 
 		    android:text="Twitter:"
-            android:layout_width="60px" 
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="10px"
             android:textColor="#FFF"
@@ -48,7 +48,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
         >
          <TextView 
             android:text="Website:"
-            android:layout_width="60px" 
+            android:layout_width="wrap_content" 
             android:layout_height="wrap_content"
             android:layout_marginRight="10px"
             android:textColor="#FFF"
@@ -67,7 +67,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
         >
          <TextView 
             android:text="Blog:"
-            android:layout_width="60px" 
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="10px"
             android:textColor="#FFF"
@@ -86,7 +86,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
         >
          <TextView 
             android:text="Identica:"
-            android:layout_width="60px" 
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="10px"
             android:textColor="#FFF"

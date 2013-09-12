@@ -340,29 +340,53 @@ public class Schedule extends Activity {
         mHandler.post(new Runnable() {
         	public void run() { 
         		
-        		//TODO run as asynctask
-        		loadSchedule(false);
-        		setAdapter();
-        		
-        		// If not on an event 
-        		if(!mDetail){
-        			// When first launch date is set an impossible date
-        			// in order to force refresh, here we check if it is that date
-        			if(mCurrentDate.equals(new Date(1900, 0, 0)))
-        				now();
-        			// Otherwise our current date was destroyed so we load it
-        			else {
-        				mAdapter.filterDay(mCurrentDate);
-        				mDate.setText(date_formatter.format(mCurrentDate));
-        				showList();
-        			}
-        		}
+        		loadOperation lo = new loadOperation();
+    			lo.execute(false);
+
         	}
 		});
     
        
     }//end onCreate
 	
+	
+	private class loadOperation extends AsyncTask<Boolean, Void, Integer> {
+
+		@Override
+		protected void onPreExecute(){
+			super.onPreExecute();
+			pdia = new ProgressDialog(Schedule.this);
+			//TODO remove hardcoded string
+			pdia.setMessage("Loading...");
+			pdia.show();
+		}
+		
+        @Override
+        protected Integer doInBackground(Boolean... params) {
+                loadSchedule(params[0]);
+                return 1;
+        }        
+
+        @Override
+        protected void onPostExecute(Integer uselessResult) {
+        	pdia.dismiss();
+        	setAdapter();
+        	// If viewing the list of events 
+        	if(!mDetail){
+    			// When first launch date is set an impossible date
+    			// in order to force refresh, here we check if it is that date
+    			if(mCurrentDate.equals(new Date(1900, 0, 0)))
+    				now();
+    				
+    			// Otherwise our current date was destroyed so we load it
+    			else {
+    				mAdapter.filterDay(mCurrentDate);
+    				mDate.setText(date_formatter.format(mCurrentDate));
+    				showList();
+    			}
+    		}
+        }
+	}
 	
 	@Override
     public void onResume() {
@@ -738,7 +762,7 @@ public class Schedule extends Activity {
 			return true;
 		case MENU_REFRESH:
 			refreshOperation ro = new refreshOperation();
-			ro.execute();
+			ro.execute(true);
 			
 			return true;
 	    }
@@ -755,7 +779,7 @@ public class Schedule extends Activity {
 	
 	private ProgressDialog pdia;
 	
-	private class refreshOperation extends AsyncTask<Void, Void, Integer> {
+	private class refreshOperation extends AsyncTask<Boolean, Void, Integer> {
 
 		@Override
 		protected void onPreExecute(){
@@ -766,22 +790,22 @@ public class Schedule extends Activity {
 		}
 		
         @Override
-        protected Integer doInBackground(Void... params) {
-                loadSchedule(true);
+        protected Integer doInBackground(Boolean... params) {
+                loadSchedule(params[0]);
                 return 1;
         }        
 
         @Override
         protected void onPostExecute(Integer uselessResult) {
         	pdia.dismiss();
-        	//setAdapter();
-        	//now();
         	mAdapter.notifyDataSetChanged();
         	mAdapter.filterDay(mCurrentDate);
 			mDate.setText(date_formatter.format(mCurrentDate));
 			showList();
         }
 	}
+	
+	
 	
 	
 	protected Dialog onCreateDialog(int id){

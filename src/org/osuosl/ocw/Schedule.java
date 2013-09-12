@@ -861,7 +861,7 @@ public class Schedule extends Activity {
 	
 	
 	public void loadSpeakers(boolean force){
-
+		
 		Speaker speaker = null;
 
 		try {
@@ -882,7 +882,7 @@ public class Schedule extends Activity {
 			} else if(raw_json.equals("doNothing")) {
 				
 			} else {
-
+				ArrayList<Speaker> speakersList = new ArrayList<Speaker>();
 				JSONObject speakers = new JSONObject(raw_json);
 				
 				String timeout = speakers.getString("timeout");
@@ -921,22 +921,27 @@ public class Schedule extends Activity {
 					}
 
 
-
+					speakersList.add(speaker);
 					mSpeakers.put(speaker.getSpeaker_id(), speaker);
 					// TODO
 					// dont touch database if no internet, database is already loaded
-					if(speakerExists(""+speaker.getSpeaker_id(), getApplicationContext()) == 0){
-						addSpeaker(speaker, getApplicationContext());
-						Log.d("ADDED ROW", "ADDED ROW");
-					}
-					else if(speakerExists(""+speaker.getSpeaker_id(), getApplicationContext()) == 1) {
-						updateSpeaker(speaker, getApplicationContext());
-						Log.d("UPDATED SPEAKER ROW", "UPDATED SPEAKER ROW");
-					}
-					else if(speakerExists(""+speaker.getSpeaker_id(), getApplicationContext()) == -1) {
-						//error checking if exists
-					}
+//					if(speakerExists(""+speaker.getSpeaker_id(), getApplicationContext()) == 0){
+//						addSpeaker(speaker, getApplicationContext());
+//						Log.d("ADDED ROW", "ADDED ROW");
+//					}
+//					else if(speakerExists(""+speaker.getSpeaker_id(), getApplicationContext()) == 1) {
+//						updateSpeaker(speaker, getApplicationContext());
+//						Log.d("UPDATED SPEAKER ROW", "UPDATED SPEAKER ROW");
+//					}
+//					else if(speakerExists(""+speaker.getSpeaker_id(), getApplicationContext()) == -1) {
+//						//error checking if exists
+//					}
 				}
+				
+				if(numRows("SPEAKERS",getApplicationContext()) == 0l){
+					addSpeakers(speakersList,getApplicationContext());
+				}
+				
 				putPref(SPEAKERS_UPDATED,""+System.currentTimeMillis());
 				
 			}
@@ -1261,21 +1266,24 @@ public class Schedule extends Activity {
 
 					Log.d("CURRENT ROW", event.getEvent_title());
 
-					if(eventExists(""+event.getEvent_id(), getApplicationContext()) == 0){
-						addSchedule(event, getApplicationContext());
-						Log.d("ADDED ROW", "ADDED ROW");
-					}
-					else if(eventExists(""+event.getEvent_id(), getApplicationContext()) == 1) {
-						updateSchedule(event, getApplicationContext());
-						Log.d("UPDATED ROW", "UPDATED ROW");
-					}
-					else if(eventExists(""+event.getEvent_id(), getApplicationContext()) == -1) {
-						//error checking if exists
-					}
+//					if(eventExists(""+event.getEvent_id(), getApplicationContext()) == 0){
+//						addSchedule(event, getApplicationContext());
+//						Log.d("ADDED ROW", "ADDED ROW");
+//					}
+//					else if(eventExists(""+event.getEvent_id(), getApplicationContext()) == 1) {
+//						updateSchedule(event, getApplicationContext());
+//						Log.d("UPDATED ROW", "UPDATED ROW");
+//					}
+//					else if(eventExists(""+event.getEvent_id(), getApplicationContext()) == -1) {
+//						//error checking if exists
+//					}
 
 					events.add(event);
 				}
 				
+				if(numRows("SCHEDULE",getApplicationContext()) == 0l){
+					addEvents(events,getApplicationContext());
+				}
 				
 				putPref(SCHEDULE_UPDATED, ""+System.currentTimeMillis());
 				
@@ -1602,8 +1610,25 @@ public class Schedule extends Activity {
   		return db.existsTrack(track_id);
   	}
 	
+  	public static Long numRows(String table, Context context){
+  		DataBaseHandler db = new DataBaseHandler(context);
+  		return db.numRows(table);
+  	}
   	
+  	public static Long addEvents(ArrayList<Event> events, Context context){
+  		DataBaseHandler db = new DataBaseHandler(context);
+  		return db.addEvents(events);
+  	}
+  	
+  	public static Long addSpeakers(ArrayList<Speaker> speakersList, Context context){
+  		DataBaseHandler db = new DataBaseHandler(context);
+  		return db.addSpeakers(speakersList);
+  	}
 
+  	public static Long addTracks(ArrayList<Track> tracks, Context context){
+  		DataBaseHandler db = new DataBaseHandler(context);
+  		return db.addTracks(tracks);
+  	}
   	
 
 }

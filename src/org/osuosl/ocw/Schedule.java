@@ -923,23 +923,13 @@ public class Schedule extends Activity {
 
 					speakersList.add(speaker);
 					mSpeakers.put(speaker.getSpeaker_id(), speaker);
-					// TODO
-					// dont touch database if no internet, database is already loaded
-//					if(speakerExists(""+speaker.getSpeaker_id(), getApplicationContext()) == 0){
-//						addSpeaker(speaker, getApplicationContext());
-//						Log.d("ADDED ROW", "ADDED ROW");
-//					}
-//					else if(speakerExists(""+speaker.getSpeaker_id(), getApplicationContext()) == 1) {
-//						updateSpeaker(speaker, getApplicationContext());
-//						Log.d("UPDATED SPEAKER ROW", "UPDATED SPEAKER ROW");
-//					}
-//					else if(speakerExists(""+speaker.getSpeaker_id(), getApplicationContext()) == -1) {
-//						//error checking if exists
-//					}
+				
 				}
 				
 				if(numRows("SPEAKERS",getApplicationContext()) == 0l){
 					addSpeakers(speakersList,getApplicationContext());
+				} else {
+					updateSpeakers(speakersList,getApplicationContext());
 				}
 				
 				putPref(SPEAKERS_UPDATED,""+System.currentTimeMillis());
@@ -975,6 +965,8 @@ public class Schedule extends Activity {
 			} else if(raw_json.equals("doNothing")) {
 				
 			} else {
+				ArrayList<Track> tracksList = new ArrayList<Track>();
+				
 				JSONObject tracks = new JSONObject(raw_json);
 				
 				String timeout = tracks.getString("timeout");
@@ -1003,19 +995,14 @@ public class Schedule extends Activity {
 
 					Log.d("CURRENT ROW", track.getTrack_title());
 
-					if(trackExists(""+track.getTrack_id(), getApplicationContext()) == 0){
-						addTrack(track, getApplicationContext());
-						Log.d("ADDED ROW", "ADDED ROW");
-					}
-					else if(trackExists(""+track.getTrack_id(), getApplicationContext()) == 1) {
-						updateTrack(track, getApplicationContext());
-						Log.d("UPDATED ROW", "UPDATED ROW");
-					}
-					else if(trackExists(""+track.getTrack_id(), getApplicationContext()) == -1) {
-						//error checking if exists
-					}
-					
+					tracksList.add(track);
 					mTracks.put(track.getTrack_id(), track);
+				}
+				
+				if(numRows("TRACKS",getApplicationContext()) == 0l){
+					addTracks(tracksList,getApplicationContext());
+				} else {
+					updateTracks(tracksList,getApplicationContext());
 				}
 				
 				putPref(TRACKS_UPDATED, ""+System.currentTimeMillis());
@@ -1253,36 +1240,21 @@ public class Schedule extends Activity {
 					}
 					
 					
-					
 					if(json.has("presenter")){
 						event.setPresenter(json.getString("presenter"));
 					} else {
 						event.setPresenter("");
 					}
 					
-					
-					// TODO
-					// dont touch database if no internet, database is already loaded
-
 					Log.d("CURRENT ROW", event.getEvent_title());
-
-//					if(eventExists(""+event.getEvent_id(), getApplicationContext()) == 0){
-//						addSchedule(event, getApplicationContext());
-//						Log.d("ADDED ROW", "ADDED ROW");
-//					}
-//					else if(eventExists(""+event.getEvent_id(), getApplicationContext()) == 1) {
-//						updateSchedule(event, getApplicationContext());
-//						Log.d("UPDATED ROW", "UPDATED ROW");
-//					}
-//					else if(eventExists(""+event.getEvent_id(), getApplicationContext()) == -1) {
-//						//error checking if exists
-//					}
 
 					events.add(event);
 				}
 				
 				if(numRows("SCHEDULE",getApplicationContext()) == 0l){
 					addEvents(events,getApplicationContext());
+				} else {
+					updateEvents(events,getApplicationContext());
 				}
 				
 				putPref(SCHEDULE_UPDATED, ""+System.currentTimeMillis());
@@ -1543,40 +1515,22 @@ public class Schedule extends Activity {
 	//						DATABASE HANDLERS						//
 	//																//
 	
-	
-  	public static void addSchedule(Event ev, Context context){
+  	
+  	public static void updateEvents(ArrayList<Event> events, Context context){
   		DataBaseHandler db = new DataBaseHandler(context);
-  		db.addScheduleRow(ev);
+  		db.updateEvents(events);
   		
   	}
   	
-  	public static void addSpeaker(Speaker sp, Context context){
+  	public static void updateSpeakers(ArrayList<Speaker> speakers, Context context){
   		DataBaseHandler db = new DataBaseHandler(context);
-  		db.addSpeakersRow(sp);
+  		db.updateSpeakers(speakers);
   		
   	}
   	
-  	public static void addTrack(Track tr, Context context){
+  	public static void updateTracks(ArrayList<Track>tracks, Context context){
   		DataBaseHandler db = new DataBaseHandler(context);
-  		db.addTrackRow(tr);
-  		
-  	}
-  	
-  	public static void updateSchedule(Event ev, Context context){
-  		DataBaseHandler db = new DataBaseHandler(context);
-  		db.updateScheduleRow(ev);
-  		
-  	}
-  	
-  	public static void updateSpeaker(Speaker sp, Context context){
-  		DataBaseHandler db = new DataBaseHandler(context);
-  		db.updateSpeakersRow(sp);
-  		
-  	}
-  	
-  	public static void updateTrack(Track tr, Context context){
-  		DataBaseHandler db = new DataBaseHandler(context);
-  		db.updateTracksRow(tr);
+  		db.updateTracks(tracks);
   		
   	}
   	

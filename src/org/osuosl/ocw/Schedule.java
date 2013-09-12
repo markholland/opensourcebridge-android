@@ -97,7 +97,7 @@ public class Schedule extends Activity {
 	
 	// session list
 	EventAdapter mAdapter;
-	ListView mEvents;
+	ListView eventsListView;
 	
 	// screen animation
 	ViewFlipper mFlipper;
@@ -110,6 +110,7 @@ public class Schedule extends Activity {
     Event mEvent = null; // Used to manipulate the selected event in the list
     HashMap<Integer, Speaker> mSpeakers;  //Stores the conference speakers in memory
     HashMap<Integer, Track> mTracks;      //Stores the tracks in memory
+    
     View mHeader;
     TextView mTitle;
     TextView mTime;
@@ -141,7 +142,7 @@ public class Schedule extends Activity {
         
         mFlipper = (ViewFlipper) findViewById(R.id.flipper);
         mDate = (TextView) findViewById(R.id.date);
-        mEvents = (ListView) findViewById(R.id.events);
+        eventsListView = (ListView) findViewById(R.id.events);
         
         Context context = getApplicationContext();
         mInLeft = AnimationUtils.loadAnimation(context, R.anim.slide_in_left);
@@ -238,7 +239,7 @@ public class Schedule extends Activity {
         
         
         
-        mEvents.setOnItemClickListener(new ListView.OnItemClickListener() {
+        eventsListView.setOnItemClickListener(new ListView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapterview, View view, int position, long id) {
 				//Remove toast if shown
 				toast.cancel();
@@ -855,7 +856,7 @@ public class Schedule extends Activity {
 	//Must be executed following loadSchedule when back on the ui thread
 	private void setAdapter(){
 		mAdapter = new EventAdapter(this, R.layout.listevent, calendar.getEvents());
-        mEvents.setAdapter(mAdapter);
+        eventsListView.setAdapter(mAdapter);
 	}
 	
 	
@@ -1408,7 +1409,7 @@ public class Schedule extends Activity {
 				if (item instanceof Date ){
 					Date slot = (Date) item;
 					if (date.before(slot)) {
-						mEvents.setSelection(i);
+						eventsListView.setSelection(i);
 						return;
 					}
 				} else {
@@ -1416,7 +1417,7 @@ public class Schedule extends Activity {
 					if (event.getEnd_time().after(date)) {
 						// should display the time marker instead of the
 						// session
-						mEvents.setSelection(i-1);
+						eventsListView.setSelection(i-1);
 						return;
 					}
 				}

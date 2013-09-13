@@ -16,6 +16,8 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 	private static final String DATABASE_NAME = "ocw";     //Name of the .db file stored on the device
 	private static final int DATABASE_VERSION = 1;		   
 
+	private static DataBaseHandler mInstance = null;
+	
 	// Table names
 	private static final String SCHEDULE_TABLE_NAME = "SCHEDULE";
 	private static final String SPEAKERS_TABLE_NAME = "SPEAKERS";
@@ -59,6 +61,16 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 	private static final String[] GET_SCHEDULE_ROW = new String[]{KEY_EVENT_ID, KEY_TITLE, KEY_START, KEY_END, KEY_DESCRIPTION, KEY_ROOM_TITLE, KEY_TRACK_ID, KEY_SPEAKER_IDS, KEY_PRESENTER};
 	
 
+	public static DataBaseHandler getInstance(Context ctx) {
+	      
+	    // Use the application context, which will ensure that you 
+	    // don't accidentally leak an Activity's context.
+	    // See this article for more information: http://bit.ly/6LRzfx
+	    if (mInstance == null) {
+	      mInstance = new DataBaseHandler(ctx.getApplicationContext());
+	    }
+	    return mInstance;
+	  }
 
 	public DataBaseHandler(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -637,6 +649,33 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 
 		return numRows;
 
+	}
+	
+	public long deleteAllRows(String table_name){
+		SQLiteDatabase db = null;
+		int i = 0;
+		try {
+			db = this.getReadableDatabase();
+			db.beginTransaction();
+			try{
+				String deleteSQL = "DELETE FROM " + table_name;
+				db.execSQL(deleteSQL);
+				db.setTransactionSuccessful();
+			} catch (Exception e){
+				db.endTransaction();
+				throw e;
+			}
+			db.endTransaction();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		finally{
+			db.close();
+		}
+
+		return i;
 	}
 
 	/**

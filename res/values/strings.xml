@@ -15,4 +15,14 @@
     <string name="loading__date_and_location">June 25, 2013 | Wellington, New Zealand</string>
     <string name="app_description">Schedule for the WDCNZ conference in Wellington, New Zealand.</string>
     
+    
+    
+    <!--Bio view labels -->
+    
+    <string name="twitter">Twitter:</string>
+    <string name="website">Website:</string>
+    <string name="blog">Blog:</string>
+    <string name="identica">Identica:</string>
+    
+    
 </resources>

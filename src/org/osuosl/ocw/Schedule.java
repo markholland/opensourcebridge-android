@@ -504,9 +504,12 @@ public class Schedule extends Activity {
 			// Single string variable for all text
 			String textToSet = speaker.getAffiliation();
 			
-			if (textToSet != null){
+			if (textToSet != null && textToSet != ""  && textToSet != "null" && textToSet.length() > 0){
 				TextView text = (TextView) view.findViewById(R.id.affiliation);
 				text.setText(textToSet);
+			} else {
+				TextView text = (TextView) view.findViewById(R.id.affiliation);
+				text.setText("No Affiliation");
 			}
 			
 			textToSet = speaker.getTwitter();

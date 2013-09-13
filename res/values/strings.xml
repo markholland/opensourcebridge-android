@@ -17,12 +17,12 @@
     
     
     
-    <--Bio view labels !-->
+    <!--Bio view labels -->
     
-    <String name="twitter">Twitter:</String>
-    <String name="website">Website:</String>
-    <String name="blog">Blog:</String>
-    <String name="identica">Identica:</String>
+    <string name="twitter">Twitter:</string>
+    <string name="website">Website:</string>
+    <string name="blog">Blog:</string>
+    <string name="identica">Identica:</string>
     
     
 </resources>

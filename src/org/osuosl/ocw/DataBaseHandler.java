@@ -1,11 +1,13 @@
 package org.osuosl.ocw;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
@@ -14,6 +16,8 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 	private static final String DATABASE_NAME = "ocw";     //Name of the .db file stored on the device
 	private static final int DATABASE_VERSION = 1;		   
 
+	private static DataBaseHandler mInstance = null;
+	
 	// Table names
 	private static final String SCHEDULE_TABLE_NAME = "SCHEDULE";
 	private static final String SPEAKERS_TABLE_NAME = "SPEAKERS";
@@ -57,17 +61,24 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 	private static final String[] GET_SCHEDULE_ROW = new String[]{KEY_EVENT_ID, KEY_TITLE, KEY_START, KEY_END, KEY_DESCRIPTION, KEY_ROOM_TITLE, KEY_TRACK_ID, KEY_SPEAKER_IDS, KEY_PRESENTER};
 	
 
+	public static DataBaseHandler getInstance(Context ctx) {
+	      
+	    // Use the application context, which will ensure that you 
+	    // don't accidentally leak an Activity's context.
+	    // See this article for more information: http://bit.ly/6LRzfx
+	    if (mInstance == null) {
+	      mInstance = new DataBaseHandler(ctx.getApplicationContext());
+	    }
+	    return mInstance;
+	  }
 
 	public DataBaseHandler(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 	}
 
-	/**
-	 * Adds a new row(Event) to the schedule database table.
-	 * @param event Event to be added.
-	 * @return Result of inserting the row.
-	 */
-	public Long addScheduleRow(Event event){
+	
+	
+	public Long addEvents(ArrayList<Event> mEvents){
 		SQLiteDatabase db = null;
 		Long i = 0l;
 
@@ -75,26 +86,27 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			db = this.getWritableDatabase();
 			db.beginTransaction();
 			try{
-				ContentValues values = new ContentValues();
-				values.put(KEY_EVENT_ID, event.getEvent_id());
-				values.put(KEY_TITLE, event.getEvent_title());
-				values.put(KEY_START, event.getStart_time().toString());
-				values.put(KEY_END, event.getEnd_time().toString());
-				values.put(KEY_DESCRIPTION, event.getDescription());
-				values.put(KEY_ROOM_TITLE, event.getRoom_title());
-				values.put(KEY_TRACK_ID, event.getTrack_id());
-				
-				String speakerIds = "";
-				if(event.getSpeaker_ids() != null){
-					speakerIds = convertArrayToString(event.getSpeaker_ids());
-					values.put(KEY_SPEAKER_IDS, speakerIds);
-				}
-				
-				values.put(KEY_PRESENTER, event.getPresenter());
-				
-				// adding row
-				i = db.insert(SCHEDULE_TABLE_NAME, null, values);
+				for(int j = 0; j < mEvents.size(); j++){
+					ContentValues values = new ContentValues();
+					values.put(KEY_EVENT_ID, mEvents.get(j).getEvent_id());
+					values.put(KEY_TITLE, mEvents.get(j).getEvent_title());
+					values.put(KEY_START, mEvents.get(j).getStart_time().toString());
+					values.put(KEY_END, mEvents.get(j).getEnd_time().toString());
+					values.put(KEY_DESCRIPTION, mEvents.get(j).getDescription());
+					values.put(KEY_ROOM_TITLE, mEvents.get(j).getRoom_title());
+					values.put(KEY_TRACK_ID, mEvents.get(j).getTrack_id());
 
+					String speakerIds = "";
+					if(mEvents.get(j).getSpeaker_ids() != null){
+						speakerIds = convertArrayToString(mEvents.get(j).getSpeaker_ids());
+						values.put(KEY_SPEAKER_IDS, speakerIds);
+					}
+
+					values.put(KEY_PRESENTER, mEvents.get(j).getPresenter());
+
+					// adding row
+					i = db.insert(SCHEDULE_TABLE_NAME, null, values);
+				}
 				db.setTransactionSuccessful();
 
 			} catch(Exception e){
@@ -114,13 +126,11 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 		}
 		return i;
 	}
-
-	/**
-	 * Adds a new row(Speaker) to the speakers database table.
-	 * @param speaker Speaker to add.
-	 * @return Result of inserting the row.
-	 */
-	public Long addSpeakersRow(Speaker speaker){
+	
+	
+	
+	
+	public Long addSpeakers(ArrayList<Speaker> speakers){
 		SQLiteDatabase db = null;
 		Long i = 0l;
 
@@ -128,22 +138,23 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			db = this.getWritableDatabase();
 
 			db.beginTransaction();
-
 			try{
-				ContentValues values = new ContentValues();
-				values.put(KEY_SPEAKER_ID, speaker.getSpeaker_id());
-				values.put(KEY_NAME, speaker.getFullname());
-				values.put(KEY_BIO, speaker.getBiography());
-				values.put(KEY_AFFILIATION, speaker.getAffiliation());
-				values.put(KEY_TWITTER, speaker.getTwitter());
-				values.put(KEY_EMAIL, speaker.getEmail());
-				values.put(KEY_WEBSITE, speaker.getWebsite());
-				values.put(KEY_BLOG, speaker.getBlog());
-				values.put(KEY_LINKEDIN, speaker.getLinkedin());
-
-				// adding row
-				i = db.insert(SPEAKERS_TABLE_NAME, null, values);
-
+				
+				for(int j = 0; j < speakers.size(); j++){
+					ContentValues values = new ContentValues();
+					values.put(KEY_SPEAKER_ID, speakers.get(j).getSpeaker_id());
+					values.put(KEY_NAME, speakers.get(j).getFullname());
+					values.put(KEY_BIO, speakers.get(j).getBiography());
+					values.put(KEY_AFFILIATION, speakers.get(j).getAffiliation());
+					values.put(KEY_TWITTER, speakers.get(j).getTwitter());
+					values.put(KEY_EMAIL, speakers.get(j).getEmail());
+					values.put(KEY_WEBSITE, speakers.get(j).getWebsite());
+					values.put(KEY_BLOG, speakers.get(j).getBlog());
+					values.put(KEY_LINKEDIN, speakers.get(j).getLinkedin());
+					//adding row
+					i = db.insert(SPEAKERS_TABLE_NAME, null, values);
+				}
+				
 				db.setTransactionSuccessful();
 
 			} catch(Exception e){
@@ -162,12 +173,9 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 		return i;
 	}
 	
-	/**
-	 * Adds a new row(Track) to the tracks database table.
-	 * @param track Track to add.
-	 * @return Result of inserting the row.
-	 */
-	public Long addTrackRow(Track track){
+	
+	
+	public Long addTracks(ArrayList<Track> tracks){
 		SQLiteDatabase db = null;
 		Long i = 0l;
 
@@ -175,17 +183,19 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			db = this.getWritableDatabase();
 
 			db.beginTransaction();
-
+			
 			try{
-				ContentValues values = new ContentValues();
-				values.put(KEY_TRACK_ID, track.getTrack_id());
-				values.put(KEY_TRACK_TITLE, track.getTrack_title());
-				values.put(KEY_COLOR, track.getColor());
-				values.put(KEY_COLOR_TEXT, track.getColor_text());
-				
-				//adding row
-				i = db.insert(TRACKS_TABLE_NAME, null, values);
+				for(int j = 0; j < tracks.size(); j++){
+					ContentValues values = new ContentValues();
+					values.put(KEY_TRACK_ID, tracks.get(j).getTrack_id());
+					values.put(KEY_TRACK_TITLE, tracks.get(j).getTrack_title());
+					values.put(KEY_COLOR, tracks.get(j).getColor());
+					values.put(KEY_COLOR_TEXT, tracks.get(j).getColor_text());
 
+					//adding row
+					i = db.insert(TRACKS_TABLE_NAME, null, values);
+				}
+				
 				db.setTransactionSuccessful();
 
 			} catch(Exception e){
@@ -246,12 +256,8 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 		return i;
 	}
 
-	/**
-	 * Updates an existing row(Event) in the schedule database table.
-	 * @param event Event that has been updated with its updated values.
-	 * @return Result of updating the row.
-	 */
-	public int updateScheduleRow(Event event){
+	
+	public int updateEvents(ArrayList<Event> events){
 		SQLiteDatabase db = null;
 		int i = 0;
 
@@ -260,27 +266,28 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 
 			db.beginTransaction();
 			try{
-				ContentValues values = new ContentValues();
-				values.put(KEY_EVENT_ID, event.getEvent_id());
-				values.put(KEY_TITLE, event.getEvent_title());
-				values.put(KEY_START, event.getStart_time().toString());
-				values.put(KEY_END, event.getEnd_time().toString());
-				values.put(KEY_DESCRIPTION, event.getDescription());
-				values.put(KEY_ROOM_TITLE, event.getRoom_title());
-				values.put(KEY_TRACK_ID, event.getTrack_id());
-				
-				String speakerIds = "";
-				if(event.getSpeaker_ids() != null){
-					speakerIds = convertArrayToString(event.getSpeaker_ids());
-					values.put(KEY_SPEAKER_IDS, speakerIds);
+				for(int j = 0; j < events.size(); j++){
+					ContentValues values = new ContentValues();
+					values.put(KEY_EVENT_ID, events.get(j).getEvent_id());
+					values.put(KEY_TITLE, events.get(j).getEvent_title());
+					values.put(KEY_START, events.get(j).getStart_time().toString());
+					values.put(KEY_END, events.get(j).getEnd_time().toString());
+					values.put(KEY_DESCRIPTION, events.get(j).getDescription());
+					values.put(KEY_ROOM_TITLE, events.get(j).getRoom_title());
+					values.put(KEY_TRACK_ID, events.get(j).getTrack_id());
+
+					String speakerIds = "";
+					if(events.get(j).getSpeaker_ids() != null){
+						speakerIds = convertArrayToString(events.get(j).getSpeaker_ids());
+						values.put(KEY_SPEAKER_IDS, speakerIds);
+					}
+
+					values.put(KEY_PRESENTER, events.get(j).getPresenter());
+
+					// updating row
+					i = db.update(SCHEDULE_TABLE_NAME, values, KEY_EVENT_ID + " = ?",
+							new String[] { String.valueOf(events.get(j).getEvent_id())});
 				}
-				
-				values.put(KEY_PRESENTER, event.getPresenter());
-
-				// updating row
-				i = db.update(SCHEDULE_TABLE_NAME, values, KEY_EVENT_ID + " = ?",
-						new String[] { String.valueOf(event.getEvent_id())});
-
 				db.setTransactionSuccessful();
 
 
@@ -301,12 +308,8 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 		return i;
 	}
 
-	/**
-	 * Updates an existing row(Speaker) in the speakers database table.
-	 * @param speaker Speaker that has been updated with its updated values.
-	 * @return Result of updating the row.
-	 */
-	public int updateSpeakersRow(Speaker speaker){
+	
+	public int updateSpeakers(ArrayList<Speaker> speakers){
 		SQLiteDatabase db = null;
 		int i = 0;
 
@@ -314,20 +317,22 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			db = this.getWritableDatabase();
 			db.beginTransaction();
 			try{
-				ContentValues values = new ContentValues();
-				values.put(KEY_SPEAKER_ID, speaker.getSpeaker_id());
-				values.put(KEY_NAME, speaker.getFullname());
-				values.put(KEY_BIO, speaker.getBiography());
-				values.put(KEY_AFFILIATION, speaker.getAffiliation());
-				values.put(KEY_TWITTER, speaker.getTwitter());
-				values.put(KEY_EMAIL, speaker.getEmail());
-				values.put(KEY_WEBSITE, speaker.getWebsite());
-				values.put(KEY_BLOG, speaker.getBlog());
-				values.put(KEY_LINKEDIN, speaker.getLinkedin());
-				
-				// updating row
-				i = db.update(SPEAKERS_TABLE_NAME, values, KEY_SPEAKER_ID + " = ?",
-						new String[] { String.valueOf(speaker.getSpeaker_id())});
+				for(int j = 0; j < speakers.size(); j++){
+					ContentValues values = new ContentValues();
+					values.put(KEY_SPEAKER_ID, speakers.get(j).getSpeaker_id());
+					values.put(KEY_NAME, speakers.get(j).getFullname());
+					values.put(KEY_BIO, speakers.get(j).getBiography());
+					values.put(KEY_AFFILIATION, speakers.get(j).getAffiliation());
+					values.put(KEY_TWITTER, speakers.get(j).getTwitter());
+					values.put(KEY_EMAIL, speakers.get(j).getEmail());
+					values.put(KEY_WEBSITE, speakers.get(j).getWebsite());
+					values.put(KEY_BLOG, speakers.get(j).getBlog());
+					values.put(KEY_LINKEDIN, speakers.get(j).getLinkedin());
+
+					// updating row
+					i = db.update(SPEAKERS_TABLE_NAME, values, KEY_SPEAKER_ID + " = ?",
+							new String[] { String.valueOf(speakers.get(j).getSpeaker_id())});
+				}
 				db.setTransactionSuccessful();
 				
 			} catch(Exception e){
@@ -346,12 +351,8 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 		return i;
 	}
 	
-	/**
-	 * Updates an existing row(Track) in the tracks database table.
-	 * @param track Track that has been updated with its updated values.
-	 * @return Result of updating the row.
-	 */
-	public int updateTracksRow(Track track){
+	
+	public int updateTracks(ArrayList<Track> tracks){
 		SQLiteDatabase db = null;
 		int i = 0;
 
@@ -359,17 +360,18 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			db = this.getWritableDatabase();
 			db.beginTransaction();
 			try{
-				ContentValues values = new ContentValues();
-				values.put(KEY_TRACK_ID, track.getTrack_id());
-				values.put(KEY_TRACK_TITLE, track.getTrack_title());
-				values.put(KEY_COLOR, track.getColor());
-				values.put(KEY_COLOR_TEXT, track.getColor_text());
-				
+				for(int j = 0; j < tracks.size(); j++){
+					ContentValues values = new ContentValues();
+					values.put(KEY_TRACK_ID, tracks.get(j).getTrack_id());
+					values.put(KEY_TRACK_TITLE, tracks.get(j).getTrack_title());
+					values.put(KEY_COLOR, tracks.get(j).getColor());
+					values.put(KEY_COLOR_TEXT, tracks.get(j).getColor_text());
 
-				// updating row
-				i = db.update(TRACKS_TABLE_NAME, values, KEY_TRACK_ID + " = ?",
-						new String[] { String.valueOf(track.getTrack_id())});
 
+					// updating row
+					i = db.update(TRACKS_TABLE_NAME, values, KEY_TRACK_ID + " = ?",
+							new String[] { String.valueOf(tracks.get(j).getTrack_id())});
+				}
 				db.setTransactionSuccessful();
 
 			} catch(Exception e){
@@ -647,6 +649,33 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 
 		return numRows;
 
+	}
+	
+	public long deleteAllRows(String table_name){
+		SQLiteDatabase db = null;
+		int i = 0;
+		try {
+			db = this.getReadableDatabase();
+			db.beginTransaction();
+			try{
+				String deleteSQL = "DELETE FROM " + table_name;
+				db.execSQL(deleteSQL);
+				db.setTransactionSuccessful();
+			} catch (Exception e){
+				db.endTransaction();
+				throw e;
+			}
+			db.endTransaction();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		finally{
+			db.close();
+		}
+
+		return i;
 	}
 
 	/**

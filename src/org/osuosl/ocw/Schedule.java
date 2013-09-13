@@ -97,7 +97,7 @@ public class Schedule extends Activity {
 	
 	// session list
 	EventAdapter mAdapter;
-	ListView mEvents;
+	ListView eventsListView;
 	
 	// screen animation
 	ViewFlipper mFlipper;
@@ -110,6 +110,7 @@ public class Schedule extends Activity {
     Event mEvent = null; // Used to manipulate the selected event in the list
     HashMap<Integer, Speaker> mSpeakers;  //Stores the conference speakers in memory
     HashMap<Integer, Track> mTracks;      //Stores the tracks in memory
+    
     View mHeader;
     TextView mTitle;
     TextView mTime;
@@ -141,7 +142,7 @@ public class Schedule extends Activity {
         
         mFlipper = (ViewFlipper) findViewById(R.id.flipper);
         mDate = (TextView) findViewById(R.id.date);
-        mEvents = (ListView) findViewById(R.id.events);
+        eventsListView = (ListView) findViewById(R.id.events);
         
         Context context = getApplicationContext();
         mInLeft = AnimationUtils.loadAnimation(context, R.anim.slide_in_left);
@@ -175,7 +176,8 @@ public class Schedule extends Activity {
         	
         	mSpeakers = new HashMap<Integer, Speaker>();
         	mTracks = new HashMap<Integer, Track>();
-        	DAYS = new ArrayList<Date>();
+        	if(DAYS == null || DAYS.isEmpty())
+        		DAYS = new ArrayList<Date>();
         	calendar = new ICal();
         	mCurrentDate = new Date(1900, 0, 0);
         
@@ -238,7 +240,7 @@ public class Schedule extends Activity {
         
         
         
-        mEvents.setOnItemClickListener(new ListView.OnItemClickListener() {
+        eventsListView.setOnItemClickListener(new ListView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapterview, View view, int position, long id) {
 				//Remove toast if shown
 				toast.cancel();
@@ -363,7 +365,19 @@ public class Schedule extends Activity {
 		
         @Override
         protected Integer doInBackground(Boolean... params) {
-                loadSchedule(params[0]);
+                Boolean force = params[0];
+                
+                if(mSpeakers.size() == 0){
+                	loadSpeakers(force);
+                }
+                if(mTracks.size() == 0){
+                	loadTracks(force);
+                }
+                if(DAYS.isEmpty()){
+                	Log.d("HERE","HERE");
+                	parseProposals(force);
+                }
+                
                 return 1;
         }        
 
@@ -762,7 +776,7 @@ public class Schedule extends Activity {
 			return true;
 		case MENU_REFRESH:
 			refreshOperation ro = new refreshOperation();
-			ro.execute(true);
+			ro.execute();
 			
 			return true;
 	    }
@@ -779,7 +793,7 @@ public class Schedule extends Activity {
 	
 	private ProgressDialog pdia;
 	
-	private class refreshOperation extends AsyncTask<Boolean, Void, Integer> {
+	private class refreshOperation extends AsyncTask<Void, Void, Integer> {
 
 		@Override
 		protected void onPreExecute(){
@@ -790,9 +804,13 @@ public class Schedule extends Activity {
 		}
 		
         @Override
-        protected Integer doInBackground(Boolean... params) {
-                loadSchedule(params[0]);
-                return 1;
+        protected Integer doInBackground(Void... params) {
+        	
+        	loadSpeakers(true);
+        	loadTracks(true);
+        	parseProposals(true);
+    		
+            return 1;
         }        
 
         @Override
@@ -834,33 +852,16 @@ public class Schedule extends Activity {
 
 	
 	
-	/**
-	 * Loads the schedule from a combination of ICal and json data
-	 * @param force - force reload
-	 */
-	private void loadSchedule(boolean force) {
-		//XXX set date to a day that is definitely, not now.  
-		if(mTracks.size() == 0 || mSpeakers.size() == 0 || force) {
-			loadSpeakers(force);
-			loadTracks(force);
-			parseProposals(force);
-		} if(!force) { //needs to be fixed, schedule loaded twice
-			//parseProposals(force);
-		}
-		//Days available here
-		Log.d("DAYS", DAYS.toString());
-		
-	}
 	
-	//Must be executed following loadSchedule when back on the ui thread
+	//Must be executed following loading when back on the ui thread if not a refresh
 	private void setAdapter(){
 		mAdapter = new EventAdapter(this, R.layout.listevent, calendar.getEvents());
-        mEvents.setAdapter(mAdapter);
+        eventsListView.setAdapter(mAdapter);
 	}
 	
 	
 	public void loadSpeakers(boolean force){
-
+		
 		Speaker speaker = null;
 
 		try {
@@ -869,7 +870,7 @@ public class Schedule extends Activity {
 			//Log.d("CHECK DATABASE",raw_json);
 			if (raw_json.equals("database")){
 				DataBaseHandler db = new DataBaseHandler(getApplicationContext());
-				Long size = db.numRows("SPEAKERS");
+		  		Long size = db.numRows("SPEAKERS");
 				
 				for(int i = 1; i <= size; i++){
 					speaker = getSpeaker(""+i, getApplicationContext());
@@ -881,7 +882,7 @@ public class Schedule extends Activity {
 			} else if(raw_json.equals("doNothing")) {
 				
 			} else {
-
+				ArrayList<Speaker> speakersList = new ArrayList<Speaker>();
 				JSONObject speakers = new JSONObject(raw_json);
 				
 				String timeout = speakers.getString("timeout");
@@ -919,23 +920,19 @@ public class Schedule extends Activity {
 						speaker.setLinkedin(json.getString("linkedin"));
 					}
 
-
-
+					Log.d("CURRENT ROW", speaker.getFullname());
+					speakersList.add(speaker);
 					mSpeakers.put(speaker.getSpeaker_id(), speaker);
-					// TODO
-					// dont touch database if no internet, database is already loaded
-					if(speakerExists(""+speaker.getSpeaker_id(), getApplicationContext()) == 0){
-						addSpeaker(speaker, getApplicationContext());
-						Log.d("ADDED ROW", "ADDED ROW");
-					}
-					else if(speakerExists(""+speaker.getSpeaker_id(), getApplicationContext()) == 1) {
-						updateSpeaker(speaker, getApplicationContext());
-						Log.d("UPDATED SPEAKER ROW", "UPDATED SPEAKER ROW");
-					}
-					else if(speakerExists(""+speaker.getSpeaker_id(), getApplicationContext()) == -1) {
-						//error checking if exists
-					}
+				
 				}
+				
+				if(numRows("SPEAKERS",getApplicationContext()) == 0l){
+					addSpeakers(speakersList,getApplicationContext());
+				} else {
+					deleteAllRows("SPEAKERS",getApplicationContext());
+					addSpeakers(speakersList,getApplicationContext());
+				}
+				
 				putPref(SPEAKERS_UPDATED,""+System.currentTimeMillis());
 				
 			}
@@ -969,6 +966,8 @@ public class Schedule extends Activity {
 			} else if(raw_json.equals("doNothing")) {
 				
 			} else {
+				ArrayList<Track> tracksList = new ArrayList<Track>();
+				
 				JSONObject tracks = new JSONObject(raw_json);
 				
 				String timeout = tracks.getString("timeout");
@@ -997,19 +996,15 @@ public class Schedule extends Activity {
 
 					Log.d("CURRENT ROW", track.getTrack_title());
 
-					if(trackExists(""+track.getTrack_id(), getApplicationContext()) == 0){
-						addTrack(track, getApplicationContext());
-						Log.d("ADDED ROW", "ADDED ROW");
-					}
-					else if(trackExists(""+track.getTrack_id(), getApplicationContext()) == 1) {
-						updateTrack(track, getApplicationContext());
-						Log.d("UPDATED ROW", "UPDATED ROW");
-					}
-					else if(trackExists(""+track.getTrack_id(), getApplicationContext()) == -1) {
-						//error checking if exists
-					}
-					
+					tracksList.add(track);
 					mTracks.put(track.getTrack_id(), track);
+				}
+				
+				if(numRows("TRACKS",getApplicationContext()) == 0l){
+					addTracks(tracksList,getApplicationContext());
+				} else {
+					deleteAllRows("TRACKS",getApplicationContext());
+					addTracks(tracksList,getApplicationContext());
 				}
 				
 				putPref(TRACKS_UPDATED, ""+System.currentTimeMillis());
@@ -1247,34 +1242,23 @@ public class Schedule extends Activity {
 					}
 					
 					
-					
 					if(json.has("presenter")){
 						event.setPresenter(json.getString("presenter"));
 					} else {
 						event.setPresenter("");
 					}
 					
-					
-					// TODO
-					// dont touch database if no internet, database is already loaded
-
 					Log.d("CURRENT ROW", event.getEvent_title());
-
-					if(eventExists(""+event.getEvent_id(), getApplicationContext()) == 0){
-						addSchedule(event, getApplicationContext());
-						Log.d("ADDED ROW", "ADDED ROW");
-					}
-					else if(eventExists(""+event.getEvent_id(), getApplicationContext()) == 1) {
-						updateSchedule(event, getApplicationContext());
-						Log.d("UPDATED ROW", "UPDATED ROW");
-					}
-					else if(eventExists(""+event.getEvent_id(), getApplicationContext()) == -1) {
-						//error checking if exists
-					}
 
 					events.add(event);
 				}
 				
+				if(numRows("SCHEDULE",getApplicationContext()) == 0l){
+					addEvents(events,getApplicationContext());
+				} else {
+					deleteAllRows("SCHEDULE", getApplicationContext());
+					addEvents(events,getApplicationContext());
+				}
 				
 				putPref(SCHEDULE_UPDATED, ""+System.currentTimeMillis());
 				
@@ -1408,7 +1392,7 @@ public class Schedule extends Activity {
 				if (item instanceof Date ){
 					Date slot = (Date) item;
 					if (date.before(slot)) {
-						mEvents.setSelection(i);
+						eventsListView.setSelection(i);
 						return;
 					}
 				} else {
@@ -1416,7 +1400,7 @@ public class Schedule extends Activity {
 					if (event.getEnd_time().after(date)) {
 						// should display the time marker instead of the
 						// session
-						mEvents.setSelection(i-1);
+						eventsListView.setSelection(i-1);
 						return;
 					}
 				}
@@ -1534,41 +1518,20 @@ public class Schedule extends Activity {
 	//						DATABASE HANDLERS						//
 	//																//
 	
+  	
+	public static Long addEvents(ArrayList<Event> events, Context context){
+		DataBaseHandler db = new DataBaseHandler(context);
+  		return db.addEvents(events);
+  	}
 	
-  	public static void addSchedule(Event ev, Context context){
-  		DataBaseHandler db = new DataBaseHandler(context);
-  		db.addScheduleRow(ev);
-  		
+	public static Long addSpeakers(ArrayList<Speaker> speakersList, Context context){
+		DataBaseHandler db = new DataBaseHandler(context);
+  		return db.addSpeakers(speakersList);
   	}
-  	
-  	public static void addSpeaker(Speaker sp, Context context){
+
+  	public static Long addTracks(ArrayList<Track> tracks, Context context){
   		DataBaseHandler db = new DataBaseHandler(context);
-  		db.addSpeakersRow(sp);
-  		
-  	}
-  	
-  	public static void addTrack(Track tr, Context context){
-  		DataBaseHandler db = new DataBaseHandler(context);
-  		db.addTrackRow(tr);
-  		
-  	}
-  	
-  	public static void updateSchedule(Event ev, Context context){
-  		DataBaseHandler db = new DataBaseHandler(context);
-  		db.updateScheduleRow(ev);
-  		
-  	}
-  	
-  	public static void updateSpeaker(Speaker sp, Context context){
-  		DataBaseHandler db = new DataBaseHandler(context);
-  		db.updateSpeakersRow(sp);
-  		
-  	}
-  	
-  	public static void updateTrack(Track tr, Context context){
-  		DataBaseHandler db = new DataBaseHandler(context);
-  		db.updateTracksRow(tr);
-  		
+  		return db.addTracks(tracks);
   	}
   	
   	public static Event getSchedule(String event_id, Context context){
@@ -1601,8 +1564,15 @@ public class Schedule extends Activity {
   		return db.existsTrack(track_id);
   	}
 	
+  	public static Long numRows(String table, Context context){
+  		DataBaseHandler db = new DataBaseHandler(context);
+  		return db.numRows(table);
+  	}
   	
-
+  	public static Long deleteAllRows(String table,Context context){
+  		DataBaseHandler db = new DataBaseHandler(context);
+  		return db.deleteAllRows(table);
+  	}
   	
 
 }

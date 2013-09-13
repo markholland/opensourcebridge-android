@@ -137,6 +137,8 @@ public class Schedule extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);  
         
+        setTitle("WDCNZ");
+        
         //Action bar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);

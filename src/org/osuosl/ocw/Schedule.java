@@ -22,7 +22,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -34,6 +33,7 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -55,7 +55,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
-public class Schedule extends Activity {
+public class Schedule extends ActionBarActivity {
 
 	//static DataBaseHandler db; //Single object for handling database operations.
 	
@@ -136,6 +136,11 @@ public class Schedule extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);  
+        
+        //Action bar
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        
         mHandler = new Handler();
         
         toast = Toast.makeText(getBaseContext(), "", Toast.LENGTH_SHORT);  // Instantiate the toast in order to change its text and show when needed.
@@ -169,7 +174,7 @@ public class Schedule extends Activity {
         
         
         // Get saved data if destroyed
-        data = (StateChangeData) getLastNonConfigurationInstance();
+        data = (StateChangeData) getLastCustomNonConfigurationInstance();
         
         // No saved data, run app as normal so we need to instantiate some variables that will have values assigned when data is pulled from server/database
         if( data == null){
@@ -463,7 +468,7 @@ public class Schedule extends Activity {
 	
 	// Save the app state when destroyed
 	@Override
-	public Object onRetainNonConfigurationInstance() {
+	public Object onRetainCustomNonConfigurationInstance() {
 		final StateChangeData data = new StateChangeData(DAYS, calendar.getEvents(),
 				mSpeakers, mTracks, mCurrentDate, mDescription.getVisibility(),
 				mBio.getVisibility(), mDetail, mFlipper.getDisplayedChild(),
@@ -741,13 +746,13 @@ public class Schedule extends Activity {
 	/* Creates the menu items */
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(0, MENU_PREV, 0, "Previous Day").setIcon(R.drawable.ic_menu_back);
-		SubMenu dayMenu = menu.addSubMenu("Day").setIcon(android.R.drawable.ic_menu_today);
-
-		for(int i = 0; i < DAYS.size(); i++){
-	    	//i+1 because zero is the days sub menu so start id at 1
-	    	dayMenu.add(0, i+1, 0, this.getDayAsString(DAYS.get(i)));
-	    	
-	    }
+//		SubMenu dayMenu = menu.addSubMenu("Day").setIcon(android.R.drawable.ic_menu_today);
+//
+//		for(int i = 0; i < DAYS.size(); i++){
+//	    	//i+1 because zero is the days sub menu so start id at 1
+//	    	dayMenu.add(0, i+1, 0, this.getDayAsString(DAYS.get(i)));
+//	    	
+//	    }
 	    
 	    
 
@@ -782,7 +787,14 @@ public class Schedule extends Activity {
 			ro.execute();
 			
 			return true;
-	    }
+		case android.R.id.home:
+			showList();
+			mAdapter.filterDay(mCurrentDate);
+			mDate.setText(date_formatter.format(mCurrentDate));
+			showList();
+			return true;
+		    
+		}
 	    
 		if(id >= 1) {
 			//submenu id starts at 1 when days start at 0 hence "id-1"
@@ -790,6 +802,8 @@ public class Schedule extends Activity {
 	    	showList();
 	    	return true;
 		}
+		
+		
 	    
 	    return false;
 	}

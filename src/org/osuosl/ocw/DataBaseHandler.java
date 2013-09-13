@@ -455,7 +455,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 					cursor.moveToFirst();
 					// Log.d("DATABASE",""+cursor.getCount());
 
-					
+					String event_id = cursor.getString(0);
 					String event_title = cursor.getString(1);
 					String start_time = cursor.getString(2);
 					String end_time = cursor.getString(3);
@@ -471,7 +471,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 						speakerids  = sIds.split(",");
 
 					event = new Event(
-							id, event_title, start_time, end_time, description, room_title, track_id, speakerids, presenter);
+							event_id, event_title, start_time, end_time, description, room_title, track_id, speakerids, presenter);
 
 				}
 				db.setTransactionSuccessful();

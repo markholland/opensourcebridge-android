@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -26,6 +27,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -76,6 +78,7 @@ public class Schedule extends ActionBarActivity {
 	private static final int MENU_ABOUT = -7;
 	private static final int MENU_NOW = -8;
 	private static final int MENU_REFRESH = -9;
+	private static final int MENU_FILTER = -10;
 	
 	// Names of timeout fields in JSON files
 	private static final String SCHEDULE_TIMEOUT = "schedule_timeout";
@@ -365,8 +368,10 @@ public class Schedule extends ActionBarActivity {
 			super.onPreExecute();
 			pdia = new ProgressDialog(Schedule.this);
 			//TODO remove hardcoded string
-			pdia.setMessage("Loading...");
-			pdia.show();
+			if(data == null){// dont show message when orientation switch
+				pdia.setMessage("Loading...");
+				pdia.show();
+			}
 		}
 		
         @Override
@@ -778,6 +783,7 @@ public class Schedule extends ActionBarActivity {
 
 		menu.add(0, MENU_NEXT, 0, "Next Day").setIcon(R.drawable.ic_menu_forward);
 	    menu.add(0, MENU_NOW, 0, "Now").setIcon(android.R.drawable.ic_menu_mylocation);
+	    menu.add(0, MENU_FILTER, 0, "Filter by Track").setIcon(R.drawable.ic_menu_refresh);
 	    menu.add(0, MENU_REFRESH, 0, "Refresh").setIcon(R.drawable.ic_menu_refresh);
 	    menu.add(0, MENU_ABOUT, 0, "About").setIcon(android.R.drawable.ic_menu_info_details);
 	    return true;
@@ -808,13 +814,22 @@ public class Schedule extends ActionBarActivity {
 			
 			return true;
 		case android.R.id.home:
-			showList();
+			//showList();
 			mAdapter.filterDay(mCurrentDate);
 			mDate.setText(date_formatter.format(mCurrentDate));
 			showList();
 			return true;
-		    
+		
+		case MENU_FILTER:
+			//Launch dialog with list of tracks
+			showDialog(1);
+			
+//			//Returned track to filter
+//			mAdapter.filterTracks(mTracks.get(1));
+//			//mDate.setText(date_formatter.format(mCurrentDate));
+//			showList();
 		}
+		
 	    
 		if(id >= 1) {
 			//submenu id starts at 1 when days start at 0 hence "id-1"
@@ -864,17 +879,39 @@ public class Schedule extends ActionBarActivity {
 	
 	
 	protected Dialog onCreateDialog(int id){
-        Context context = getApplicationContext();
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
-        View v = inflater.inflate(R.layout.about, null);
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("About");
-        builder.setCancelable(true);
-        builder.setView(v);
-        builder.setIcon(android.R.drawable.ic_dialog_info);
-        final AlertDialog alert = builder.create();
-        return alert;
-    }
+		
+		if(id == 0){
+			Context context = getApplicationContext();
+			LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
+			View v = inflater.inflate(R.layout.about, null);
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle("About");
+			builder.setCancelable(true);
+			builder.setView(v);
+			builder.setIcon(android.R.drawable.ic_dialog_info);
+			final AlertDialog alert = builder.create();
+			return alert;
+		} else {
+			final ArrayList<Track> tracks = new ArrayList<Track>(mTracks.values());
+			final List<String> strings = new ArrayList<String>();
+			for(int i = 0; i<tracks.size(); i++){
+				strings.add(tracks.get(i).getTrack_title());
+			}
+			final CharSequence[] items = strings.toArray(new String[strings.size()]);
+			
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			    builder.setTitle("Pick Track")
+			           .setItems(items, new DialogInterface.OnClickListener() {
+			               public void onClick(DialogInterface dialog, int which) {
+			            	mAdapter.filterTracks(tracks.get(which));
+			       			showList();
+			           }
+			    });
+			    return builder.create();
+			}
+		
+	}
+    
 
 	public static final DateFormat date_formatter = new SimpleDateFormat("E, MMMM d");
 
@@ -1412,6 +1449,21 @@ public class Schedule extends ActionBarActivity {
 			mFiltered = filtered; 
 			notifyDataSetChanged();
 			now(date);
+		}
+		
+		public void filterTracks(Track track){
+			ArrayList<Event> items = mItems;
+			ArrayList<Object> filtered = new ArrayList<Object>();
+			int size = mItems.size();
+			for (int i=0; i<size; i++){
+				Event event = items.get(i);
+				if(event.getTrack_id() == track.getTrack_id()){
+					filtered.add(event);
+				}
+			}
+			mFiltered = filtered; 
+			notifyDataSetChanged();
+			
 		}
 		
 		/**

@@ -4,8 +4,10 @@ package org.osuosl.ocw;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.ActionBar;
 
 public class Main extends Activity {
 	
@@ -23,9 +25,12 @@ public class Main extends Activity {
 
                         public void run() {
                                 /* Create an Intent that will start the Menu-Activity. */
-                                Intent mainIntent = new Intent(Main.this, Schedule.class);
-                                Main.this.startActivity(mainIntent);
-                                Main.this.finish();
+                        	Intent mainIntent = new Intent(Main.this, Schedule.class);
+                        	if (Build.VERSION.SDK_INT >= 8) {
+                        		mainIntent = new Intent(Main.this, ActionBarSchedule.class);
+                            } 
+                            Main.this.startActivity(mainIntent);
+                            Main.this.finish();
                         }
                 }, SPLASH_DISPLAY_LENGTH);
         }

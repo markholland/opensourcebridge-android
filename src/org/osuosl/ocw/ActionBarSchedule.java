@@ -22,7 +22,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -34,12 +33,12 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -55,57 +54,57 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
-public class Schedule extends Activity {
+public class ActionBarSchedule extends ActionBarActivity {
 
 	//static DataBaseHandler db; //Single object for handling database operations.
-
+	
 	private StateChangeData data = null;
-
+	
 	SimpleDateFormat httpHeaderFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
-
+	
 	// Stores in memory the days that the conference has events
 	private ArrayList<Date> DAYS;
-
+	
 	private ICal calendar;
 
 	//Global Toast object in order to allow it be displayed and cancelled when needed
 	private Toast toast;
-
+	
 	// Indexes for Options menu items
 	private static final int MENU_NEXT = -5;
 	private static final int MENU_PREV = -6;
 	private static final int MENU_ABOUT = -7;
 	private static final int MENU_NOW = -8;
 	private static final int MENU_REFRESH = -9;
-
+	
 	// Names of timeout fields in JSON files
 	private static final String SCHEDULE_TIMEOUT = "schedule_timeout";
 	private static final String SPEAKERS_TIMEOUT = "speakers_timeout";
 	private static final String TRACKS_TIMEOUT = "tracks_timeout";
-
+	
 	// Names of the fields in SharedPreferences that store when database tables were last updated
 	private static final String SCHEDULE_UPDATED = "schedule_updated";
 	private static final String SPEAKERS_UPDATED = "speakers_updated";
 	private static final String TRACKS_UPDATED = "tracks_updated";
-
-
+	
+	
 	// state
 	Date mCurrentDate;
 	TextView mDate;
 	boolean mDetail = false;  // Is the event description view currently visible. Used when orientation switches are performed to allow the same view to be visible
 	private Handler mHandler; 
-
+	
 	// session list
 	EventAdapter mAdapter;
 	ListView eventsListView;
-
+	
 	// screen animation
 	ViewFlipper mFlipper;
 	Animation mInLeft;
     Animation mInRight;
     Animation mOutLeft;
     Animation mOutRight;
-
+	
     // session details
     Event mEvent = null; // Used to manipulate the selected event in the list
     HashMap<Integer, Speaker> mSpeakers;  //Stores the conference speakers in memory
@@ -136,6 +135,13 @@ public class Schedule extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);  
+        
+        setTitle("WDCNZ");
+        
+        //Action bar
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        
         mHandler = new Handler();
         
         toast = Toast.makeText(getBaseContext(), "", Toast.LENGTH_SHORT);  // Instantiate the toast in order to change its text and show when needed.
@@ -169,7 +175,7 @@ public class Schedule extends Activity {
         
         
         // Get saved data if destroyed
-        data = (StateChangeData) getLastNonConfigurationInstance();
+        data = (StateChangeData) getLastCustomNonConfigurationInstance();
         
         // No saved data, run app as normal so we need to instantiate some variables that will have values assigned when data is pulled from server/database
         if( data == null){
@@ -245,7 +251,7 @@ public class Schedule extends Activity {
 				//Remove toast if shown
 				toast.cancel();
 
-
+				
 				Object item = mAdapter.mFiltered.get(position);
 				if (item instanceof Date) {
 					return;// ignore clicks on the dates
@@ -267,12 +273,12 @@ public class Schedule extends Activity {
 				String timeString = startFormat.format(mEvent.getStart_time()) + " - " + endFormat.format(mEvent.getEnd_time());
 				mTime.setText(timeString);
 				//TODO Fix for multiple speakers
-
+				
 				Speaker sp = new Speaker();
 				if(mSpeakers.containsKey(Integer.parseInt(mEvent.getSpeaker_ids()[0]))) // If first speaker exists
 					sp = mSpeakers.get(Integer.parseInt(mEvent.getSpeaker_ids()[0]));
 				//Otherwise use default speaker
-
+					
         		if(sp!=null){
         			if(!mEvent.getPresenter().equals("null"))
         				mSpeaker.setText(mEvent.getPresenter());
@@ -309,20 +315,20 @@ public class Schedule extends Activity {
 			public void onClick(View v) {
 				//Remove toast if showing
 				toast.cancel();
-
+				
 				String error = show_bio();
-
+				
 				if(!error.equals("none")) { 
 					//TODO remove hardcoded string
 					toast.setText(error);
 					toast.show();
 				}
-
+				
 			}
-
-
-
-
+			
+			
+			
+			
         });
         
         mShare.setOnClickListener(new OnClickListener() { 
@@ -350,14 +356,14 @@ public class Schedule extends Activity {
     
        
     }//end onCreate
-
-
+	
+	
 	private class loadOperation extends AsyncTask<Boolean, Integer, Integer> {
 
 		@Override
 		protected void onPreExecute(){
 			super.onPreExecute();
-			pdia = new ProgressDialog(Schedule.this);
+			pdia = new ProgressDialog(ActionBarSchedule.this);
 			//TODO remove hardcoded string
 			pdia.setMessage("Loading...");
 			pdia.show();
@@ -420,14 +426,14 @@ public class Schedule extends Activity {
     		}
         }
 	}
-
+	
 	@Override
     public void onResume() {
 		super.onResume();
-
+		
 		// if not an orientation switch
 		if(data == null){
-
+			
 			// Check that we have timeouts and last updated variables available
 			if(!getPref(SCHEDULE_UPDATED).equals("") && !getPref(SCHEDULE_TIMEOUT).equals("")){
 				//Check if the timeout has been hit
@@ -438,7 +444,7 @@ public class Schedule extends Activity {
 					mAdapter.filterDay(mCurrentDate);
 					mDate.setText(date_formatter.format(mCurrentDate));
 					showList();
-
+					
 				}
 			}
 
@@ -465,38 +471,38 @@ public class Schedule extends Activity {
 					mDate.setText(date_formatter.format(mCurrentDate));
 					showList();
 				}
-
+			
 		}
 	}
-
+	
 	@Override
 	public void onPause(){
 		super.onPause();
-
+		
 		//So that when onCreate or onResume is called it won't think there was an orientation switch
 		//and ignore checking whether to update data
 		data = null;
 	}
-
-
-
+	
+	
+	
 	// Save the app state when destroyed
 	@Override
-	public Object onRetainNonConfigurationInstance() {
+	public Object onRetainCustomNonConfigurationInstance() {
 		final StateChangeData data = new StateChangeData(DAYS, calendar.getEvents(),
 				mSpeakers, mTracks, mCurrentDate, mDescription.getVisibility(),
 				mBio.getVisibility(), mDetail, mFlipper.getDisplayedChild(),
 				mEvent);
 		return data;
 	}
-
-
-
-
+	
+	
+	
+	
 	//																		//
 	// 								LOAD VIEWS 								//
 	//																		//
-
+	
 	/**
 	 * loads a view populated with the speakers info
 	 * @param id
@@ -510,7 +516,7 @@ public class Schedule extends Activity {
 		if (mSpeakers.containsKey(id))
 			speaker = mSpeakers.get(id);
 		// Otherwise use default speaker
-
+		
 		// create view
 		if (speaker != null) {
 			LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -519,15 +525,18 @@ public class Schedule extends Activity {
 			name.setText(speaker.getFullname());
 			TextView biography = (TextView) view.findViewById(R.id.biography);
 			biography.setText(speaker.getBiography());
-
+			
 			// Single string variable for all text
 			String textToSet = speaker.getAffiliation();
-
-			if (textToSet != null){
+			
+			if (textToSet != null && textToSet != ""  && textToSet != "null" && textToSet.length() > 0){
 				TextView text = (TextView) view.findViewById(R.id.affiliation);
 				text.setText(textToSet);
+			} else {
+				TextView text = (TextView) view.findViewById(R.id.affiliation);
+				text.setText("No Affiliation");
 			}
-
+			
 			textToSet = speaker.getTwitter();
 			if (textToSet != null && textToSet != ""  && textToSet != "null" && textToSet.length() > 0){
 				TextView text = (TextView) view.findViewById(R.id.twitter);
@@ -535,7 +544,7 @@ public class Schedule extends Activity {
 				View parent = (View) text.getParent();
 				parent.setVisibility(View.VISIBLE);
 			}
-
+			
 			textToSet = speaker.getEmail();
 			if (textToSet != null && textToSet != "" && textToSet != "null" && textToSet.length() > 0){
 				TextView text = (TextView) view.findViewById(R.id.website);
@@ -543,7 +552,7 @@ public class Schedule extends Activity {
 				View parent = (View) text.getParent();
 				parent.setVisibility(View.VISIBLE);
 			}
-
+			
 			textToSet = speaker.getWebsite();
 			if (textToSet != null && textToSet != "" && textToSet != "null" && textToSet.length() > 0){
 				TextView text = (TextView) view.findViewById(R.id.website);
@@ -551,7 +560,7 @@ public class Schedule extends Activity {
 				View parent = (View) text.getParent();
 				parent.setVisibility(View.VISIBLE);
 			}
-
+			
 			textToSet = speaker.getBlog();
 			if (textToSet != null && textToSet != "" && textToSet != "null" && textToSet.length() > 0){
 				TextView text = (TextView) view.findViewById(R.id.blog);
@@ -559,7 +568,7 @@ public class Schedule extends Activity {
 				View parent = (View) text.getParent();
 				parent.setVisibility(View.VISIBLE);
 			}
-
+			
 			textToSet = speaker.getLinkedin();
 			if (textToSet != null && textToSet != "" && textToSet != "null" && textToSet.length() > 0){
 				TextView text = (TextView) view.findViewById(R.id.identica);
@@ -568,17 +577,17 @@ public class Schedule extends Activity {
 				parent.setVisibility(View.VISIBLE);
 			}
 		}
-
+		
 		return view;
 	}
-
-
+	
+	
 	//																		//
 	// 							MANIPULATE VIEWS 							//
 	//																		//
-
-
-
+	
+	
+	
 	/**
 	 * Shows the session description, hides all other sub views
 	 */
@@ -586,7 +595,7 @@ public class Schedule extends Activity {
 		mBio.setVisibility(View.GONE);
 		mDescription.setVisibility(View.VISIBLE);
 	}
-
+	
 	/**
 	 * Shows the session bio, hides all other subviews
 	 */
@@ -596,8 +605,8 @@ public class Schedule extends Activity {
 		String error = "none";
 		mBio.removeAllViews();
 		String[] speaker_ids = mEvent.getSpeaker_ids();
-
-
+		
+		
 		if (speaker_ids != null) {
 			for (int i=0; i<speaker_ids.length; i++) {
 
@@ -619,16 +628,16 @@ public class Schedule extends Activity {
 			display = false;
 			//TODO Remove hardcoded string
 			error = "This event doesn't have any speakers";
-
+			
 		}
 		if(display){
 			mDescription.setVisibility(View.GONE);
 			mBio.setVisibility(View.VISIBLE);
 		}
-
+		
 		return error;
 	}
-
+	
 	/* sets the current day, filtering the list if need be */
 	public void setDay(Date date) {
 		if (isSameDay(mCurrentDate, date)) {
@@ -637,14 +646,14 @@ public class Schedule extends Activity {
 		} else {
 			// different day, update the list
 			mCurrentDate = date;
-
+			
 			mAdapter.filterDay(date);
 			mDate.setText(this.getDayAsString(mCurrentDate));
 		} 
-
-
+		
+		
 	}
-
+	
 	/**
 	 * Jumps the user to right now in the event list:
 	 * 
@@ -655,7 +664,7 @@ public class Schedule extends Activity {
 	 */
 	public void now(){
 		Date now = new Date();
-
+		
 		if(!DAYS.isEmpty()){
 
 			if (now.before(DAYS.get(0)) || now.after(DAYS.get(DAYS.size() - 1))) {
@@ -667,21 +676,21 @@ public class Schedule extends Activity {
 				setDay(now);
 				showList();
 			}
-
+			
 		} else {
 			//TODO remove hardcoded string
 			toast.setText("Conference info not downloaded");
 			toast.show();
-
+			
 		}
-
+		
 	}
-
+	
 	/**
 	 * Jumps to the next day, if not already at the end
 	 */
 	public void next() {
-
+		
 		//Find the index of the current day and then set to the next
 		boolean found = false;
 		for(int i = 0; i < DAYS.size() - 1 && !found; i++){
@@ -694,16 +703,16 @@ public class Schedule extends Activity {
 			//TODO remove hardcoded string
 			toast.setText("No more days");
 			toast.show();
-
+			
 		}
 		showList();
 	}
-
+	
 	/**
 	 * Jumps to the previous day if now already at the beginning
 	 */
 	public void previous() {
-
+		
 		boolean found = false;
 		for(int i = DAYS.size() - 1; i > 0 && !found; i--){
 			if(mCurrentDate == DAYS.get(i)){
@@ -718,7 +727,7 @@ public class Schedule extends Activity {
 		}
 		showList();
 	}
-
+	
 	/**
 	 * Shows the event listing
 	 */
@@ -730,7 +739,7 @@ public class Schedule extends Activity {
             mDetail=false;
 		}
 	}
-
+	
 	/**
 	 * overridden to hook back button when on the detail page
 	 */
@@ -742,30 +751,30 @@ public class Schedule extends Activity {
 			showList();
 			return true;
 		}
-
+		
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_MENU:
 			//Cancel any toasts when pressing the menu button
 			toast.cancel();
 		}
-
+		
 		return super.onKeyDown(keyCode, event);
-
-
+		
+		
 	}
-
+	
 	/* Creates the menu items */
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(0, MENU_PREV, 0, "Previous Day").setIcon(R.drawable.ic_menu_back);
-		SubMenu dayMenu = menu.addSubMenu("Day").setIcon(android.R.drawable.ic_menu_today);
-
-		for(int i = 0; i < DAYS.size(); i++){
-	    	//i+1 because zero is the days sub menu so start id at 1
-	    	dayMenu.add(0, i+1, 0, this.getDayAsString(DAYS.get(i)));
-
-	    }
-
-
+//		SubMenu dayMenu = menu.addSubMenu("Day").setIcon(android.R.drawable.ic_menu_today);
+//
+//		for(int i = 0; i < DAYS.size(); i++){
+//	    	//i+1 because zero is the days sub menu so start id at 1
+//	    	dayMenu.add(0, i+1, 0, this.getDayAsString(DAYS.get(i)));
+//	    	
+//	    }
+	    
+	    
 
 		menu.add(0, MENU_NEXT, 0, "Next Day").setIcon(R.drawable.ic_menu_forward);
 	    menu.add(0, MENU_NOW, 0, "Now").setIcon(android.R.drawable.ic_menu_mylocation);
@@ -777,9 +786,9 @@ public class Schedule extends Activity {
 	/* Handles item selections */
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// TODO Manage per-day schedules dynamically, rather than hard coding them in.
-
+	    
 		int id = item.getItemId();
-
+		
 		switch (id) {
 	    case MENU_NOW:
 	        now();
@@ -796,32 +805,41 @@ public class Schedule extends Activity {
 		case MENU_REFRESH:
 			refreshOperation ro = new refreshOperation();
 			ro.execute();
-
+			
 			return true;
-	    }
-
+		case android.R.id.home:
+			showList();
+			mAdapter.filterDay(mCurrentDate);
+			mDate.setText(date_formatter.format(mCurrentDate));
+			showList();
+			return true;
+		    
+		}
+	    
 		if(id >= 1) {
 			//submenu id starts at 1 when days start at 0 hence "id-1"
 	    	setDay(DAYS.get(id-1));
 	    	showList();
 	    	return true;
 		}
-
+		
+		
+	    
 	    return false;
 	}
-
+	
 	private ProgressDialog pdia;
-
+	
 	private class refreshOperation extends AsyncTask<Void, Void, Integer> {
 
 		@Override
 		protected void onPreExecute(){
 			super.onPreExecute();
-			pdia = new ProgressDialog(Schedule.this);
+			pdia = new ProgressDialog(ActionBarSchedule.this);
 			pdia.setMessage("Refreshing...");
 			pdia.show();
 		}
-
+		
         @Override
         protected Integer doInBackground(Void... params) {
         	
@@ -841,10 +859,10 @@ public class Schedule extends Activity {
 			showList();
         }
 	}
-
-
-
-
+	
+	
+	
+	
 	protected Dialog onCreateDialog(int id){
         Context context = getApplicationContext();
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -869,18 +887,18 @@ public class Schedule extends Activity {
 	// 								LOAD DATA 								//
 	//																		//
 
-
-
-
+	
+	
+	
 	//Must be executed following loading when back on the ui thread if not a refresh
 	private void setAdapter(){
 		mAdapter = new EventAdapter(this, R.layout.listevent, calendar.getEvents());
         eventsListView.setAdapter(mAdapter);
 	}
-
-
+	
+	
 	public void loadSpeakers(boolean force){
-
+		
 		Speaker speaker = null;
 
 		try {
@@ -890,23 +908,23 @@ public class Schedule extends Activity {
 			if (raw_json.equals("database")){
 				DataBaseHandler db = new DataBaseHandler(getApplicationContext());
 		  		Long size = db.numRows("SPEAKERS");
-
+				
 				for(int i = 1; i <= size; i++){
 					speaker = getSpeaker(""+i, getApplicationContext());
 					if(speaker == null)
 						speaker = new Speaker();
 					mSpeakers.put(speaker.getSpeaker_id(), speaker);
 				}
-
+				
 			} else if(raw_json.equals("doNothing")) {
-
+				
 			} else {
 				ArrayList<Speaker> speakersList = new ArrayList<Speaker>();
 				JSONObject speakers = new JSONObject(raw_json);
-
+				
 				String timeout = speakers.getString("timeout");
 				putPref(SPEAKERS_TIMEOUT, timeout);
-
+				
 				JSONArray json_speakers = speakers.getJSONArray("items");
 				int size = json_speakers.length();
 				for(int i=0; i<size; i++){
@@ -942,18 +960,18 @@ public class Schedule extends Activity {
 					Log.d("CURRENT ROW", speaker.getFullname());
 					speakersList.add(speaker);
 					mSpeakers.put(speaker.getSpeaker_id(), speaker);
-
+				
 				}
-
+				
 				if(numRows("SPEAKERS",getApplicationContext()) == 0l){
 					addSpeakers(speakersList,getApplicationContext());
 				} else {
 					deleteAllRows("SPEAKERS",getApplicationContext());
 					addSpeakers(speakersList,getApplicationContext());
 				}
-
+				
 				putPref(SPEAKERS_UPDATED,""+System.currentTimeMillis());
-
+				
 			}
 
 
@@ -962,15 +980,15 @@ public class Schedule extends Activity {
 		} catch (IOException e) {
 			// file couldn't be loaded
 		}
-
+		
 
 	}
-
+	
 	private void loadTracks(boolean force){
 		try{
 			//TODO
 			String raw_json = getURL(TRACKS_URI, "TRACKS", force);
-
+			
 			if (raw_json.equals("database")){
 				DataBaseHandler db = new DataBaseHandler(getApplicationContext());
 				long size = db.numRows("TRACKS");
@@ -978,20 +996,20 @@ public class Schedule extends Activity {
 					Track track = new Track();
 					Log.d("Track Row", ""+i);
 					track = getTrack(""+i, getApplicationContext());
-
+					
 					mTracks.put(track.getTrack_id(), track);
 				}
-
+			
 			} else if(raw_json.equals("doNothing")) {
-
+				
 			} else {
 				ArrayList<Track> tracksList = new ArrayList<Track>();
-
+				
 				JSONObject tracks = new JSONObject(raw_json);
-
+				
 				String timeout = tracks.getString("timeout");
 				putPref(TRACKS_TIMEOUT, timeout);
-
+				
 				JSONArray json_tracks = tracks.getJSONArray("tracks");
 				int size = json_tracks.length();
 				for(int i=0; i<size; i++){
@@ -1000,16 +1018,16 @@ public class Schedule extends Activity {
 
 					track.setTrack_id(json.getInt("track_id"));
 					track.setTrack_title(json.getString("track_title"));
-
-
+					
+					
 					if (json.has("color"))
 						track.setColor(Color.parseColor(json.getString("color")));
-
-
+					
+				
 					if (json.has("color_text"))
 						track.setColor_text(Color.parseColor(json.getString("color_text")));
-
-
+					
+					
 					// TODO
 					// dont touch database if no internet, database is already loaded
 
@@ -1018,16 +1036,16 @@ public class Schedule extends Activity {
 					tracksList.add(track);
 					mTracks.put(track.getTrack_id(), track);
 				}
-
+				
 				if(numRows("TRACKS",getApplicationContext()) == 0l){
 					addTracks(tracksList,getApplicationContext());
 				} else {
 					deleteAllRows("TRACKS",getApplicationContext());
 					addTracks(tracksList,getApplicationContext());
 				}
-
+				
 				putPref(TRACKS_UPDATED, ""+System.currentTimeMillis());
-
+				
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -1036,7 +1054,7 @@ public class Schedule extends Activity {
 			// TODO
 		}
 	}
-
+	
 
 	/**
 	 * fetches a url and returns it as a string.  This method will cache the
@@ -1047,17 +1065,17 @@ public class Schedule extends Activity {
 	 */
 	private String getURL(String uri, String table, boolean force) throws IOException{
 		InputStream is = null;
-
+		
 		String line;
 		StringBuilder sb = new StringBuilder();
-
-
-
+		
+		
+		
 		try {
 			// determine whether to open local file or remote file
 			// Retrieve from database instead of raw file
 			DataBaseHandler db = new DataBaseHandler(getApplicationContext());
-
+			
 			if (table.equals("SCHEDULE") && (db.numRows("SCHEDULE") != 0) && !force && ((Long.parseLong(getPref(SCHEDULE_UPDATED))
 					+Long.parseLong(getPref(SCHEDULE_TIMEOUT))) > System.currentTimeMillis())){
 				return "database";
@@ -1069,7 +1087,7 @@ public class Schedule extends Activity {
 			else if(table.equals("TRACKS") && (db.numRows("TRACKS") != 0) && !force && ((Long.parseLong(getPref(TRACKS_UPDATED))
 					+Long.parseLong(getPref(TRACKS_TIMEOUT))) > System.currentTimeMillis())){
 				return "database";
-
+			
 			} else {
 				URL url = new URL(uri);
 				URLConnection conn = null;
@@ -1078,7 +1096,7 @@ public class Schedule extends Activity {
 					conn.setDoInput(true); 
 					conn.setUseCaches(false);
 					is = conn.getInputStream();
-
+					
 				} catch (IOException e) {
 					// fall back to local file if exists, regardless of age
 					if ((db.numRows("SCHEDULE") != 0)) {
@@ -1093,8 +1111,8 @@ public class Schedule extends Activity {
 					}
 				}
 			}
-
-
+		
+			
 			//check json http header here
 			Boolean jsonModified = jsonModified(table);
 
@@ -1117,14 +1135,14 @@ public class Schedule extends Activity {
 			else{
 				return "doNothing";
 			}
-
+			
 		} catch (NumberFormatException e){
 			throw e;
-
+			
 		} catch (IOException e) {
 			// failure to get file, throw this higher
 			throw e;
-
+			
 		 } finally {
 			if (is!=null) {
 				try {
@@ -1133,15 +1151,15 @@ public class Schedule extends Activity {
 					e.printStackTrace();
 				}
 			}
-
+			
 		}
-
-
+		
+		
 		return sb.toString();
 	}
-
-
-
+	
+	
+	
 	/**
 	 * parse events from json file and update the given calendar
 	 * @param calendar
@@ -1153,13 +1171,13 @@ public class Schedule extends Activity {
 			//TODO
 			String raw_json = getURL(SCHEDULE_URI, "SCHEDULE", force);
 			Log.d("RAW_JSON",raw_json);
-
+			
 			if (raw_json.equals("database")){
 				DataBaseHandler db = new DataBaseHandler(getApplicationContext());
 				long size = db.numRows("SCHEDULE");
 				for(int i=1; i<=size; i++){
 					mEvent = getSchedule(""+i, getApplicationContext());
-
+					
 					if(mEvent != null){
 						events.add(mEvent);
 
@@ -1172,24 +1190,24 @@ public class Schedule extends Activity {
 						if(mEvent.getStart_time().getDate() > (DAYS.get(DAYS.size() - 1).getDate())){
 							DAYS.add(mEvent.getStart_time());
 						}
-
+						
 					}
-
+					
 				}
-
+			
 			} else if(raw_json.equals("doNothing")) {
-
+				
 			} else {
-
-
+				
+			
 				DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss-'07:00'");
 				JSONObject schedule = new JSONObject(raw_json);
-
+				
 
 				String timeout = schedule.getString("timeout");
 				putPref(SCHEDULE_TIMEOUT, timeout);
-
-
+				
+				
 				JSONArray json_events = schedule.getJSONArray("items");
 				int size = json_events.length();
 				for(int i=0; i<size; i++){
@@ -1198,9 +1216,9 @@ public class Schedule extends Activity {
 
 					event.setEvent_id(json.getInt("event_id"));
 					event.setEvent_title(json.getString("event_title"));
-
+					
 					event.setStart_time(formatter.parse(json.getString("start_time")));
-
+					
 					//If no days then add the first
 					if(DAYS.isEmpty())
 						DAYS.add(event.getStart_time());
@@ -1210,9 +1228,9 @@ public class Schedule extends Activity {
 					if(event.getStart_time().getDate() > (DAYS.get(DAYS.size() - 1).getDate())){
 						DAYS.add(event.getStart_time());
 					}
-
+					
 					event.setEnd_time(formatter.parse(json.getString("end_time")));
-
+					
 					if(json.has("description")){
 						event.setDescription(json.getString("description")
 								.replace("\r","")
@@ -1240,9 +1258,9 @@ public class Schedule extends Activity {
 							event.setTrack_id(-1);
 						}
 					}
-
+					
 					if (json.has("speaker_ids")){
-
+						
 						JSONArray speaker_ids = json.getJSONArray("speaker_ids");
 						String [] stringArray = new String[speaker_ids.length()];
 						for(int j = 0; j < speaker_ids.length(); j++)
@@ -1259,28 +1277,28 @@ public class Schedule extends Activity {
 						}
 						event.setSpeaker_ids(stringArray);
 					}
-
-
+					
+					
 					if(json.has("presenter")){
 						event.setPresenter(json.getString("presenter"));
 					} else {
 						event.setPresenter("");
 					}
-
+					
 					Log.d("CURRENT ROW", event.getEvent_title());
 
 					events.add(event);
 				}
-
+				
 				if(numRows("SCHEDULE",getApplicationContext()) == 0l){
 					addEvents(events,getApplicationContext());
 				} else {
 					deleteAllRows("SCHEDULE", getApplicationContext());
 					addEvents(events,getApplicationContext());
 				}
-
+				
 				putPref(SCHEDULE_UPDATED, ""+System.currentTimeMillis());
-
+				
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -1291,30 +1309,30 @@ public class Schedule extends Activity {
 			// TODO
 		}
 		calendar.setEvents(events);
-
-
+		
+		
 	}
-
-
+	
+	
 	private boolean jsonModified(String json){
-
+		
 		try{
-
+			
 			HttpClient client = new DefaultHttpClient();
 			HttpGet request = null;
-
-
+			
+			
 			if(json.equals("SCHEDULE")){
 				request = new HttpGet(SCHEDULE_URI);
-
+			
 			}
 			if(json.equals("SPEAKERS")){
 				 request = new HttpGet(SPEAKER_URI);
-
+				
 				}
 			if(json.equals("TRACKS")){
 				 request = new HttpGet(TRACKS_URI);
-
+				
 			}
 			HttpResponse response = null;
 			if(request != null)
@@ -1350,13 +1368,13 @@ public class Schedule extends Activity {
 			e.printStackTrace();
 		}
 
-
+		
 
 		return false;
-
+		
 	}
-
-
+		
+	
 	/**
 	 * EventAdapter used for displaying a list of events
 	 *
@@ -1364,7 +1382,7 @@ public class Schedule extends Activity {
 	private class EventAdapter extends ArrayAdapter<Event> {
 		private ArrayList<Event> mItems;
 		private ArrayList<Object> mFiltered;
-
+		
 		public EventAdapter(Context context, int textViewResourceId,
 				ArrayList<Event> items) {
 			super(context, textViewResourceId, items);
@@ -1395,7 +1413,7 @@ public class Schedule extends Activity {
 			notifyDataSetChanged();
 			now(date);
 		}
-
+		
 		/**
 		 * sets the position to the current time
 		 * @param date
@@ -1405,7 +1423,7 @@ public class Schedule extends Activity {
 			int size = filtered.size();
 			for (int i=0; i<size; i++){
 				Object item = filtered.get(i);
-
+				
 				// find either the first session that hasn't ended yet
 				// or the first time marker that hasn't occurred yet.
 				if (item instanceof Date ){
@@ -1424,19 +1442,19 @@ public class Schedule extends Activity {
 					}
 				}
 			}
-
+			
 			// no current event was found, jump to the next day
 			next();
 		}
-
+		
 		public int getCount(){
 			return mFiltered.size();
 		}
-
+		
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View v = convertView;
 			LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
+			
 			Object item = mFiltered.get(position);
 			if (item instanceof Date) {
 				Date date = (Date)item;
@@ -1461,7 +1479,7 @@ public class Schedule extends Activity {
 							track.setTextColor(new Track().getColor_text());
 							track.setText(new Track().getTrack_title());
 						}
-
+					
 					}
 					if (event_title != null) {
 						event_title.setText(event.getEvent_title());
@@ -1473,13 +1491,13 @@ public class Schedule extends Activity {
 						DateFormat formatter = new SimpleDateFormat("h:mm");
 						time.setText(formatter.format(event.getStart_time()) + "-" + formatter.format(event.getEnd_time()));
 					}
-
+					
 				}
 			}
 			return v;
 		}
 	}
-
+	
 	/**
 	 * Checks if two dates are the same day
 	 * @param date1
@@ -1511,38 +1529,38 @@ public class Schedule extends Activity {
                 cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
                 cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR));
     }
-
-
+	
+	
 	//																//
 	//                     SHARED  PREFERENCES                      //
 	//																//
-
+	
 	private void putPref(String key, String value){
 		 SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
 	     SharedPreferences.Editor editor = sharedPreferences.edit();
 	     editor.putString(key, value);
 	     editor.commit();
 	}
-
+	
 	private String getPref(String key){
 		SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
         String savedPref = sharedPreferences.getString(key, "");
         return savedPref;
 	}
-
-
-
-
+	
+	
+	
+	
 	//																//
 	//						DATABASE HANDLERS						//
 	//																//
-
+	
   	
 	public static Long addEvents(ArrayList<Event> events, Context context){
 		DataBaseHandler db = new DataBaseHandler(context);
   		return db.addEvents(events);
   	}
-
+	
 	public static Long addSpeakers(ArrayList<Speaker> speakersList, Context context){
 		DataBaseHandler db = new DataBaseHandler(context);
   		return db.addSpeakers(speakersList);
@@ -1582,7 +1600,7 @@ public class Schedule extends Activity {
   		DataBaseHandler db = new DataBaseHandler(context);
   		return db.existsTrack(track_id);
   	}
-
+	
   	public static Long numRows(String table, Context context){
   		DataBaseHandler db = new DataBaseHandler(context);
   		return db.numRows(table);

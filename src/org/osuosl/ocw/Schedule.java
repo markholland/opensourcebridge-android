@@ -39,7 +39,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -359,7 +358,7 @@ public class Schedule extends ActionBarActivity {
     }//end onCreate
 	
 	
-	private class loadOperation extends AsyncTask<Boolean, Void, Integer> {
+	private class loadOperation extends AsyncTask<Boolean, Integer, Integer> {
 
 		@Override
 		protected void onPreExecute(){
@@ -375,18 +374,37 @@ public class Schedule extends ActionBarActivity {
                 Boolean force = params[0];
                 
                 if(mSpeakers.size() == 0){
+                	publishProgress(30);
                 	loadSpeakers(force);
+                	
                 }
                 if(mTracks.size() == 0){
+                	publishProgress(60);
                 	loadTracks(force);
+                	
                 }
                 if(DAYS.isEmpty()){
-                	Log.d("HERE","HERE");
+                	publishProgress(80);
                 	parseProposals(force);
+                	
                 }
                 
                 return 1;
-        }        
+        } 
+        
+        protected void onProgressUpdate(Integer... progress) {
+            
+        	if(progress[0] > 25){
+        		pdia.setMessage("Loading Speakers");
+        	}
+        	if(progress[0] > 50){
+        		pdia.setMessage("Loading Tracks");
+        	}
+        	if(progress[0] > 75){
+        		pdia.setMessage("Loading Events");
+        	}
+        	
+        }
 
         @Override
         protected void onPostExecute(Integer uselessResult) {

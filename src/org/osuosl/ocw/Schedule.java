@@ -79,6 +79,7 @@ public class Schedule extends ActionBarActivity {
 	private static final int MENU_NOW = -8;
 	private static final int MENU_REFRESH = -9;
 	private static final int MENU_FILTER = -10;
+	private static final int MENU_UPDATED = -11;
 	
 	// Names of timeout fields in JSON files
 	private static final String SCHEDULE_TIMEOUT = "schedule_timeout";
@@ -89,6 +90,7 @@ public class Schedule extends ActionBarActivity {
 	private static final String SCHEDULE_UPDATED = "schedule_updated";
 	private static final String SPEAKERS_UPDATED = "speakers_updated";
 	private static final String TRACKS_UPDATED = "tracks_updated";
+	
 	
 	
 	// state
@@ -436,48 +438,48 @@ public class Schedule extends ActionBarActivity {
     public void onResume() {
 		super.onResume();
 		
-		// if not an orientation switch
-		if(data == null){
-			
-			// Check that we have timeouts and last updated variables available
-			if(!getPref(SCHEDULE_UPDATED).equals("") && !getPref(SCHEDULE_TIMEOUT).equals("")){
-				//Check if the timeout has been hit
-				if((Long.parseLong(getPref(SCHEDULE_UPDATED))
-						+Long.parseLong(getPref(SCHEDULE_TIMEOUT))) < System.currentTimeMillis()){
-					parseProposals(true);
-					setAdapter();
-					mAdapter.filterDay(mCurrentDate);
-					mDate.setText(date_formatter.format(mCurrentDate));
-					showList();
-					
-				}
-			}
-
-			// Check that we have timeouts and last updated variables available
-			if(!getPref(SPEAKERS_UPDATED).equals("") && !getPref(SPEAKERS_TIMEOUT).equals(""))
-				//Check if the timeout has been hit
-				if((Long.parseLong(getPref(SPEAKERS_UPDATED))
-						+Long.parseLong(getPref(SPEAKERS_TIMEOUT))) < System.currentTimeMillis()){
-					loadSpeakers(true);
-					setAdapter();
-					mAdapter.filterDay(mCurrentDate);
-					mDate.setText(date_formatter.format(mCurrentDate));
-					showList();
-				}
-
-			// Check that we have timeouts and last updated variables available
-			if(!getPref(TRACKS_UPDATED).equals("") && !getPref(TRACKS_TIMEOUT).equals(""))
-				//Check if the timeout has been hit
-				if((Long.parseLong(getPref(TRACKS_UPDATED))
-						+Long.parseLong(getPref(TRACKS_TIMEOUT))) < System.currentTimeMillis()){
-					loadTracks(true);
-					setAdapter();
-					mAdapter.filterDay(mCurrentDate);
-					mDate.setText(date_formatter.format(mCurrentDate));
-					showList();
-				}
-			
-		}
+//		// if not an orientation switch
+//		if(data == null){
+//			
+//			// Check that we have timeouts and last updated variables available
+//			if(!getPref(SCHEDULE_UPDATED).equals("") && !getPref(SCHEDULE_TIMEOUT).equals("")){
+//				//Check if the timeout has been hit
+//				if((Long.parseLong(getPref(SCHEDULE_UPDATED))
+//						+Long.parseLong(getPref(SCHEDULE_TIMEOUT))) < System.currentTimeMillis()){
+//					parseProposals(true);
+//					setAdapter();
+//					mAdapter.filterDay(mCurrentDate);
+//					mDate.setText(date_formatter.format(mCurrentDate));
+//					showList();
+//					
+//				}
+//			}
+//
+//			// Check that we have timeouts and last updated variables available
+//			if(!getPref(SPEAKERS_UPDATED).equals("") && !getPref(SPEAKERS_TIMEOUT).equals(""))
+//				//Check if the timeout has been hit
+//				if((Long.parseLong(getPref(SPEAKERS_UPDATED))
+//						+Long.parseLong(getPref(SPEAKERS_TIMEOUT))) < System.currentTimeMillis()){
+//					loadSpeakers(true);
+//					setAdapter();
+//					mAdapter.filterDay(mCurrentDate);
+//					mDate.setText(date_formatter.format(mCurrentDate));
+//					showList();
+//				}
+//
+//			// Check that we have timeouts and last updated variables available
+//			if(!getPref(TRACKS_UPDATED).equals("") && !getPref(TRACKS_TIMEOUT).equals(""))
+//				//Check if the timeout has been hit
+//				if((Long.parseLong(getPref(TRACKS_UPDATED))
+//						+Long.parseLong(getPref(TRACKS_TIMEOUT))) < System.currentTimeMillis()){
+//					loadTracks(true);
+//					setAdapter();
+//					mAdapter.filterDay(mCurrentDate);
+//					mDate.setText(date_formatter.format(mCurrentDate));
+//					showList();
+//				}
+//			
+//		}
 	}
 	
 	@Override
@@ -784,6 +786,7 @@ public class Schedule extends ActionBarActivity {
 		menu.add(0, MENU_NEXT, 0, "Next Day").setIcon(R.drawable.ic_menu_forward);
 	    menu.add(0, MENU_NOW, 0, "Now").setIcon(android.R.drawable.ic_menu_mylocation);
 	    menu.add(0, MENU_FILTER, 0, "Filter by Track").setIcon(R.drawable.ic_menu_refresh);
+	    menu.add(0, MENU_UPDATED, 0, "Last updated").setIcon(R.drawable.ic_menu_refresh);
 	    menu.add(0, MENU_REFRESH, 0, "Refresh").setIcon(R.drawable.ic_menu_refresh);
 	    menu.add(0, MENU_ABOUT, 0, "About").setIcon(android.R.drawable.ic_menu_info_details);
 	    return true;
@@ -828,7 +831,10 @@ public class Schedule extends ActionBarActivity {
 //			mAdapter.filterTracks(mTracks.get(1));
 //			//mDate.setText(date_formatter.format(mCurrentDate));
 //			showList();
-		}
+		
+		case MENU_UPDATED:
+			showDialog(2);
+		}	
 		
 	    
 		if(id >= 1) {
@@ -891,7 +897,7 @@ public class Schedule extends ActionBarActivity {
 			builder.setIcon(android.R.drawable.ic_dialog_info);
 			final AlertDialog alert = builder.create();
 			return alert;
-		} else {
+		} else if(id == 1){
 			final ArrayList<Track> tracks = new ArrayList<Track>(mTracks.values());
 			final List<String> strings = new ArrayList<String>();
 			for(int i = 0; i<tracks.size(); i++){
@@ -908,7 +914,28 @@ public class Schedule extends ActionBarActivity {
 			           }
 			    });
 			    return builder.create();
+		} else {
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			
+			Long lastUpdatedSpeakers = Long.parseLong(getPref(SPEAKERS_UPDATED));
+			Long lastUpdatedTracks = Long.parseLong(getPref(TRACKS_UPDATED));
+			Long lastUpdatedEvents = Long.parseLong(getPref(SCHEDULE_UPDATED));
+			Long max =  Math.max(Math.max(lastUpdatedSpeakers,lastUpdatedTracks),lastUpdatedEvents);
+			Date lastUpdated = new Date(max);
+
+			builder.setMessage("Last updated:"+lastUpdated)
+			.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					// User cancelled the dialog
+				}
+			});
+
+			// Create the AlertDialog object and return it
+			return builder.create();
 			}
+			
+	
+		
 		
 	}
     

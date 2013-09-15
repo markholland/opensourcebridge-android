@@ -15,7 +15,16 @@
     <string name="loading__date_and_location">June 25, 2013 | Wellington, New Zealand</string>
     <string name="app_description">Schedule for the WDCNZ conference in Wellington, New Zealand.</string>
     
+    <!-- Menu items -->
     
+    <string name="refresh">Refresh</string>
+    <string name="previousday">Previous Day</string>
+    <string name="nextday">NextDay</string>
+    <string name="now">Now</string>
+    <string name="filter">Filter by Track</string>
+    <string name="removefilter">Remove Filter</string>
+    <string name="updated">Last updated</string>
+    <string name="about">About</string>
     
     <!--Bio view labels -->
     
@@ -27,6 +36,8 @@
     <!-- last modified dialog -->
     
     <string name="lastupdated">Last updated:</string>
+    
+    
     
     
 </resources>

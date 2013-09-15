@@ -40,6 +40,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -773,24 +774,8 @@ public class Schedule extends ActionBarActivity {
 	
 	/* Creates the menu items */
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0, MENU_PREV, 0, "Previous Day").setIcon(R.drawable.ic_menu_back);
-//		SubMenu dayMenu = menu.addSubMenu("Day").setIcon(android.R.drawable.ic_menu_today);
-//
-//		for(int i = 0; i < DAYS.size(); i++){
-//	    	//i+1 because zero is the days sub menu so start id at 1
-//	    	dayMenu.add(0, i+1, 0, this.getDayAsString(DAYS.get(i)));
-//	    	
-//	    }
-	    
-	    
-
-		menu.add(0, MENU_NEXT, 0, "Next Day").setIcon(R.drawable.ic_menu_forward);
-	    menu.add(0, MENU_NOW, 0, "Now").setIcon(android.R.drawable.ic_menu_mylocation);
-	    menu.add(0, MENU_FILTER, 0, "Filter by Track");
-	    menu.add(0, MENU_REMOVE_FILTER, 0, "Remove filter");
-	    menu.add(0, MENU_UPDATED, 0, "Last updated");
-	    menu.add(0, MENU_REFRESH, 0, "Refresh").setIcon(R.drawable.ic_menu_refresh);
-	    menu.add(0, MENU_ABOUT, 0, "About").setIcon(android.R.drawable.ic_menu_info_details);
+		MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.menu, menu);
 	    return true;
 	}
 
@@ -801,19 +786,19 @@ public class Schedule extends ActionBarActivity {
 		int id = item.getItemId();
 		
 		switch (id) {
-	    case MENU_NOW:
+	    case R.id.action_now:
 	        now();
 	        return true;
-		case MENU_PREV:
+		case R.id.action_previous:
 			previous();
 			return true;
-		case MENU_NEXT:
+		case R.id.action_next:
 			next();
 			return true;
-		case MENU_ABOUT:
+		case R.id.action_about:
 			showDialog(MENU_ABOUT);
 			return true;
-		case MENU_REFRESH:
+		case R.id.action_refresh:
 			refreshOperation ro = new refreshOperation();
 			ro.execute();
 			
@@ -825,7 +810,7 @@ public class Schedule extends ActionBarActivity {
 			showList();
 			return true;
 		
-		case MENU_FILTER:
+		case R.id.action_filter:
 			//Launch dialog with list of tracks
 			showDialog(MENU_FILTER);
 			return true;
@@ -834,13 +819,13 @@ public class Schedule extends ActionBarActivity {
 //			//mDate.setText(date_formatter.format(mCurrentDate));
 //			showList();
 			
-		case MENU_REMOVE_FILTER:
+		case R.id.action_removefilter:
 			mAdapter.filterDay(mCurrentDate);
 			mDate.setText(date_formatter.format(mCurrentDate));
 			showList();
 			return true;
 		
-		case MENU_UPDATED:
+		case R.id.action_updated:
 			showDialog(MENU_UPDATED);
 			return true;
 		}	

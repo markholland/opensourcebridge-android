@@ -79,7 +79,8 @@ public class Schedule extends ActionBarActivity {
 	private static final int MENU_NOW = -8;
 	private static final int MENU_REFRESH = -9;
 	private static final int MENU_FILTER = -10;
-	private static final int MENU_UPDATED = -11;
+	private static final int MENU_REMOVE_FILTER = -11;
+	private static final int MENU_UPDATED = -12;
 	
 	// Names of timeout fields in JSON files
 	private static final String SCHEDULE_TIMEOUT = "schedule_timeout";
@@ -785,8 +786,9 @@ public class Schedule extends ActionBarActivity {
 
 		menu.add(0, MENU_NEXT, 0, "Next Day").setIcon(R.drawable.ic_menu_forward);
 	    menu.add(0, MENU_NOW, 0, "Now").setIcon(android.R.drawable.ic_menu_mylocation);
-	    menu.add(0, MENU_FILTER, 0, "Filter by Track").setIcon(R.drawable.ic_menu_refresh);
-	    menu.add(0, MENU_UPDATED, 0, "Last updated").setIcon(R.drawable.ic_menu_refresh);
+	    menu.add(0, MENU_FILTER, 0, "Filter by Track");
+	    menu.add(0, MENU_REMOVE_FILTER, 0, "Remove filter");
+	    menu.add(0, MENU_UPDATED, 0, "Last updated");
 	    menu.add(0, MENU_REFRESH, 0, "Refresh").setIcon(R.drawable.ic_menu_refresh);
 	    menu.add(0, MENU_ABOUT, 0, "About").setIcon(android.R.drawable.ic_menu_info_details);
 	    return true;
@@ -831,6 +833,12 @@ public class Schedule extends ActionBarActivity {
 //			mAdapter.filterTracks(mTracks.get(1));
 //			//mDate.setText(date_formatter.format(mCurrentDate));
 //			showList();
+			
+		case MENU_REMOVE_FILTER:
+			mAdapter.filterDay(mCurrentDate);
+			mDate.setText(date_formatter.format(mCurrentDate));
+			showList();
+			return true;
 		
 		case MENU_UPDATED:
 			showDialog(MENU_UPDATED);

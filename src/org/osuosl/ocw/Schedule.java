@@ -1570,19 +1570,28 @@ public class Schedule extends ActionBarActivity {
 		}
 		
 		public View getView(int position, View convertView, ViewGroup parent) {
-			View v = convertView;
-			LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			View v;
 			
 			Object item = mFiltered.get(position);
 			if (item instanceof Date) {
 				Date date = (Date)item;
-				v = vi.inflate(R.layout.list_slot, null);
-				TextView time = (TextView) v.findViewById(R.id.time);
+				if(convertView == null || convertView.findViewById(R.id.timeSlot) == null){
+					LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+					v = vi.inflate(R.layout.list_slot, null);
+				} else {
+					v = convertView;
+				}
+				TextView time = (TextView) v.findViewById(R.id.timeSlot);
 				DateFormat formatter = new SimpleDateFormat("h:mm a");
 				time.setText(formatter.format(date));
 			} else {
 				Event event = (Event) item;
-				v = vi.inflate(R.layout.listevent, null);
+				if(convertView == null || convertView.findViewById(R.id.track) == null){
+					LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+					v = vi.inflate(R.layout.listevent, null);
+				} else {
+					v = convertView;
+				}
 				if (event != null) {
 					TextView event_title = (TextView) v.findViewById(R.id.title);
 					TextView room_title = (TextView) v.findViewById(R.id.room_title);
@@ -1597,7 +1606,7 @@ public class Schedule extends ActionBarActivity {
 							track.setTextColor(new Track().getColor_text());
 							track.setText(new Track().getTrack_title());
 						}
-					
+
 					}
 					if (event_title != null) {
 						event_title.setText(event.getEvent_title());
@@ -1609,7 +1618,7 @@ public class Schedule extends ActionBarActivity {
 						DateFormat formatter = new SimpleDateFormat("h:mm");
 						time.setText(formatter.format(event.getStart_time()) + "-" + formatter.format(event.getEnd_time()));
 					}
-					
+
 				}
 			}
 			return v;

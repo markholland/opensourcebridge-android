@@ -809,7 +809,7 @@ public class Schedule extends ActionBarActivity {
 			next();
 			return true;
 		case MENU_ABOUT:
-			showDialog(0);
+			showDialog(MENU_ABOUT);
 			return true;
 		case MENU_REFRESH:
 			refreshOperation ro = new refreshOperation();
@@ -825,15 +825,16 @@ public class Schedule extends ActionBarActivity {
 		
 		case MENU_FILTER:
 			//Launch dialog with list of tracks
-			showDialog(1);
-			
+			showDialog(MENU_FILTER);
+			return true;
 //			//Returned track to filter
 //			mAdapter.filterTracks(mTracks.get(1));
 //			//mDate.setText(date_formatter.format(mCurrentDate));
 //			showList();
 		
 		case MENU_UPDATED:
-			showDialog(2);
+			showDialog(MENU_UPDATED);
+			return true;
 		}	
 		
 	    
@@ -885,8 +886,7 @@ public class Schedule extends ActionBarActivity {
 	
 	
 	protected Dialog onCreateDialog(int id){
-		
-		if(id == 0){
+		if(id == MENU_ABOUT){
 			Context context = getApplicationContext();
 			LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
 			View v = inflater.inflate(R.layout.about, null);
@@ -897,46 +897,68 @@ public class Schedule extends ActionBarActivity {
 			builder.setIcon(android.R.drawable.ic_dialog_info);
 			final AlertDialog alert = builder.create();
 			return alert;
-		} else if(id == 1){
+		} else if(id == MENU_FILTER){
 			final ArrayList<Track> tracks = new ArrayList<Track>(mTracks.values());
 			final List<String> strings = new ArrayList<String>();
 			for(int i = 0; i<tracks.size(); i++){
 				strings.add(tracks.get(i).getTrack_title());
 			}
 			final CharSequence[] items = strings.toArray(new String[strings.size()]);
-			
+
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			    builder.setTitle("Pick Track")
-			           .setItems(items, new DialogInterface.OnClickListener() {
-			               public void onClick(DialogInterface dialog, int which) {
-			            	mAdapter.filterTracks(tracks.get(which));
-			       			showList();
-			           }
-			    });
-			    return builder.create();
-		} else {
+			builder.setTitle("Pick Track")
+			.setCancelable(true)
+			.setItems(items, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int which) {
+					mAdapter.filterTracks(tracks.get(which));
+					showList();
+				}
+			});
+			final AlertDialog alert = builder.create();
+			return alert;
+		} else if(id == MENU_UPDATED){
+
+			Context context = getApplicationContext();
+			LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
+			View v = inflater.inflate(R.layout.lastupdateddialog, null);
+
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			
+
 			Long lastUpdatedSpeakers = Long.parseLong(getPref(SPEAKERS_UPDATED));
 			Long lastUpdatedTracks = Long.parseLong(getPref(TRACKS_UPDATED));
 			Long lastUpdatedEvents = Long.parseLong(getPref(SCHEDULE_UPDATED));
 			Long max =  Math.max(Math.max(lastUpdatedSpeakers,lastUpdatedTracks),lastUpdatedEvents);
-			Date lastUpdated = new Date(max);
+			Date lastUpdatedDate = new Date(max);
+			TextView lastUpdatedTextView = (TextView)v.findViewById(R.id.lastupdatedtextview);
 
-			builder.setMessage("Last updated:"+lastUpdated)
-			.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+			lastUpdatedTextView.setText(lastUpdatedDate.toLocaleString());
+
+			builder.setCancelable(true);
+			builder.setView(v);
+			builder.setNegativeButton("Close", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id) {
 					// User cancelled the dialog
 				}
 			});
 
-			// Create the AlertDialog object and return it
-			return builder.create();
-			}
-			
+			final AlertDialog alert = builder.create();
+			return alert;
+		}
+
+		return null;
+	}
 	
-		
-		
+	protected void onPrepareDialog(int id, Dialog dialog) {
+		if(id == MENU_UPDATED){
+			Long lastUpdatedSpeakers = Long.parseLong(getPref(SPEAKERS_UPDATED));
+			Long lastUpdatedTracks = Long.parseLong(getPref(TRACKS_UPDATED));
+			Long lastUpdatedEvents = Long.parseLong(getPref(SCHEDULE_UPDATED));
+			Long max =  Math.max(Math.max(lastUpdatedSpeakers,lastUpdatedTracks),lastUpdatedEvents);
+			Date lastUpdatedDate = new Date(max);
+			
+			TextView lastUpdatedTextView = (TextView)dialog.findViewById(R.id.lastupdatedtextview);
+			lastUpdatedTextView.setText(lastUpdatedDate.toLocaleString());
+		}
 	}
     
 
@@ -1260,8 +1282,8 @@ public class Schedule extends ActionBarActivity {
 				}
 			
 			} else if(raw_json.equals("doNothing")) {
-				
-			} else {
+			
+			} else {//load from json
 				
 			
 				DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss-'07:00'");

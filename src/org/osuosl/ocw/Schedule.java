@@ -852,7 +852,7 @@ public class Schedule extends ActionBarActivity {
 	
 	private ProgressDialog pdia;
 	
-	private class refreshOperation extends AsyncTask<Void, Void, Integer> {
+	private class refreshOperation extends AsyncTask<Void, Integer, Integer> {
 
 		@Override
 		protected void onPreExecute(){
@@ -865,12 +865,29 @@ public class Schedule extends ActionBarActivity {
         @Override
         protected Integer doInBackground(Void... params) {
         	
+        	publishProgress(30);
         	loadSpeakers(true);
+        	publishProgress(60);
         	loadTracks(true);
+        	publishProgress(80);
         	parseProposals(true);
     		
             return 1;
-        }        
+        }  
+        
+        protected void onProgressUpdate(Integer... progress) {
+            
+        	if(progress[0] > 25){
+        		pdia.setMessage("Refreshing Speakers");
+        	}
+        	if(progress[0] > 50){
+        		pdia.setMessage("Refreshing Tracks");
+        	}
+        	if(progress[0] > 75){
+        		pdia.setMessage("Refreshing Events");
+        	}
+        	
+        }
 
         @Override
         protected void onPostExecute(Integer uselessResult) {

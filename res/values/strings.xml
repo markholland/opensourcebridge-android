@@ -24,5 +24,9 @@
     <string name="blog">Blog:</string>
     <string name="identica">Identica:</string>
     
+    <!-- last modified dialog -->
+    
+    <string name="lastupdated">Last updated:</string>
+    
     
 </resources>

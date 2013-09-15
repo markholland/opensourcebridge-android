@@ -1586,7 +1586,7 @@ public class Schedule extends ActionBarActivity {
 				time.setText(formatter.format(date));
 			} else {
 				Event event = (Event) item;
-				if(convertView == null || convertView.findViewById(R.id.track) == null){
+				if(convertView == null || convertView.findViewById(R.id.time) == null){
 					LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 					v = vi.inflate(R.layout.listevent, null);
 				} else {
@@ -1607,6 +1607,10 @@ public class Schedule extends ActionBarActivity {
 							track.setText(new Track().getTrack_title());
 						}
 
+					} else { //doesn't have a track so make sure it doesn't reuse a listevent that did have a track
+						TextView track = (TextView) v.findViewById(R.id.track);
+						if(track != null)
+							track.setText("");
 					}
 					if (event_title != null) {
 						event_title.setText(event.getEvent_title());

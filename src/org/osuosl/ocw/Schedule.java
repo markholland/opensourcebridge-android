@@ -281,7 +281,6 @@ public class Schedule extends ActionBarActivity {
 				DateFormat endFormat = new SimpleDateFormat("h:mm a");
 				String timeString = startFormat.format(mEvent.getStart_time()) + " - " + endFormat.format(mEvent.getEnd_time());
 				mTime.setText(timeString);
-				//TODO Fix for multiple speakers
 				
 				Speaker sp = new Speaker();
 				if(mSpeakers.containsKey(Integer.parseInt(mEvent.getSpeaker_ids()[0]))) // If first speaker exists
@@ -305,8 +304,7 @@ public class Schedule extends ActionBarActivity {
 					mFlipper.showNext();
 					mDetail = true;
 				} else { 
-					//TODO remove hardcoded string
-					toast.setText("Event info not downloaded");
+					toast.setText(R.string.eventinfonotdownloaded);
 					toast.show();
 				}
 			}
@@ -328,7 +326,6 @@ public class Schedule extends ActionBarActivity {
 				String error = show_bio();
 				
 				if(!error.equals("none")) { 
-					//TODO remove hardcoded string
 					toast.setText(error);
 					toast.show();
 				}
@@ -373,9 +370,8 @@ public class Schedule extends ActionBarActivity {
 		protected void onPreExecute(){
 			super.onPreExecute();
 			pdia = new ProgressDialog(Schedule.this);
-			//TODO remove hardcoded string
 			if(data == null){// dont show message when orientation switch
-				pdia.setMessage("Loading...");
+				pdia.setMessage(getApplicationContext().getString(R.string.loading));
 				pdia.setCancelable(false);
 				pdia.show();
 			}
@@ -582,8 +578,7 @@ public class Schedule extends ActionBarActivity {
 	 */
 	private String show_bio(){
 		boolean display = true;
-		//TODO remove hardcoded string
-		String error = "none";
+		String error = getApplicationContext().getString(R.string.no_error);
 		mBio.removeAllViews();
 		String[] speaker_ids = mEvent.getSpeaker_ids();
 		
@@ -600,15 +595,13 @@ public class Schedule extends ActionBarActivity {
 				} else {
 					// bio not yet downloaded
 					display = false;
-					//TODO Remove hardcoded string
-					error = "The speakers for this event haven't been downloaded yet";
+					error = getApplicationContext().getString(R.string.speakers_not_downloaded);
 				}
 			}
 		} else { 
 			// Event doesn't have any speakers
 			display = false;
-			//TODO Remove hardcoded string
-			error = "This event doesn't have any speakers";
+			error = getApplicationContext().getString(R.string.event_no_speakers);
 			
 		}
 		if(display){
@@ -659,8 +652,7 @@ public class Schedule extends ActionBarActivity {
 			}
 			
 		} else {
-			//TODO remove hardcoded string
-			toast.setText("Conference info not downloaded");
+			toast.setText(R.string.confinfonotdownloaded);
 			toast.show();
 			
 		}
@@ -681,8 +673,7 @@ public class Schedule extends ActionBarActivity {
 			}
 		}
 		if(!found) {
-			//TODO remove hardcoded string
-			toast.setText("No more days");
+			toast.setText(R.string.no_more_days);
 			toast.show();
 			
 		}
@@ -702,8 +693,7 @@ public class Schedule extends ActionBarActivity {
 			}
 		}
 		if(!found) {
-			//TODO remove hardcoded string
-			toast.setText("No more days");
+			toast.setText(R.string.no_more_days);
 			toast.show();
 		}
 		showList();
@@ -753,8 +743,7 @@ public class Schedule extends ActionBarActivity {
 
 	/* Handles item selections */
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// TODO Manage per-day schedules dynamically, rather than hard coding them in.
-	    
+		
 		int id = item.getItemId();
 		
 		switch (id) {
@@ -1070,7 +1059,6 @@ public class Schedule extends ActionBarActivity {
 	
 	private void loadTracks(boolean force){
 		try{
-			//TODO
 			String raw_json = getURL(TRACKS_URI, "TRACKS", force);
 			
 			if (raw_json.equals("database")){
@@ -1246,7 +1234,6 @@ public class Schedule extends ActionBarActivity {
 	private void parseProposals(boolean force){
 		ArrayList<Event> events = new ArrayList<Event>();
 		try{
-			//TODO
 			String raw_json = getURL(SCHEDULE_URI, "SCHEDULE", force);
 			if (raw_json.equals("database")){
 				DataBaseHandler db = new DataBaseHandler(getApplicationContext());

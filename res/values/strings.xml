@@ -15,6 +15,11 @@
     <string name="loading__date_and_location">June 18 - 21, 2013 | Portland, Oregon</string>
     <string name="app_description">Schedule for the Open Source Bridge conference in Portland, Oregon.</string>
     
+    <string name="loading">Loading...</string>
+    <string name="no_error">No Error</string>
+    <string name="speakers_not_downloaded">The speakers for this event haven\'t been downloaded yet</string>
+    <string name="event_no_speakers">This event doesn\'t have any speakers</string>
+    <string name="no_more_days">No more days</string>
     
     <!-- Menu items -->
     
@@ -33,6 +38,12 @@
     <string name="website">Website:</string>
     <string name="blog">Blog:</string>
     <string name="identica">Identica:</string>
+    
+    <!-- Toast messages -->
+    
+    <string name="eventinfonotdownloaded">Event info not downloaded</string>
+    <string name="confinfonotdownloaded">Conference info not downloaded</string>
+    
     
     <!-- last modified dialog -->
     

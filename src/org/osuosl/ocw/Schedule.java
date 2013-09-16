@@ -453,48 +453,7 @@ public class Schedule extends ActionBarActivity {
     public void onResume() {
 		super.onResume();
 		
-//		// if not an orientation switch
-//		if(data == null){
-//			
-//			// Check that we have timeouts and last updated variables available
-//			if(!getPref(SCHEDULE_UPDATED).equals("") && !getPref(SCHEDULE_TIMEOUT).equals("")){
-//				//Check if the timeout has been hit
-//				if((Long.parseLong(getPref(SCHEDULE_UPDATED))
-//						+Long.parseLong(getPref(SCHEDULE_TIMEOUT))) < System.currentTimeMillis()){
-//					parseProposals(true);
-//					setAdapter();
-//					mAdapter.filterDay(mCurrentDate);
-//					mDate.setText(date_formatter.format(mCurrentDate));
-//					showList();
-//					
-//				}
-//			}
-//
-//			// Check that we have timeouts and last updated variables available
-//			if(!getPref(SPEAKERS_UPDATED).equals("") && !getPref(SPEAKERS_TIMEOUT).equals(""))
-//				//Check if the timeout has been hit
-//				if((Long.parseLong(getPref(SPEAKERS_UPDATED))
-//						+Long.parseLong(getPref(SPEAKERS_TIMEOUT))) < System.currentTimeMillis()){
-//					loadSpeakers(true);
-//					setAdapter();
-//					mAdapter.filterDay(mCurrentDate);
-//					mDate.setText(date_formatter.format(mCurrentDate));
-//					showList();
-//				}
-//
-//			// Check that we have timeouts and last updated variables available
-//			if(!getPref(TRACKS_UPDATED).equals("") && !getPref(TRACKS_TIMEOUT).equals(""))
-//				//Check if the timeout has been hit
-//				if((Long.parseLong(getPref(TRACKS_UPDATED))
-//						+Long.parseLong(getPref(TRACKS_TIMEOUT))) < System.currentTimeMillis()){
-//					loadTracks(true);
-//					setAdapter();
-//					mAdapter.filterDay(mCurrentDate);
-//					mDate.setText(date_formatter.format(mCurrentDate));
-//					showList();
-//				}
-//			
-//		}
+
 	}
 	
 	@Override
@@ -1031,7 +990,6 @@ public class Schedule extends ActionBarActivity {
 		try {
 			String raw_json = getURL(SPEAKER_URI, "SPEAKERS", force);
 
-			//Log.d("CHECK DATABASE",raw_json);
 			if (raw_json.equals("database")){
 				DataBaseHandler db = new DataBaseHandler(getApplicationContext());
 		  		Long size = db.numRows("SPEAKERS");
@@ -1084,7 +1042,6 @@ public class Schedule extends ActionBarActivity {
 						speaker.setLinkedin(json.getString("linkedin"));
 					}
 
-					Log.d("CURRENT ROW", speaker.getFullname());
 					speakersList.add(speaker);
 					mSpeakers.put(speaker.getSpeaker_id(), speaker);
 				
@@ -1121,7 +1078,6 @@ public class Schedule extends ActionBarActivity {
 				long size = db.numRows("TRACKS");
 				for(int i=1; i<=size; i++){
 					Track track = new Track();
-					Log.d("Track Row", ""+i);
 					track = getTrack(""+i, getApplicationContext());
 					
 					mTracks.put(track.getTrack_id(), track);
@@ -1155,11 +1111,6 @@ public class Schedule extends ActionBarActivity {
 						track.setColor_text(Color.parseColor(json.getString("color_text")));
 					
 					
-					// TODO
-					// dont touch database if no internet, database is already loaded
-
-					Log.d("CURRENT ROW", track.getTrack_title());
-
 					tracksList.add(track);
 					mTracks.put(track.getTrack_id(), track);
 				}
@@ -1297,8 +1248,6 @@ public class Schedule extends ActionBarActivity {
 		try{
 			//TODO
 			String raw_json = getURL(SCHEDULE_URI, "SCHEDULE", force);
-			Log.d("RAW_JSON",raw_json);
-			
 			if (raw_json.equals("database")){
 				DataBaseHandler db = new DataBaseHandler(getApplicationContext());
 				long size = db.numRows("SCHEDULE");
@@ -1312,8 +1261,6 @@ public class Schedule extends ActionBarActivity {
 						if(DAYS.isEmpty())
 							DAYS.add(mEvent.getStart_time());
 						//if the event date is after the last added days date then add the day
-						Log.d("event.date",""+mEvent.getStart_time().getDate());
-						Log.d("Last added date", ""+DAYS.get(DAYS.size() - 1).getDate());
 						if(mEvent.getStart_time().getDate() > (DAYS.get(DAYS.size() - 1).getDate())){
 							DAYS.add(mEvent.getStart_time());
 						}
@@ -1351,8 +1298,6 @@ public class Schedule extends ActionBarActivity {
 					if(DAYS.isEmpty())
 						DAYS.add(event.getStart_time());
 					//if the event date is after the last added days date then add the day
-					Log.d("event.date",""+event.getStart_time().getDate());
-					Log.d("Last added date", ""+DAYS.get(DAYS.size() - 1).getDate());
 					if(event.getStart_time().getDate() > (DAYS.get(DAYS.size() - 1).getDate())){
 						DAYS.add(event.getStart_time());
 					}
@@ -1400,7 +1345,6 @@ public class Schedule extends ActionBarActivity {
 							aux = aux.replace("[", "");
 							aux = aux.replace("]", "");
 							stringArray = aux.split(",");
-							Log.d("STRINGARRAY", stringArray[j]);
 
 						}
 						event.setSpeaker_ids(stringArray);
@@ -1413,8 +1357,6 @@ public class Schedule extends ActionBarActivity {
 						event.setPresenter("");
 					}
 					
-					Log.d("CURRENT ROW", event.getEvent_title());
-
 					events.add(event);
 				}
 				
@@ -1466,16 +1408,13 @@ public class Schedule extends ActionBarActivity {
 				response = client.execute(request);
 
 			String server = ""+response.getFirstHeader("Last-Modified");
-			Log.d("SERVERMODIFIED", server);
 			if(!server.equals("") || server != null){
 				server = server.substring(15,server.length());
-				Log.d("SERVERMODIFIED", server);
 				httpHeaderFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
 				Date current = httpHeaderFormat.parse(server);
 
 
 				String lm = getPref(json+"lastModified");
-				Log.d("LASTMODIFIED", lm);
 				if(!lm.equals("")){
 					Date lastModified = new Date(lm);
 					if(current.after(lastModified)){

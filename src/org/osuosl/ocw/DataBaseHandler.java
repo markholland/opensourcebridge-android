@@ -117,7 +117,6 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			db.endTransaction();
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -163,7 +162,6 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			}
 			db.endTransaction();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -204,7 +202,6 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			}
 			db.endTransaction();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -246,7 +243,6 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			db.endTransaction();
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -298,7 +294,6 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			db.endTransaction();
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -341,7 +336,6 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			}
 			db.endTransaction();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -380,7 +374,6 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			}
 			db.endTransaction();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -422,7 +415,6 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			}
 			db.endTransaction();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -453,8 +445,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 						new String[] { id }, null, null, null, null);
 				if (cursor != null){
 					cursor.moveToFirst();
-					// Log.d("DATABASE",""+cursor.getCount());
-
+					
 					String event_id = cursor.getString(0);
 					String event_title = cursor.getString(1);
 					String start_time = cursor.getString(2);
@@ -465,7 +456,6 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 					String sIds = cursor.getString(7);
 					String presenter = cursor.getString(8);
 					cursor.close();
-					// TODO
 					String[] speakerids = {};
 					if(sIds != null)
 						speakerids  = sIds.split(",");
@@ -481,7 +471,6 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			}
 			db.endTransaction();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -525,7 +514,6 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			}
 			db.endTransaction();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -567,7 +555,6 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			}
 			db.endTransaction();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -607,7 +594,6 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			}
 			db.endTransaction();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -639,7 +625,6 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			}
 			db.endTransaction();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -667,7 +652,6 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			}
 			db.endTransaction();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -704,7 +688,6 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			db.endTransaction();
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -742,7 +725,6 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			db.endTransaction();
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -780,7 +762,6 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			db.endTransaction();
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -818,7 +799,6 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 			db.endTransaction();
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

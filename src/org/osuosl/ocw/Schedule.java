@@ -86,8 +86,7 @@ public class Schedule extends ActionBarActivity {
 	private static final int MENU_NOW = -8;
 	private static final int MENU_REFRESH = -9;
 	private static final int MENU_FILTER = -10;
-	private static final int MENU_REMOVE_FILTER = -11;
-	private static final int MENU_UPDATED = -12;
+	private static final int MENU_UPDATED = -11;
 	
 	// Names of timeout fields in JSON files
 	private static final String SCHEDULE_TIMEOUT = "schedule_timeout";
@@ -785,12 +784,6 @@ public class Schedule extends ActionBarActivity {
 			showDialog(MENU_FILTER);
 			return true;
 
-		case R.id.action_removefilter:
-			mAdapter.filterDay(mCurrentDate);
-			mDate.setText(date_formatter.format(mCurrentDate));
-			showList();
-			return true;
-		
 		case R.id.action_updated:
 			showDialog(MENU_UPDATED);
 			return true;
@@ -852,10 +845,10 @@ public class Schedule extends ActionBarActivity {
         		pdia.setMessage(getApplicationContext().getString(R.string.refreshing_speakers));
         	}
         	if(progress[0] > 50){
-        		pdia.setMessage(getApplicationContext().getString(R.string.refreshing_speakers));
+        		pdia.setMessage(getApplicationContext().getString(R.string.refreshing_tracks));
         	}
         	if(progress[0] > 75){
-        		pdia.setMessage(getApplicationContext().getString(R.string.refreshing_speakers));
+        		pdia.setMessage(getApplicationContext().getString(R.string.refreshing_events));
         	}
         	
         }
@@ -913,6 +906,13 @@ public class Schedule extends ActionBarActivity {
 			.setItems(items, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
 					mAdapter.filterTracks(tracks.get(which));
+					showList();
+				}
+			});
+			builder.setNegativeButton(R.string.removefilter, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					mAdapter.filterDay(mCurrentDate);
+					mDate.setText(date_formatter.format(mCurrentDate));
 					showList();
 				}
 			});

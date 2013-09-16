@@ -12,7 +12,7 @@
     <string name="share_text2">\&quot; #osbridge</string>
     <string name="share_subject">This session at OS Bridge was interesting</string>
     <string name="loading__tagline">The conference for open source citizens</string>
-    <string name="loading__date_and_location">June 18 #8211; 21, 2013 | Portland, Oregon</string>
+    <string name="loading__date_and_location">June 18 - 21, 2013 | Portland, Oregon</string>
     <string name="app_description">Schedule for the Open Source Bridge conference in Portland, Oregon.</string>
     
     <!-- Actions -->
@@ -27,7 +27,6 @@
     <string name="refreshing_events">Refreshing Events&#8230;</string>
     
     <string name="close">Close</string>
-    <string name="removefilter">Remove filter</string>
     
     <string name="no_error">No Error</string>
     <string name="speakers_not_downloaded">The speakers for this event haven\'t been downloaded yet</string>

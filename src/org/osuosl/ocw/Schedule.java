@@ -30,6 +30,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -376,6 +378,14 @@ public class Schedule extends ActionBarActivity {
 				pdia.setMessage("Loading...");
 				pdia.show();
 			}
+			//Find out what the orientation is and lock it while the background work runs
+			int currentOrientation = getResources().getConfiguration().orientation; 
+			if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+				setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+			}
+			else {
+				setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+			}
 		}
 		
         @Override
@@ -417,6 +427,8 @@ public class Schedule extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(Integer uselessResult) {
+        	//set the requested orientation once background work has finished
+        	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         	pdia.dismiss();
         	setAdapter();
         	// If viewing the list of events 
@@ -853,6 +865,14 @@ public class Schedule extends ActionBarActivity {
 			pdia = new ProgressDialog(Schedule.this);
 			pdia.setMessage("Refreshing...");
 			pdia.show();
+			//Find out what the orientation is and lock it while the background work runs
+			int currentOrientation = getResources().getConfiguration().orientation; 
+			if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+				setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+			}
+			else {
+				setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+			}
 		}
 		
         @Override
@@ -884,6 +904,8 @@ public class Schedule extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(Integer uselessResult) {
+        	//set the requested orientation once background work has finished
+        	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         	pdia.dismiss();
         	mAdapter.notifyDataSetChanged();
         	mAdapter.filterDay(mCurrentDate);

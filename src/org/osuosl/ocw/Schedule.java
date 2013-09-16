@@ -459,6 +459,48 @@ public class Schedule extends ActionBarActivity {
     public void onResume() {
 		super.onResume();
 		
+		// if not an orientation switch
+		if(data == null){
+			
+			// Check that we have timeouts and last updated variables available
+			if(!getPref(SCHEDULE_UPDATED).equals("") && !getPref(SCHEDULE_TIMEOUT).equals("")){
+				//Check if the timeout has been hit
+				if((Long.parseLong(getPref(SCHEDULE_UPDATED))
+						+Long.parseLong(getPref(SCHEDULE_TIMEOUT))) < System.currentTimeMillis()){
+					parseProposals(true);
+					setAdapter();
+					mAdapter.filterDay(mCurrentDate);
+					mDate.setText(date_formatter.format(mCurrentDate));
+					showList();
+					
+				}
+			}
+
+			// Check that we have timeouts and last updated variables available
+			if(!getPref(SPEAKERS_UPDATED).equals("") && !getPref(SPEAKERS_TIMEOUT).equals(""))
+				//Check if the timeout has been hit
+				if((Long.parseLong(getPref(SPEAKERS_UPDATED))
+						+Long.parseLong(getPref(SPEAKERS_TIMEOUT))) < System.currentTimeMillis()){
+					loadSpeakers(true);
+					setAdapter();
+					mAdapter.filterDay(mCurrentDate);
+					mDate.setText(date_formatter.format(mCurrentDate));
+					showList();
+				}
+
+			// Check that we have timeouts and last updated variables available
+			if(!getPref(TRACKS_UPDATED).equals("") && !getPref(TRACKS_TIMEOUT).equals(""))
+				//Check if the timeout has been hit
+				if((Long.parseLong(getPref(TRACKS_UPDATED))
+						+Long.parseLong(getPref(TRACKS_TIMEOUT))) < System.currentTimeMillis()){
+					loadTracks(true);
+					setAdapter();
+					mAdapter.filterDay(mCurrentDate);
+					mDate.setText(date_formatter.format(mCurrentDate));
+					showList();
+				}
+			
+		}
 
 	}
 	

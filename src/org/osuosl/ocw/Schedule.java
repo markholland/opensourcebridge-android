@@ -19,6 +19,9 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,7 +41,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -1011,7 +1013,7 @@ public class Schedule extends ActionBarActivity {
 				}
 				
 			} else if(raw_json.equals("doNothing")) {
-				
+				return;
 			} else {
 				ArrayList<Speaker> speakersList = new ArrayList<Speaker>();
 				JSONObject speakers = new JSONObject(raw_json);
@@ -1096,7 +1098,7 @@ public class Schedule extends ActionBarActivity {
 				}
 			
 			} else if(raw_json.equals("doNothing")) {
-				
+				return;
 			} else {
 				ArrayList<Track> tracksList = new ArrayList<Track>();
 				
@@ -1282,7 +1284,7 @@ public class Schedule extends ActionBarActivity {
 				calendar.setEvents(events);
 			
 			} else if(raw_json.equals("doNothing")) {
-			
+				return;
 			} else {//load from json
 				
 			
@@ -1403,6 +1405,8 @@ public class Schedule extends ActionBarActivity {
 		try{
 			
 			HttpClient client = new DefaultHttpClient();
+			final HttpParams httpParams = new BasicHttpParams();
+			HttpConnectionParams.setConnectionTimeout(httpParams, 3000);
 			HttpGet request = null;
 			
 			

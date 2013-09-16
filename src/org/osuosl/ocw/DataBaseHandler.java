@@ -1,7 +1,6 @@
 package org.osuosl.ocw;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import android.content.ContentValues;
 import android.content.Context;

@@ -75,6 +75,10 @@ public class Schedule extends ActionBarActivity {
 	//Global Toast object in order to allow it be displayed and cancelled when needed
 	private Toast toast;
 	
+	//Global progress dialog used in asynctasks
+	private ProgressDialog pdia;
+	
+	
 	// Indexes for Options menu items
 	private static final int MENU_NEXT = -5;
 	private static final int MENU_PREV = -6;
@@ -363,7 +367,12 @@ public class Schedule extends ActionBarActivity {
        
     }//end onCreate
 	
-	
+	/**
+	 * Loads data into memory if not present on a background thread, upon completion
+	 * load the data into the view
+	 * @author markholland
+	 *
+	 */
 	private class loadOperation extends AsyncTask<Boolean, Integer, Integer> {
 
 		@Override
@@ -411,13 +420,13 @@ public class Schedule extends ActionBarActivity {
         protected void onProgressUpdate(Integer... progress) {
             
         	if(progress[0] > 25){
-        		pdia.setMessage("Loading Speakers");
+        		pdia.setMessage(getApplicationContext().getString(R.string.loading_speakers));
         	}
         	if(progress[0] > 50){
-        		pdia.setMessage("Loading Tracks");
+        		pdia.setMessage(getApplicationContext().getString(R.string.loading_tracks));
         	}
         	if(progress[0] > 75){
-        		pdia.setMessage("Loading Events");
+        		pdia.setMessage(getApplicationContext().getString(R.string.loading_events));
         	}
         	
         }
@@ -574,7 +583,7 @@ public class Schedule extends ActionBarActivity {
 	}
 	
 	/**
-	 * Shows the session bio, hides all other subviews
+	 * Shows the session bio, hides all other sub views
 	 */
 	private String show_bio(){
 		boolean display = true;
@@ -712,7 +721,7 @@ public class Schedule extends ActionBarActivity {
 	}
 	
 	/**
-	 * overridden to hook back button when on the detail page
+	 * overridden to hook back button when on the detail page and canceling toasts on menu press
 	 */
 	public boolean onKeyDown(int keyCode, KeyEvent  event){
 		if (mDetail && keyCode == KeyEvent.KEYCODE_BACK){
@@ -775,11 +784,7 @@ public class Schedule extends ActionBarActivity {
 			//Launch dialog with list of tracks
 			showDialog(MENU_FILTER);
 			return true;
-//			//Returned track to filter
-//			mAdapter.filterTracks(mTracks.get(1));
-//			//mDate.setText(date_formatter.format(mCurrentDate));
-//			showList();
-			
+
 		case R.id.action_removefilter:
 			mAdapter.filterDay(mCurrentDate);
 			mDate.setText(date_formatter.format(mCurrentDate));
@@ -804,15 +809,18 @@ public class Schedule extends ActionBarActivity {
 	    return false;
 	}
 	
-	private ProgressDialog pdia;
-	
+	/**
+	 * Refreshes data in the background and then refreshes the views
+	 * @author markholland
+	 *
+	 */
 	private class refreshOperation extends AsyncTask<Void, Integer, Integer> {
 
 		@Override
 		protected void onPreExecute(){
 			super.onPreExecute();
 			pdia = new ProgressDialog(Schedule.this);
-			pdia.setMessage("Refreshing...");
+			pdia.setMessage(getApplicationContext().getString(R.string.refreshing));
 			pdia.setCancelable(false);
 			pdia.show();
 			//Find out what the orientation is and lock it while the background work runs
@@ -841,13 +849,13 @@ public class Schedule extends ActionBarActivity {
         protected void onProgressUpdate(Integer... progress) {
             
         	if(progress[0] > 25){
-        		pdia.setMessage("Refreshing Speakers");
+        		pdia.setMessage(getApplicationContext().getString(R.string.refreshing_speakers));
         	}
         	if(progress[0] > 50){
-        		pdia.setMessage("Refreshing Tracks");
+        		pdia.setMessage(getApplicationContext().getString(R.string.refreshing_speakers));
         	}
         	if(progress[0] > 75){
-        		pdia.setMessage("Refreshing Events");
+        		pdia.setMessage(getApplicationContext().getString(R.string.refreshing_speakers));
         	}
         	
         }
@@ -873,7 +881,12 @@ public class Schedule extends ActionBarActivity {
 	
 	
 	
-	
+	/**
+	 * Treats the different dialogs that can be opened
+	 * - The about dialog
+	 * - The filter tracks dialog
+	 * - The local data last updated dialog
+	 */
 	protected Dialog onCreateDialog(int id){
 		if(id == MENU_ABOUT){
 			Context context = getApplicationContext();
@@ -937,6 +950,10 @@ public class Schedule extends ActionBarActivity {
 		return null;
 	}
 	
+	/**
+	 * Because the last updated time changes during runtime we have to
+	 * modify the dialog after it has been created.
+	 */
 	protected void onPrepareDialog(int id, Dialog dialog) {
 		if(id == MENU_UPDATED){
 			Long lastUpdatedSpeakers = Long.parseLong(getPref(SPEAKERS_UPDATED));
@@ -971,7 +988,10 @@ public class Schedule extends ActionBarActivity {
         eventsListView.setAdapter(mAdapter);
 	}
 	
-	
+	/**
+	 * Loads speakers data from the server or the database depending on the timeout
+	 * @param force True skip checking timeout
+	 */
 	public void loadSpeakers(boolean force){
 		
 		Speaker speaker = null;
@@ -1057,6 +1077,10 @@ public class Schedule extends ActionBarActivity {
 
 	}
 	
+	/**
+	 * Loads tracks data from the server or the database depending on the timeout
+	 * @param force True skip checking timeout
+	 */
 	private void loadTracks(boolean force){
 		try{
 			String raw_json = getURL(TRACKS_URI, "TRACKS", force);
@@ -1227,7 +1251,7 @@ public class Schedule extends ActionBarActivity {
 	
 	
 	/**
-	 * parse events from json file and update the given calendar
+	 * parse events from json file or database and update the given calendar
 	 * @param calendar
 	 * @param force - force refresh
 	 */
@@ -1369,7 +1393,11 @@ public class Schedule extends ActionBarActivity {
 		
 	}
 	
-	
+	/**
+	 * Returns whether a json file has been modified on the server
+	 * @param json
+	 * @return
+	 */
 	private boolean jsonModified(String json){
 		
 		try{
@@ -1619,14 +1647,19 @@ public class Schedule extends ActionBarActivity {
 	//                     SHARED  PREFERENCES                      //
 	//																//
 	
-	private void putPref(String key, String value){
-		 SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
-	     SharedPreferences.Editor editor = sharedPreferences.edit();
-	     editor.putString(key, value);
-	     editor.commit();
+	public boolean putPref(String key, String value){
+		
+		if(key != null && value != null){
+			SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+			SharedPreferences.Editor editor = sharedPreferences.edit();
+			editor.putString(key, value);
+			editor.commit();
+			return true;
+		}
+		return false;
 	}
 	
-	private String getPref(String key){
+	public String getPref(String key){
 		SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
         String savedPref = sharedPreferences.getString(key, "");
         return savedPref;

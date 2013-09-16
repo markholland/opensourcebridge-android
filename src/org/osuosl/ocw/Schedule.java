@@ -135,9 +135,9 @@ public class Schedule extends ActionBarActivity {
     Button mShowBio;
     
     // URLs for the JSON files
-    private static final String SCHEDULE_URI = "http://www.partiallogic.com/gsoc2013/schedule.json";
-    private static final String TRACKS_URI = "http://www.partiallogic.com/gsoc2013/tracks.json";
-    private static final String SPEAKER_URI = "http://www.partiallogic.com/gsoc2013/speakers.json";
+    private static final String SCHEDULE_URI = "http://www.partiallogic.com/gsoc2013/OSBRIDGE/schedule.json";
+    private static final String TRACKS_URI = "http://www.partiallogic.com/gsoc2013/OSBRIDGE/tracks.json";
+    private static final String SPEAKER_URI = "http://www.partiallogic.com/gsoc2013/OSBRIDGE/speakers.json";
     
     /** Called when the activity is first created. */
 	@Override
@@ -145,7 +145,7 @@ public class Schedule extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);  
         
-        setTitle("WDCNZ");
+        setTitle("OS Bridge");
         
         //Action bar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -909,9 +909,17 @@ public class Schedule extends ActionBarActivity {
         	//set the requested orientation once background work has finished
         	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         	pdia.dismiss();
+        	mAdapter.setItems(calendar.getEvents());
+        	
+        	//If refreshing when there was no local data
+        	if(mCurrentDate.equals(new Date(1900, 0, 0)))
+				now();
+        	else{
+        	
         	mAdapter.notifyDataSetChanged();
         	mAdapter.filterDay(mCurrentDate);
 			showList();
+        	}
         }
 	}
 	
@@ -1585,6 +1593,9 @@ public class Schedule extends ActionBarActivity {
 			return mFiltered.size();
 		}
 		
+		public void setItems(ArrayList<Event> items){
+			mItems = items;
+		}
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View v;
 			

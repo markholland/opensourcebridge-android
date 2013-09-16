@@ -776,7 +776,7 @@ public class Schedule extends ActionBarActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 	    inflater.inflate(R.menu.menu, menu);
-	    return true;
+	    return super.onCreateOptionsMenu(menu);
 	}
 
 	/* Handles item selections */

@@ -14,7 +14,9 @@
     <item android:id="@+id/action_now"
          android:title="@string/now" />
     <item android:id="@+id/action_filter"
-          android:title="@string/filter" />
+          android:title="@string/filter" 
+    	  android:icon="@drawable/ic_menu_filter"
+    	  ocw-android:showAsAction="ifRoom"/>
     <item android:id="@+id/action_removefilter"
           android:title="@string/removefilter" />
     <item android:id="@+id/action_updated"

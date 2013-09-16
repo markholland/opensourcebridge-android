@@ -893,7 +893,7 @@ public class Schedule extends ActionBarActivity {
 			LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
 			View v = inflater.inflate(R.layout.about, null);
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setTitle("About");
+			builder.setTitle(R.string.about);
 			builder.setCancelable(true);
 			builder.setView(v);
 			builder.setIcon(android.R.drawable.ic_dialog_info);
@@ -908,7 +908,7 @@ public class Schedule extends ActionBarActivity {
 			final CharSequence[] items = strings.toArray(new String[strings.size()]);
 
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setTitle("Pick Track")
+			builder.setTitle(R.string.picktrack)
 			.setCancelable(true)
 			.setItems(items, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
@@ -937,7 +937,7 @@ public class Schedule extends ActionBarActivity {
 
 			builder.setCancelable(true);
 			builder.setView(v);
-			builder.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+			builder.setNegativeButton(R.string.close, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id) {
 					// User cancelled the dialog
 				}

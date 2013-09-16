@@ -4,7 +4,7 @@
     <string name="app_name">OS Bridge</string>
     <string name="version">Android app version 2012.0</string>
     
-    <string name="about"> </string>
+    <string name="about">About</string>
     <string name="author">This project was started by Peter Krenesky of the Oregon State University Open Source Lab, home of growing, high-impact open source communities: http://osuosl.org</string>
     <string name="label_contributors">Contributors:</string>
     <string name="contributors">Don Park, Sean Sullivan, Igal Koshevoy, Jacob Helwig and Ben Hengst</string>
@@ -15,6 +15,8 @@
     <string name="loading__date_and_location">June 18 #8211; 21, 2013 | Portland, Oregon</string>
     <string name="app_description">Schedule for the Open Source Bridge conference in Portland, Oregon.</string>
     
+    <!-- Actions -->
+    
     <string name="loading">Loading&#8230;</string>
     <string name="loading_speakers">Loading Speakers&#8230;</string>
     <string name="loading_tracks">Loading Tracks&#8230;</string>
@@ -23,6 +25,9 @@
     <string name="refreshing_speakers">Refreshing Speakers&#8230;</string>
     <string name="refreshing_tracks">Refreshing Tracks&#8230;</string>
     <string name="refreshing_events">Refreshing Events&#8230;</string>
+    
+    <string name="close">Close</string>
+    <string name="removefilter">Remove filter</string>
     
     <string name="no_error">No Error</string>
     <string name="speakers_not_downloaded">The speakers for this event haven\'t been downloaded yet</string>
@@ -53,8 +58,10 @@
     <string name="confinfonotdownloaded">Conference info not downloaded</string>
     
     
-    <!-- last modified dialog -->
+    <!-- dialogs -->
     
+    <string name="lastupdated">Last updated:</string>
+    <string name="picktrack">Pick track:</string>
     <string name="lastupdated">Last updated:</string>
     
     

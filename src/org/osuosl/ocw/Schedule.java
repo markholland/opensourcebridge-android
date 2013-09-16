@@ -376,6 +376,7 @@ public class Schedule extends ActionBarActivity {
 			//TODO remove hardcoded string
 			if(data == null){// dont show message when orientation switch
 				pdia.setMessage("Loading...");
+				pdia.setCancelable(false);
 				pdia.show();
 			}
 			//Find out what the orientation is and lock it while the background work runs
@@ -715,7 +716,7 @@ public class Schedule extends ActionBarActivity {
 		//Find the index of the current day and then set to the next
 		boolean found = false;
 		for(int i = 0; i < DAYS.size() - 1 && !found; i++){
-			if(mCurrentDate == DAYS.get(i)){
+			if(mCurrentDate.equals(DAYS.get(i))){
 				setDay(DAYS.get(i+1));
 				found = true;
 			}
@@ -736,7 +737,7 @@ public class Schedule extends ActionBarActivity {
 		
 		boolean found = false;
 		for(int i = DAYS.size() - 1; i > 0 && !found; i--){
-			if(mCurrentDate == DAYS.get(i)){
+			if(mCurrentDate.equals(DAYS.get(i))){
 				setDay(DAYS.get(i-1));
 				found = true;
 			}
@@ -864,6 +865,7 @@ public class Schedule extends ActionBarActivity {
 			super.onPreExecute();
 			pdia = new ProgressDialog(Schedule.this);
 			pdia.setMessage("Refreshing...");
+			pdia.setCancelable(false);
 			pdia.show();
 			//Find out what the orientation is and lock it while the background work runs
 			int currentOrientation = getResources().getConfiguration().orientation; 
@@ -909,7 +911,6 @@ public class Schedule extends ActionBarActivity {
         	pdia.dismiss();
         	mAdapter.notifyDataSetChanged();
         	mAdapter.filterDay(mCurrentDate);
-			mDate.setText(date_formatter.format(mCurrentDate));
 			showList();
         }
 	}
@@ -1312,6 +1313,7 @@ public class Schedule extends ActionBarActivity {
 					}
 					
 				}
+				calendar.setEvents(events);
 			
 			} else if(raw_json.equals("doNothing")) {
 			
@@ -1416,7 +1418,7 @@ public class Schedule extends ActionBarActivity {
 				}
 				
 				putPref(SCHEDULE_UPDATED, ""+System.currentTimeMillis());
-				
+				calendar.setEvents(events);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -1426,7 +1428,6 @@ public class Schedule extends ActionBarActivity {
 			// unable to get file, show error to user
 			// TODO
 		}
-		calendar.setEvents(events);
 		
 		
 	}

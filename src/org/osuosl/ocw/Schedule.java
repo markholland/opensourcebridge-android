@@ -330,7 +330,7 @@ public class Schedule extends ActionBarActivity {
 				
 				String error = show_bio();
 				
-				if(!error.equals("none")) { 
+				if(!error.equals(getApplicationContext().getString(R.string.no_error))) { 
 					toast.setText(error);
 					toast.show();
 				}

@@ -563,7 +563,7 @@ public class Schedule extends ActionBarActivity {
 				text.setText(textToSet);
 			} else {
 				TextView text = (TextView) view.findViewById(R.id.affiliation);
-				text.setText("No Affiliation");
+				text.setText(getApplicationContext().getString(R.string.no_affiliation));
 			}
 			
 			textToSet = speaker.getTwitter();

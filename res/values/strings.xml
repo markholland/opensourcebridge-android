@@ -32,6 +32,8 @@
     <string name="speakers_not_downloaded">The speakers for this event haven\'t been downloaded yet</string>
     <string name="event_no_speakers">This event doesn\'t have any speakers</string>
     <string name="no_more_days">No more days</string>
+    <string name="not_available">Not available</string>
+    <string name="no_affiliation">No affiliation</string>
     
     <!-- Menu items -->
     

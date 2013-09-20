@@ -16,7 +16,7 @@ public class Speaker {
 	public Speaker(){
 
 		this.speaker_id = -1;
-		this.fullname = "Not available";
+		this.fullname = "Not available"; //Be sure that in strings.xml this is assigned to "not_available"
 		this.biography = null;
 		this.affiliation = null;
 		this.twitter = null;

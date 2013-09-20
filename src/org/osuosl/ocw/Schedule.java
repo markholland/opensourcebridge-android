@@ -561,7 +561,7 @@ public class Schedule extends ActionBarActivity {
 			if (textToSet != null && textToSet != ""  && textToSet != "null" && textToSet.length() > 0){
 				TextView text = (TextView) view.findViewById(R.id.affiliation);
 				text.setText(textToSet);
-			} else {
+			} else if(!speaker.getFullname().equals(getApplicationContext().getString(R.string.not_available))){
 				TextView text = (TextView) view.findViewById(R.id.affiliation);
 				text.setText(getApplicationContext().getString(R.string.no_affiliation));
 			}

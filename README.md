@@ -1,7 +1,15 @@
-OpenConferenceWare Android
+ocw-android
 ==========================
 
-This is an Android mobile application for displaying a conference schedule. It is in ongoing development as part of GSoC 2013.
+ocw-android is an open source app for Android that displs schedules for a conference.
+
+All data is pulled from a server as JSON and follows a strict format that can be found in the README.
+
+Once pulled from the server all info is parsed and then stored in an sqlite database.  From then on until a timeout hits the app will use this locally stored data.
+
+When a timeout hits, a new JSON is only pulled from the server if it has been modified since the last time it was pulled, this last-modified date is stored locally.
+
+The app works on android version from 2.1 and up, there is an unmerged branch, feature-14685, that supports all the way down to android 1.6
 
 You can clone the code and add as an existing project in eclipse, you must have the android-sdk installed on your computer and the path to it configured in the adt-plugin.
 
@@ -14,7 +22,7 @@ You must have the android support library in your workspace which can be found i
 
 
 
-When a timeout hits, a new JSON is only pulled from the server if it has been modified since the last time it was pulled, this last-modified date is stored locally.
+
 
 
 

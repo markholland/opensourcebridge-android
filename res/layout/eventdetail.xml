@@ -138,14 +138,14 @@
 		                    android:padding="5dp"
 		                    android:visibility="gone"
 	                    />
-<!-- 	                    <ImageView -->
-<!-- 	                        android:layout_marginTop="20dp" -->
-<!-- 	                        android:layout_width="75dp" -->
-<!-- 	                        android:layout_height="31dp" -->
-<!-- 	                        android:layout_marginBottom="15dp" -->
-<!-- 	                        android:src="@drawable/icon_footer" -->
-<!-- 	                        android:layout_gravity="center_horizontal" -->
-<!-- 	                    /> -->
+	                    <ImageView
+	                        android:layout_marginTop="20dp"
+	                        android:layout_width="75dp"
+	                        android:layout_height="31dp"
+	                        android:layout_marginBottom="15dp"
+	                        android:src="@drawable/icon_footer"
+	                        android:layout_gravity="center_horizontal"
+	                    />
                    </LinearLayout>
             </ScrollView>    
         </LinearLayout>

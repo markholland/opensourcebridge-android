@@ -15,7 +15,8 @@
          android:title="@string/now" />
     <item android:id="@+id/action_filter"
           android:title="@string/filter" 
-    	  android:icon="@drawable/ic_menu_filter"
+    	  android:icon="@drawable/ic_action_filter"
+    	  android:padding="5dp"
     	  ocw-android:showAsAction="ifRoom"/>
     <item android:id="@+id/action_updated"
           android:title="@string/updated" />

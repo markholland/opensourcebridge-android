@@ -7,31 +7,31 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
     
     <ImageView
-        android:layout_width="wrap_content" 
+        android:id="@+id/logoView"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/logo"
         android:layout_marginBottom="35dip"
-    />
+        android:src="@drawable/logo" />
     
     <TextView
-        android:layout_width="wrap_content" 
+        android:id="@+id/loadingTag"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="5dip"
         android:text="@string/loading__tagline"
         android:textColor="#222222"
-        android:textStyle="bold"
-        android:layout_marginBottom="5dip"
-    />
+        android:textStyle="bold" />
     
     <TextView
+        android:id="@+id/loadingDateLocation"
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content"
         android:text="@string/loading__date_and_location"
         android:textColor="#08B9A6"
     />
 
-    
-    
     <TextView
+        android:id="@+id/loadingVersion"
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content"
         android:layout_marginTop="140dip"

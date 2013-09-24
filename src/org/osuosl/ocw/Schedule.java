@@ -1547,7 +1547,8 @@ public class Schedule extends ActionBarActivity {
 			int size = mItems.size();
 			for (int i=0; i<size; i++){
 				Event event = items.get(i);
-				if(event.getTrack_id() == track.getTrack_id()){
+				if(event.getTrack_id() == track.getTrack_id()
+						&& isSameDay(mCurrentDate,event.getStart_time())){
 					filtered.add(event);
 				}
 			}

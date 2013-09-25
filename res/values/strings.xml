@@ -42,7 +42,6 @@
     <string name="filter">Filter by Track</string>
     <string name="removefilter">Remove Filter</string>
     <string name="updated">Last updated</string>
-    <string name="about">About</string>
     
     <!--Bio view labels -->
     
@@ -61,7 +60,7 @@
     
     <string name="lastupdated">Last updated:</string>
     <string name="picktrack">Pick track:</string>
-    <string name="lastupdated">Last updated:</string>
+    
     
     
     

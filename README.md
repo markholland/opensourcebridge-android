@@ -15,9 +15,9 @@ You can clone the code and add as an existing project in eclipse, you must have 
 
 [Installing the android sdk](http://developer.android.com/sdk/index.html)
 
-You must have the android support library in your workspace which can be found in the extras folder of the Android SDK Manager.  
- Then in eclipse you must right-click on the project and under Android Tools click on "Add Support library...".   
- This will open the android sdk-manager and will prompt you to install the latest support library.
+You must have the android support library in your workspace which can be found inside the sdk folder at, extras/android/support/v7/appcompat. appcompat being the project you must import to your workspace.
+
+Next right-click the ocw-android project and select properties, in the windows that opens select android and then add the android support library.
 
 
 

@@ -1,7 +1,7 @@
 ocw-android
 ==========================
 
-ocw-android is an open source app for Android that displs schedules for a conference.
+ocw-android is an open source app for Android that displays schedules for a conference.
 
 All data is pulled from a server as JSON and follows a strict format that can be found in the README.
 

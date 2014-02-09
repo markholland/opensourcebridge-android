@@ -216,7 +216,7 @@ public class Schedule extends ActionBarActivity {
         	
         	// Was looking at an event when destroyed so load it.
         	if(mDetail) {
-        		if(mTracks.containsKey(mEvent.getTrack_id())) // If referenced track exists
+                if(mTracks.containsKey(mEvent.getTrack_id())) // If referenced track exists
         			mHeader.setBackgroundColor(mTracks.get(mEvent.getTrack_id()).getColor());
         		else // Otherwise use default track
         			mHeader.setBackgroundColor(new Track().getColor());
@@ -228,22 +228,23 @@ public class Schedule extends ActionBarActivity {
         		String timeString = startFormat.format(mEvent.getStart_time()) + " - " + endFormat.format(mEvent.getEnd_time());
         		mTime.setText(timeString);
         		
-        		Speaker sp = new Speaker();
-        		if(mSpeakers.containsKey(Integer.parseInt(mEvent.getSpeaker_ids()[0])))  // If first speaker exists
-        			sp = mSpeakers.get(Integer.parseInt(mEvent.getSpeaker_ids()[0]));
-        		// Otherwise default speaker is used
-        			
-
-        		if(sp!=null){
+Speaker sp = new Speaker();
+        		if(mSpeakers.containsKey(Integer.parseInt(event.getSpeaker_ids()[0])))
+        			sp = mSpeakers.get(Integer.parseInt(event.getSpeaker_ids()[0]));
+        		else //Use default speaker
+        			sp = new Speaker();
+                if(sp!=null){
         			if(!mEvent.getPresenter().equals("null")) // If presenter exists
         				mSpeaker.setText(mEvent.getPresenter());
         			else 									  // Otherwise use speaker 
         				mSpeaker.setText(sp.getFullname());
+
         			if(mTracks.containsKey(mEvent.getTrack_id()))
         				mTimeLocation.setBackgroundColor(mTracks.get(mEvent.getTrack_id()).getColor());
         			else //Use default track
         				mTimeLocation.setBackgroundColor(new Track().getColor());
         			mDescription.setText(mEvent.getDescription());
+
         		}
         		
         		mFlipper.setDisplayedChild(flipperTab);
@@ -275,6 +276,7 @@ public class Schedule extends ActionBarActivity {
 					return;// ignore clicks on non-events
 				}
 				//only set color if event has track_id
+
 				if(mEvent.getTrack_id() != -1)
 					if(mTracks.containsKey(mEvent.getTrack_id()))
 						mHeader.setBackgroundColor(mTracks.get(mEvent.getTrack_id()).getColor());
@@ -282,12 +284,14 @@ public class Schedule extends ActionBarActivity {
 						mHeader.setBackgroundColor(new Track().getColor());
 				mTitle.setText(mEvent.getEvent_title());
 				mRoom_title.setText(mEvent.getRoom_title());
+
 				DateFormat startFormat = new SimpleDateFormat("E, h:mm");
 				DateFormat endFormat = new SimpleDateFormat("h:mm a");
 				String timeString = startFormat.format(mEvent.getStart_time()) + " - " + endFormat.format(mEvent.getEnd_time());
 				mTime.setText(timeString);
 				
 				Speaker sp = new Speaker();
+
 				if(mSpeakers.containsKey(Integer.parseInt(mEvent.getSpeaker_ids()[0]))) // If first speaker exists
 					sp = mSpeakers.get(Integer.parseInt(mEvent.getSpeaker_ids()[0]));
 				//Otherwise use default speaker
@@ -297,11 +301,13 @@ public class Schedule extends ActionBarActivity {
         				mSpeaker.setText(mEvent.getPresenter());
         			else
         				mSpeaker.setText(sp.getFullname());
+
         			if(mTracks.containsKey(mEvent.getTrack_id()))
         				mTimeLocation.setBackgroundColor(mTracks.get(mEvent.getTrack_id()).getColor());
         			else //Use default track
         				mTimeLocation.setBackgroundColor(new Track().getColor());
         			mDescription.setText(mEvent.getDescription());
+
         			show_description();
 					mDescriptionScroller.scrollTo(0, 0);
 					mFlipper.setInAnimation(mInRight);
@@ -1158,11 +1164,10 @@ public class Schedule extends ActionBarActivity {
 					track.setTrack_id(json.getInt("track_id"));
 					track.setTrack_title(json.getString("track_title"));
 					
-					
+	
 					if (json.has("color"))
 						track.setColor(Color.parseColor(json.getString("color")));
-					
-				
+
 					if (json.has("color_text"))
 						track.setColor_text(Color.parseColor(json.getString("color_text")));
 					
@@ -1634,11 +1639,11 @@ public class Schedule extends ActionBarActivity {
 							track.setTextColor(new Track().getColor_text());
 							track.setText(new Track().getTrack_title());
 						}
-
-					} else { //doesn't have a track so make sure it doesn't reuse a listevent that did have a track
+                    } else { //doesn't have a track so make sure it doesn't reuse a listevent that did have a track
 						TextView track = (TextView) v.findViewById(R.id.track);
 						if(track != null)
 							track.setText("");
+
 					}
 					if (event_title != null) {
 						event_title.setText(event.getEvent_title());

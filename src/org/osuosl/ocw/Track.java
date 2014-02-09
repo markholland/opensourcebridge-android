@@ -9,18 +9,24 @@ public class Track {
 	private int color;
 	private int color_text;
 	
-	
 	public Track() {
-		
+
 		this.track_id = -1;
 		this.track_title = "";
 		this.color = Color.parseColor("#116db6"); //TODO Match color chosen for event list
 		this.color_text = Color.parseColor("white"); //TODO Match color chosen for event list
 	}
-	
-	
+
+	public Track(int track_id, String track_title, int color, int color_text) {
+
+		this.track_id = track_id;
+		this.track_title = track_title;
+		this.color = color;
+		this.color_text = color_text;
+	}
+
 	public Track(String track_id, String track_title, int color, int color_text) {
-		
+
 		this.track_id = Integer.parseInt(track_id);
 		this.track_title = track_title;
 		this.color = color;
@@ -60,6 +66,6 @@ public class Track {
 	public void setColor_text(int color_text) {
 		this.color_text = color_text;
 	}
-	
-	
+
+
 }

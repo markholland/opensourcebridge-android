@@ -60,7 +60,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 	private static final String[] GET_SCHEDULE_ROW = new String[]{KEY_EVENT_ID, KEY_TITLE, KEY_START, KEY_END, KEY_DESCRIPTION, KEY_ROOM_TITLE, KEY_TRACK_ID, KEY_SPEAKER_IDS, KEY_PRESENTER};
 	
 
-	public static DataBaseHandler getInstance(Context ctx) {
+	public static synchronized DataBaseHandler getInstance(Context ctx) {
 	      
 	    // Use the application context, which will ensure that you 
 	    // don't accidentally leak an Activity's context.
@@ -72,7 +72,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 	  }
 
 	public DataBaseHandler(Context context) {
-		super(context, DATABASE_NAME, null, DATABASE_VERSION);
+		super(context.getApplicationContext(), DATABASE_NAME, null, DATABASE_VERSION);
 	}
 
 	

@@ -1,9 +1,22 @@
 package DataAccess;
 
+import java.util.ArrayList;
+
+import org.osuosl.ocw.Event;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.database.sqlite.SQLiteDatabase;
+
 public class EventDAOImp implements IEventDAO{
 
+	
+	private static DataBaseHelper dbh;
+	
 	// Table names
-	private static final String SCHEDULE_TABLE_NAME = "SCHEDULE";
+	private static final String EVENT_TABLE_NAME = "SCHEDULE";
 	private static final String KEY_ID = "_id";
 	// Schedule table column names
 	private static final String KEY_EVENT_ID = "event_id";
@@ -20,13 +33,18 @@ public class EventDAOImp implements IEventDAO{
 	private static final String[] GET_SCHEDULE_ROW = new String[]{KEY_EVENT_ID, KEY_TITLE, KEY_START, KEY_END, KEY_DESCRIPTION, KEY_ROOM_TITLE, KEY_TRACK_ID, KEY_SPEAKER_IDS, KEY_PRESENTER};
 
 
+	public EventDAOImp(Context ctx) {
+		super();
+    	dbh = DataBaseHelper.getInstance(ctx.getApplicationContext());
+	}
+	
 	
 	public Long addEvents(ArrayList<Event> mEvents){
 		SQLiteDatabase db = null;
 		Long i = 0l;
 
 		try {
-			db = this.getWritableDatabase();
+			db = dbh.getWritableDatabase();
 			db.beginTransaction();
 			try{
 				for(int j = 0; j < mEvents.size(); j++){
@@ -48,7 +66,7 @@ public class EventDAOImp implements IEventDAO{
 					values.put(KEY_PRESENTER, mEvents.get(j).getPresenter());
 
 					// adding row
-					i = db.insert(SCHEDULE_TABLE_NAME, null, values);
+					i = db.insert(EVENT_TABLE_NAME, null, values);
 				}
 				db.setTransactionSuccessful();
 
@@ -69,14 +87,12 @@ public class EventDAOImp implements IEventDAO{
 	
 	
 	
-	
-	
 	public int updateEvents(ArrayList<Event> events){
 		SQLiteDatabase db = null;
 		int i = 0;
 
 		try {
-			db = this.getWritableDatabase();
+			db = dbh.getWritableDatabase();
 
 			db.beginTransaction();
 			try{
@@ -99,7 +115,7 @@ public class EventDAOImp implements IEventDAO{
 					values.put(KEY_PRESENTER, events.get(j).getPresenter());
 
 					// updating row
-					i = db.update(SCHEDULE_TABLE_NAME, values, KEY_EVENT_ID + " = ?",
+					i = db.update(EVENT_TABLE_NAME, values, KEY_EVENT_ID + " = ?",
 							new String[] { String.valueOf(events.get(j).getEvent_id())});
 				}
 				db.setTransactionSuccessful();
@@ -115,9 +131,6 @@ public class EventDAOImp implements IEventDAO{
 			e.printStackTrace();
 		}
 
-		finally{
-			;
-		}
 		return i;
 	}
 
@@ -132,15 +145,14 @@ public class EventDAOImp implements IEventDAO{
 		Event event = null;
 		SQLiteDatabase db = null;
 		try {
-			db = this.getReadableDatabase();
+			db = dbh.getReadableDatabase();
 
 			db.beginTransaction();
 			try{
 
-				Cursor cursor = db.query(SCHEDULE_TABLE_NAME, GET_SCHEDULE_ROW, KEY_ID + "=?",
+				Cursor cursor = db.query(EVENT_TABLE_NAME, GET_SCHEDULE_ROW, KEY_ID + "=?",
 						new String[] { id }, null, null, null, null);
-				if (cursor != null){
-					cursor.moveToFirst();
+				if (cursor.moveToFirst()){
 					
 					String event_id = cursor.getString(0);
 					String event_title = cursor.getString(1);
@@ -170,14 +182,60 @@ public class EventDAOImp implements IEventDAO{
 			e.printStackTrace();
 		}
 
-		finally{
-			;
-		}
-
 		return event;
 	}
 
-	
+	/**
+	 * Retrieve all rows(Event) in a single transaction.
+	 * @param id row to be retrieved.
+	 * @return Event at row == id.
+	 */
+	public ArrayList<Event> getAllEvents() {
+		ArrayList<Event> events = new ArrayList<Event>();
+		SQLiteDatabase db = null;
+		try {
+			db = dbh.getReadableDatabase();
+
+			db.beginTransaction();
+			try{
+
+				Cursor cursor = db.rawQuery("SELECT * FROM "+EVENT_TABLE_NAME, null, null);
+				if (cursor.moveToFirst()){
+
+					while (cursor.isAfterLast() == false) {
+
+						String event_id = cursor.getString(0);
+						String event_title = cursor.getString(1);
+						String start_time = cursor.getString(2);
+						String end_time = cursor.getString(3);
+						String description = cursor.getString(4);
+						String room_title = cursor.getString(5);
+						String track_id = cursor.getString(6);
+						String sIds = cursor.getString(7);
+						String presenter = cursor.getString(8);
+						cursor.close();
+						String[] speakerids = {};
+						if(sIds != null)
+							speakerids  = sIds.split(",");
+
+						events.add(new Event(
+								event_id, event_title, start_time, end_time, description, room_title, track_id, speakerids, presenter));
+						
+						cursor.moveToNext();
+					}
+				}
+				db.setTransactionSuccessful();
+			}catch(Exception e){
+				db.endTransaction();
+				throw e;
+			}
+			db.endTransaction();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return events;
+	}
 	
 	/**
 	 * Returns the number of rows a table has.
@@ -188,7 +246,7 @@ public class EventDAOImp implements IEventDAO{
 		long numRows = 0l;
 		SQLiteDatabase db = null;
 		try {
-			db = this.getReadableDatabase();
+			db = dbh.getReadableDatabase();
 			db.beginTransaction();
 			try{
 				numRows = DatabaseUtils.queryNumEntries(db, table_name);
@@ -202,40 +260,11 @@ public class EventDAOImp implements IEventDAO{
 			e.printStackTrace();
 		}
 
-		finally{
-			;
-		}
-
 		return numRows;
 
 	}
 	
-	public long deleteAllRowsInTable(String table_name){
-		SQLiteDatabase db = null;
-		int i = 0;
-		try {
-			db = this.getReadableDatabase();
-			db.beginTransaction();
-			try{
-				String deleteSQL = "DELETE FROM " + table_name;
-				db.execSQL(deleteSQL);
-				db.setTransactionSuccessful();
-			} catch (Exception e){
-				db.endTransaction();
-				throw e;
-			}
-			db.endTransaction();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		finally{
-			;
-		}
-
-		return i;
-	}
-
+	
 	/**
 	 * Checks if a row(Event) already exists with event_id == id.
 	 * @param id event_id to be checked if already exists in the database.
@@ -245,7 +274,7 @@ public class EventDAOImp implements IEventDAO{
 		int exists = -1;
 		SQLiteDatabase db = null;
 		try {
-			db = this.getReadableDatabase();
+			db = dbh.getReadableDatabase();
 
 			db.beginTransaction();
 			try{
@@ -264,11 +293,7 @@ public class EventDAOImp implements IEventDAO{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		finally{
-			;
-		}
-
+		
 		return exists;
 	}
 

@@ -1,13 +1,11 @@
 package DataAccess;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
-public class DataBaseHelper extends SQLiteAssetHelper implements IDataBaseHelper {
+public class DataBaseHelper extends SQLiteAssetHelper implements IDataBaseHelper{
 
 	private static final String DATABASE_NAME = "ocw";  //Name of the .db file stored on the device
 	private static final int DATABASE_VERSION = 1;		   
@@ -28,6 +26,17 @@ public class DataBaseHelper extends SQLiteAssetHelper implements IDataBaseHelper
 
 	public DataBaseHelper(Context context) {
 		super(context.getApplicationContext(), DATABASE_NAME, null, DATABASE_VERSION);
+	}
+
+	
+	public void deleteAllRows(String TABLE_NAME){
+		SQLiteDatabase db = null;
+		try {
+			db = this.getReadableDatabase();
+			db.delete(TABLE_NAME, null, null);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	

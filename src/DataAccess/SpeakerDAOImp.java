@@ -35,7 +35,7 @@ public class SpeakerDAOImp implements ISpeakerDAO {
 
 
 
-	public Long addSpeakers(ArrayList<Speaker> speakers){
+	public Long addSpeakers(ArrayList<Speaker> speakers) {
 		SQLiteDatabase db = null;
 		Long i = 0l;
 
@@ -76,7 +76,7 @@ public class SpeakerDAOImp implements ISpeakerDAO {
 
 
 
-	public int updateSpeakers(ArrayList<Speaker> speakers){
+	public int updateSpeakers(ArrayList<Speaker> speakers) {
 		SQLiteDatabase db = null;
 		int i = 0;
 
@@ -240,7 +240,7 @@ public class SpeakerDAOImp implements ISpeakerDAO {
 	 * @param array
 	 * @return 
 	 */
-	public static String convertArrayToString(String[] array){
+	public static String convertArrayToString(String[] array) {
 		String str = "";
 		for (int i = 0;i<array.length; i++) {
 			str = str+array[i];
@@ -256,7 +256,7 @@ public class SpeakerDAOImp implements ISpeakerDAO {
 	 * @param str
 	 * @return
 	 */
-	public static String[] convertStringToArray(String str){
+	public static String[] convertStringToArray(String str) {
 		String[] arr = str.split(",");
 		return arr;
 	}

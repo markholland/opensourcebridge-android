@@ -12,11 +12,13 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 
-public class TrackDAOImp implements ITrackDAO{
+public class TrackDAOImp implements ITrackDAO {
 
 	private static DataBaseHelper dbh;
 
 
+	private static final String KEY_ID = "_id";
+	
 	private static final String TRACKS_TABLE_NAME = "TRACKS";
 	// Tracks table column names
 	private static final String KEY_TRACK_ID = "track_id";
@@ -32,7 +34,7 @@ public class TrackDAOImp implements ITrackDAO{
 
 	
 
-	public Long addTracks(ArrayList<Track> tracks){
+	public Long addTracks(ArrayList<Track> tracks) {
 		SQLiteDatabase db = null;
 		Long i = 0l;
 
@@ -69,7 +71,7 @@ public class TrackDAOImp implements ITrackDAO{
 
 	
 
-	public int updateTracks(ArrayList<Track> tracks){
+	public int updateTracks(ArrayList<Track> tracks) {
 		SQLiteDatabase db = null;
 		int i = 0;
 
@@ -234,7 +236,7 @@ public class TrackDAOImp implements ITrackDAO{
 	 * @param array
 	 * @return 
 	 */
-	public static String convertArrayToString(String[] array){
+	public static String convertArrayToString(String[] array) {
 		String str = "";
 		for (int i = 0;i<array.length; i++) {
 			str = str+array[i];
@@ -250,7 +252,7 @@ public class TrackDAOImp implements ITrackDAO{
 	 * @param str
 	 * @return
 	 */
-	public static String[] convertStringToArray(String str){
+	public static String[] convertStringToArray(String str) {
 		String[] arr = str.split(",");
 		return arr;
 	}

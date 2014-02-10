@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
+import BusinessLogic.Event;
+import BusinessLogic.Speaker;
+import BusinessLogic.Track;
+
 // Class used for saving the current state of important objects when the orientation
 // of the device is switched.
 public class StateChangeData {

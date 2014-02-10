@@ -2,10 +2,10 @@ package DataAccess;
 
 import java.util.ArrayList;
 
-import org.osuosl.ocw.Event;
-import org.osuosl.ocw.Speaker;
-import org.osuosl.ocw.Track;
 
+import BusinessLogic.Event;
+import BusinessLogic.Speaker;
+import BusinessLogic.Track;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -14,7 +14,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
-public class DataBaseHandler extends SQLiteAssetHelper implements IDataBaseHandler{
+public class DataBaseHandler extends SQLiteAssetHelper {
 
 	private static final String DATABASE_NAME = "ocw";     //Name of the .db file stored on the device
 	private static final int DATABASE_VERSION = 1;		   

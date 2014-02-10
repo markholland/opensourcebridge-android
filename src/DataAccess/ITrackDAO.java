@@ -2,7 +2,7 @@ package DataAccess;
 
 import java.util.ArrayList;
 
-import org.osuosl.ocw.Track;
+import BusinessLogic.Track;
 
 public interface ITrackDAO {
 

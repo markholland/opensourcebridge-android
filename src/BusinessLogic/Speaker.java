@@ -1,4 +1,4 @@
-package org.osuosl.ocw;
+package BusinessLogic;
 
 public class Speaker {
 	

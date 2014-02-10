@@ -2,8 +2,8 @@ package DataAccess;
 
 import java.util.ArrayList;
 
-import org.osuosl.ocw.Event;
 
+import BusinessLogic.Event;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;

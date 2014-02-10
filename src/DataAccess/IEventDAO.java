@@ -2,7 +2,7 @@ package DataAccess;
 
 import java.util.ArrayList;
 
-import org.osuosl.ocw.Event;
+import BusinessLogic.Event;
 
 public interface IEventDAO {
 

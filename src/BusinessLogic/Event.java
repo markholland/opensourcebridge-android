@@ -1,4 +1,4 @@
-package org.osuosl.ocw;
+package BusinessLogic;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -142,7 +142,4 @@ public class Event {
 		this.presenter = presenter;
 	}
     
-
-
-	
 }

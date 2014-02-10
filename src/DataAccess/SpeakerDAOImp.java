@@ -2,8 +2,8 @@ package DataAccess;
 
 import java.util.ArrayList;
 
-import org.osuosl.ocw.Speaker;
 
+import BusinessLogic.Speaker;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;

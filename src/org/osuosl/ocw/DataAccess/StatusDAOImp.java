@@ -1,4 +1,4 @@
-package DataAccess;
+package org.osuosl.ocw.DataAccess;
 
 import android.content.ContentValues;
 import android.content.Context;

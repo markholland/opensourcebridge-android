@@ -25,11 +25,11 @@ import org.apache.http.params.HttpParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.osuosl.ocw.BusinessLogic.Event;
+import org.osuosl.ocw.BusinessLogic.Speaker;
+import org.osuosl.ocw.BusinessLogic.Track;
+import org.osuosl.ocw.DataAccess.DataBaseHandler;
 
-import BusinessLogic.Event;
-import BusinessLogic.Speaker;
-import BusinessLogic.Track;
-import DataAccess.DataBaseHandler;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;

@@ -1,4 +1,4 @@
-package BusinessLogic;
+package org.osuosl.ocw.BusinessLogic;
 
 import android.graphics.Color;
 

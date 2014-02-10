@@ -1,4 +1,4 @@
-package DataAccess;
+package org.osuosl.ocw.DataAccess;
 
 public interface IDataBaseHelper {
 	public long numRows(String TABLE_NAME);

@@ -1,11 +1,12 @@
-package DataAccess;
+package org.osuosl.ocw.DataAccess;
 
 import java.util.ArrayList;
 
+import org.osuosl.ocw.BusinessLogic.Event;
+import org.osuosl.ocw.BusinessLogic.Speaker;
+import org.osuosl.ocw.BusinessLogic.Track;
 
-import BusinessLogic.Event;
-import BusinessLogic.Speaker;
-import BusinessLogic.Track;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;

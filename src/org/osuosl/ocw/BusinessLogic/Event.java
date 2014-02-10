@@ -1,4 +1,4 @@
-package BusinessLogic;
+package org.osuosl.ocw.BusinessLogic;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

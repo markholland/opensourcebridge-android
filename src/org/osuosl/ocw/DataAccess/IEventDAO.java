@@ -1,8 +1,9 @@
-package DataAccess;
+package org.osuosl.ocw.DataAccess;
 
 import java.util.ArrayList;
 
-import BusinessLogic.Event;
+import org.osuosl.ocw.BusinessLogic.Event;
+
 
 public interface IEventDAO {
 

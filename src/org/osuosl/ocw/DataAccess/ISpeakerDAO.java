@@ -1,8 +1,9 @@
-package DataAccess;
+package org.osuosl.ocw.DataAccess;
 
 import java.util.ArrayList;
 
-import BusinessLogic.Speaker;
+import org.osuosl.ocw.BusinessLogic.Speaker;
+
 
 public interface ISpeakerDAO {
 

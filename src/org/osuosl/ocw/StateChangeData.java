@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
-import BusinessLogic.Event;
-import BusinessLogic.Speaker;
-import BusinessLogic.Track;
+import org.osuosl.ocw.BusinessLogic.Event;
+import org.osuosl.ocw.BusinessLogic.Speaker;
+import org.osuosl.ocw.BusinessLogic.Track;
+
 
 // Class used for saving the current state of important objects when the orientation
 // of the device is switched.

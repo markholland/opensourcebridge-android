@@ -1,4 +1,4 @@
-package DataAccess;
+package org.osuosl.ocw.DataAccess;
 
 public interface IStatusDAO {
 

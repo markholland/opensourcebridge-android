@@ -227,6 +227,15 @@ public class TrackDAOImp implements ITrackDAO {
 	}
 
 	
+	public long numRows() {
+		return dbh.numRows(TRACKS_TABLE_NAME);
+	}
+	
+	
+	public void deleteAllRows() {
+		dbh.deleteAllRows(TRACKS_TABLE_NAME);
+	}
+	
 
 	/**
 	 * Converts an array of Strings to a comma separated string

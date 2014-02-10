@@ -269,6 +269,14 @@ public class EventDAOImp implements IEventDAO{
 		return exists;
 	}
 
+
+	public long numRows() {
+		return dbh.numRows(EVENT_TABLE_NAME);
+	}
+	
+	public void deleteAllRows() {
+		dbh.deleteAllRows(EVENT_TABLE_NAME);
+	}
 	
 	
 	/**

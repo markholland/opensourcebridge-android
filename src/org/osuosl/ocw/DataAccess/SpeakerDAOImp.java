@@ -234,7 +234,15 @@ public class SpeakerDAOImp implements ISpeakerDAO {
 		return exists;
 	}
 
+	
+	public long numRows() {
+		return dbh.numRows(SPEAKERS_TABLE_NAME);
+	}
 
+	
+	public void deleteAllRows() {
+		dbh.deleteAllRows(SPEAKERS_TABLE_NAME);
+	}
 
 	/**
 	 * Converts an array of Strings to a comma separated string

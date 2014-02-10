@@ -11,4 +11,6 @@ public interface ITrackDAO {
 	public int updateTracks(ArrayList<Track> Tracks);
 	public Track getTrackRow(String id);
 	public ArrayList<Track> getAllTracks();
+	public long numRows();
+	public void deleteAllRows();
 }

@@ -28,7 +28,9 @@ import org.json.JSONObject;
 import org.osuosl.ocw.BusinessLogic.Event;
 import org.osuosl.ocw.BusinessLogic.Speaker;
 import org.osuosl.ocw.BusinessLogic.Track;
-import org.osuosl.ocw.DataAccess.DataBaseHandler;
+import org.osuosl.ocw.DataAccess.EventDAOImp;
+import org.osuosl.ocw.DataAccess.SpeakerDAOImp;
+import org.osuosl.ocw.DataAccess.TrackDAOImp;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -232,9 +234,9 @@ public class Schedule extends ActionBarActivity {
         		String timeString = startFormat.format(mEvent.getStart_time()) + " - " + endFormat.format(mEvent.getEnd_time());
         		mTime.setText(timeString);
         		
-Speaker sp = new Speaker();
-        		if(mSpeakers.containsKey(Integer.parseInt(event.getSpeaker_ids()[0])))
-        			sp = mSpeakers.get(Integer.parseInt(event.getSpeaker_ids()[0]));
+        		Speaker sp = null;
+        		if(mSpeakers.containsKey(Integer.parseInt(mEvent.getSpeaker_ids()[0])))
+        			sp = mSpeakers.get(Integer.parseInt(mEvent.getSpeaker_ids()[0]));
         		else //Use default speaker
         			sp = new Speaker();
                 if(sp!=null){
@@ -1054,8 +1056,8 @@ Speaker sp = new Speaker();
 			String raw_json = getURL(SPEAKER_URI, "SPEAKERS", force);
 
 			if (raw_json.equals("database")){
-				DataBaseHandler db = new DataBaseHandler(getApplicationContext());
-		  		Long size = db.numRows("SPEAKERS");
+				SpeakerDAOImp db = new SpeakerDAOImp(getApplicationContext());
+		  		Long size = db.numRows();
 				
 				for(int i = 1; i <= size; i++){
 					speaker = getSpeaker(""+i, getApplicationContext());
@@ -1110,10 +1112,10 @@ Speaker sp = new Speaker();
 				
 				}
 				
-				if(numRows("SPEAKERS",getApplicationContext()) == 0l){
+				if(new SpeakerDAOImp(getApplicationContext()).numRows() == 0l){
 					addSpeakers(speakersList,getApplicationContext());
 				} else {
-					deleteAllRows("SPEAKERS",getApplicationContext());
+					new SpeakerDAOImp(getApplicationContext()).deleteAllRows();
 					addSpeakers(speakersList,getApplicationContext());
 				}
 				
@@ -1140,8 +1142,8 @@ Speaker sp = new Speaker();
 			String raw_json = getURL(TRACKS_URI, "TRACKS", force);
 			
 			if (raw_json.equals("database")){
-				DataBaseHandler db = new DataBaseHandler(getApplicationContext());
-				long size = db.numRows("TRACKS");
+				TrackDAOImp db = new TrackDAOImp(getApplicationContext());
+				long size = db.numRows();
 				for(int i=1; i<=size; i++){
 					Track track = new Track();
 					track = getTrack(""+i, getApplicationContext());
@@ -1180,10 +1182,10 @@ Speaker sp = new Speaker();
 					mTracks.put(track.getTrack_id(), track);
 				}
 				
-				if(numRows("TRACKS",getApplicationContext()) == 0l){
+				if(new TrackDAOImp(getApplicationContext()).numRows() == 0l){
 					addTracks(tracksList,getApplicationContext());
 				} else {
-					deleteAllRows("TRACKS",getApplicationContext());
+					new TrackDAOImp(getApplicationContext()).deleteAllRows();
 					addTracks(tracksList,getApplicationContext());
 				}
 				
@@ -1217,17 +1219,19 @@ Speaker sp = new Speaker();
 		try {
 			// determine whether to open local file or remote file
 			// Retrieve from database instead of raw file
-			DataBaseHandler db = new DataBaseHandler(getApplicationContext());
+			EventDAOImp Event_db = new EventDAOImp(getApplicationContext());
+			SpeakerDAOImp Speaker_db = new SpeakerDAOImp(getApplicationContext());
+			TrackDAOImp Track_db = new TrackDAOImp(getApplicationContext());
 			
-			if (table.equals("SCHEDULE") && (db.numRows("SCHEDULE") != 0) && !force && ((Long.parseLong(getPref(SCHEDULE_UPDATED))
+			if (table.equals("SCHEDULE") && (Event_db.numRows() != 0) && !force && ((Long.parseLong(getPref(SCHEDULE_UPDATED))
 					+Long.parseLong(getPref(SCHEDULE_TIMEOUT))) > System.currentTimeMillis())){
 				return "database";
 			}
-			else if(table.equals("SPEAKERS") && (db.numRows("SPEAKERS") != 0) && !force && ((Long.parseLong(getPref(SPEAKERS_UPDATED))
+			else if(table.equals("SPEAKERS") && (Speaker_db.numRows() != 0) && !force && ((Long.parseLong(getPref(SPEAKERS_UPDATED))
 					+Long.parseLong(getPref(SPEAKERS_TIMEOUT))) > System.currentTimeMillis())){
 				return "database";
 			}
-			else if(table.equals("TRACKS") && (db.numRows("TRACKS") != 0) && !force && ((Long.parseLong(getPref(TRACKS_UPDATED))
+			else if(table.equals("TRACKS") && (Track_db.numRows() != 0) && !force && ((Long.parseLong(getPref(TRACKS_UPDATED))
 					+Long.parseLong(getPref(TRACKS_TIMEOUT))) > System.currentTimeMillis())){
 				return "database";
 			
@@ -1242,11 +1246,11 @@ Speaker sp = new Speaker();
 					
 				} catch (IOException e) {
 					// fall back to local file if exists, regardless of age
-					if ((db.numRows("SCHEDULE") != 0)) {
+					if ((Event_db.numRows() != 0)) {
 						return "database";
-					} else if(db.numRows("SPEAKERS") != 0) {
+					} else if(Speaker_db.numRows() != 0) {
 						return "database";
-					} else if(db.numRows("TRACKS") != 0){
+					} else if(Track_db.numRows() != 0){
 						return "database";
 					}
 					else {
@@ -1313,8 +1317,8 @@ Speaker sp = new Speaker();
 		try{
 			String raw_json = getURL(SCHEDULE_URI, "SCHEDULE", force);
 			if (raw_json.equals("database")){
-				DataBaseHandler db = new DataBaseHandler(getApplicationContext());
-				long size = db.numRows("SCHEDULE");
+				EventDAOImp db = new EventDAOImp(getApplicationContext());
+				long size = db.numRows();
 				for(int i=1; i<=size; i++){
 					mEvent = getSchedule(""+i, getApplicationContext());
 					
@@ -1424,10 +1428,10 @@ Speaker sp = new Speaker();
 					events.add(event);
 				}
 				
-				if(numRows("SCHEDULE",getApplicationContext()) == 0l){
+				if(new EventDAOImp(getApplicationContext()).numRows() == 0l){
 					addEvents(events,getApplicationContext());
 				} else {
-					deleteAllRows("SCHEDULE", getApplicationContext());
+					new EventDAOImp(getApplicationContext()).deleteAllRows();
 					addEvents(events,getApplicationContext());
 				}
 				
@@ -1730,59 +1734,49 @@ Speaker sp = new Speaker();
 	
   	
 	public static Long addEvents(ArrayList<Event> events, Context context){
-		DataBaseHandler db = new DataBaseHandler(context);
+		EventDAOImp db = new EventDAOImp(context);
   		return db.addEvents(events);
   	}
 	
 	public static Long addSpeakers(ArrayList<Speaker> speakersList, Context context){
-		DataBaseHandler db = new DataBaseHandler(context);
+		SpeakerDAOImp db = new SpeakerDAOImp(context);
   		return db.addSpeakers(speakersList);
   	}
 
   	public static Long addTracks(ArrayList<Track> tracks, Context context){
-  		DataBaseHandler db = new DataBaseHandler(context);
+  		TrackDAOImp db = new TrackDAOImp(context);
   		return db.addTracks(tracks);
   	}
   	
   	public static Event getSchedule(String event_id, Context context){
-  		DataBaseHandler db = new DataBaseHandler(context);
+  		EventDAOImp db = new EventDAOImp(context);
   		return db.getEventRow(event_id);
   	}
   	
   	public static Speaker getSpeaker(String speaker_id, Context context){
-  		DataBaseHandler db = new DataBaseHandler(context);
-  		return db.getSpeakersRow(speaker_id);
+  		SpeakerDAOImp db = new SpeakerDAOImp(context);
+  		return db.getSpeakerRow(speaker_id);
   	}
   		
   	public static Track getTrack(String track_id, Context context){
-  		DataBaseHandler db = new DataBaseHandler(context);
-  		return db.getTracksRow(track_id);
+  		TrackDAOImp db = new TrackDAOImp(context);
+  		return db.getTrackRow(track_id);
   	}
   	
   	public static int eventExists(String event_id, Context context){
-  		DataBaseHandler db = new DataBaseHandler(context);
+  		EventDAOImp db = new EventDAOImp(context);
   		return db.existsEvent(event_id);
   	}
   	
   	public static int speakerExists(String speaker_id, Context context){
-  		DataBaseHandler db = new DataBaseHandler(context);
+  		SpeakerDAOImp db = new SpeakerDAOImp(context);
   		return db.existsSpeaker(speaker_id);
   	}
   	
   	public static int trackExists(String track_id, Context context){
-  		DataBaseHandler db = new DataBaseHandler(context);
+  		TrackDAOImp db = new TrackDAOImp(context);
   		return db.existsTrack(track_id);
   	}
 	
-  	public static Long numRows(String table, Context context){
-  		DataBaseHandler db = new DataBaseHandler(context);
-  		return db.numRows(table);
-  	}
-  	
-  	public static Long deleteAllRows(String table,Context context){
-  		DataBaseHandler db = new DataBaseHandler(context);
-  		return db.deleteAllRows(table);
-  	}
-  	
 
 }

@@ -120,7 +120,7 @@ public class SpeakerDAOImp implements ISpeakerDAO {
 	 * @param id row to be retrieved.
 	 * @return Speaker at row == id.
 	 */
-	public Speaker getSpeakersRow(String id) {
+	public Speaker getSpeakerRow(String id) {
 		Speaker speaker = null;
 		SQLiteDatabase db = null;
 		try {
@@ -171,19 +171,20 @@ public class SpeakerDAOImp implements ISpeakerDAO {
 				Cursor cursor = db.rawQuery("SELECT * FROM "+SPEAKERS_TABLE_NAME, null, null);
 				if (cursor.moveToFirst()){
 					
-					while (cursor.isAfterLast() == false) {
-						
+					while (cursor.isAfterLast() == false) {	
 					
 					speaker = new Speaker(
 							cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), 
 							cursor.getString(5), cursor.getString(6), cursor.getString(7), cursor.getString(8),
 							cursor.getString(9));
-					cursor.close();
 					
 					speakers.add(speaker);
 					
+					cursor.moveToNext();
+					
 					}
 				}
+				cursor.close();
 				db.setTransactionSuccessful();
 			} catch(Exception e){
 				db.endTransaction();

@@ -1,5 +1,260 @@
 package DataAccess;
 
-public class TrackDAOImp {
+import java.util.ArrayList;
+
+import org.osuosl.ocw.Event;
+import org.osuosl.ocw.Speaker;
+import org.osuosl.ocw.Track;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.database.sqlite.SQLiteDatabase;
+
+public class TrackDAOImp implements ITrackDAO{
+
+	private static DataBaseHelper dbh;
+
+
+	private static final String TRACKS_TABLE_NAME = "TRACKS";
+	// Tracks table column names
+	private static final String KEY_TRACK_ID = "track_id";
+	private static final String KEY_TRACK_TITLE = "track_title";
+	private static final String KEY_COLOR = "color";
+	private static final String KEY_COLOR_TEXT = "color_text";
+
+
+	public TrackDAOImp(Context ctx) {
+		super();
+		dbh = DataBaseHelper.getInstance(ctx.getApplicationContext());
+	}
+
+	
+
+	public Long addTracks(ArrayList<Track> tracks){
+		SQLiteDatabase db = null;
+		Long i = 0l;
+
+		try {
+			db = dbh.getWritableDatabase();
+
+			db.beginTransaction();
+
+			try{
+				for(int j = 0; j < tracks.size(); j++){
+					ContentValues values = new ContentValues();
+					values.put(KEY_TRACK_ID, tracks.get(j).getTrack_id());
+					values.put(KEY_TRACK_TITLE, tracks.get(j).getTrack_title());
+					values.put(KEY_COLOR, tracks.get(j).getColor());
+					values.put(KEY_COLOR_TEXT, tracks.get(j).getColor_text());
+
+					//adding row
+					i = db.insert(TRACKS_TABLE_NAME, null, values);
+				}
+
+				db.setTransactionSuccessful();
+
+			} catch(Exception e){
+				db.endTransaction();
+				throw e;
+			}
+			db.endTransaction();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return i;
+	}
+
+	
+
+	public int updateTracks(ArrayList<Track> tracks){
+		SQLiteDatabase db = null;
+		int i = 0;
+
+		try {
+			db = dbh.getWritableDatabase();
+			db.beginTransaction();
+			try{
+				for(int j = 0; j < tracks.size(); j++){
+					ContentValues values = new ContentValues();
+					values.put(KEY_TRACK_ID, tracks.get(j).getTrack_id());
+					values.put(KEY_TRACK_TITLE, tracks.get(j).getTrack_title());
+					values.put(KEY_COLOR, tracks.get(j).getColor());
+					values.put(KEY_COLOR_TEXT, tracks.get(j).getColor_text());
+
+
+					// updating row
+					i = db.update(TRACKS_TABLE_NAME, values, KEY_TRACK_ID + " = ?",
+							new String[] { String.valueOf(tracks.get(j).getTrack_id())});
+				}
+				db.setTransactionSuccessful();
+
+			} catch(Exception e){
+				db.endTransaction();
+				throw e;
+			}
+			db.endTransaction();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return i;
+	}
+
+
+
+
+	/**
+	 * Retrieve a single row(Track) from the tracks database table
+	 * @param id row of the track to be retrieved.
+	 * @return Track at row == id.
+	 */
+	public Track getTrackRow(String id) {
+		Track track = null;
+		SQLiteDatabase db = null;
+		try {
+			db = dbh.getReadableDatabase();
+
+			db.beginTransaction();
+			try{
+
+				Cursor cursor = db.rawQuery("SELECT * FROM TRACKS WHERE _id = "+id, null);
+
+				if (cursor.moveToFirst()){
+					
+					track = new Track(
+							cursor.getString(1), cursor.getString(2), cursor.getInt(3), cursor.getInt(4) 
+							);
+					cursor.close();
+				}
+				db.setTransactionSuccessful();
+			} catch(Exception e){
+				db.endTransaction();
+				throw e;
+			}
+			db.endTransaction();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return track;
+	}
+	
+	
+	/**
+	 * Retrieve a single row(Track) from the tracks database table
+	 * @param id row of the track to be retrieved.
+	 * @return Track at row == id.
+	 */
+	public ArrayList<Track> getAllTracks() {
+		ArrayList<Track> tracks = new ArrayList<Track>();
+		Track track = null;
+		SQLiteDatabase db = null;
+		try {
+			db = dbh.getReadableDatabase();
+
+			db.beginTransaction();
+			try{
+
+				Cursor cursor = db.rawQuery("SELECT * FROM "+TRACKS_TABLE_NAME, null, null);
+
+				if (cursor.moveToFirst()){
+
+					while (cursor.isAfterLast() == false) {
+
+
+						track = new Track(
+								cursor.getString(1), cursor.getString(2), cursor.getInt(3), cursor.getInt(4) 
+								);
+
+						tracks.add(track);
+						
+						cursor.moveToNext();
+					}
+				}
+				cursor.close();
+				db.setTransactionSuccessful();
+			} catch(Exception e){
+				db.endTransaction();
+				throw e;
+			}
+			db.endTransaction();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return tracks;
+	}
+
+	
+
+	/**
+	 * Checks if a row(Track) already exists with track_id == id.
+	 * @param id track_id to be checked if already exists in the database.
+	 * @return 1 if exists, 0 if doesn't exist, -1 if error checking if exists.
+	 */
+	public int existsTrack(String id) {
+		int exists = -1;
+		SQLiteDatabase db = null;
+		try {
+			db = dbh.getReadableDatabase();
+
+			db.beginTransaction();
+
+			try{
+				Cursor cursor = db.rawQuery("select 1 from TRACKS where track_id=?", 
+						new String[] { id });
+				Boolean b = (cursor.getCount() > 0);
+				exists = b? 1 : 0;
+				cursor.close();
+				db.setTransactionSuccessful();
+			} catch(Exception e){
+				db.endTransaction();
+				throw e;
+			}
+			db.endTransaction();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		finally{
+
+		}
+
+		return exists;
+	}
+
+	
+
+	/**
+	 * Converts an array of Strings to a comma separated string
+	 * @param array
+	 * @return 
+	 */
+	public static String convertArrayToString(String[] array){
+		String str = "";
+		for (int i = 0;i<array.length; i++) {
+			str = str+array[i];
+			// Do not append comma at the end of last element
+			if(i<array.length-1){
+				str = str+",";
+			}
+		}
+		return str;
+	}
+	/**
+	 * Converts a comma separated string of elements into an array of Strings
+	 * @param str
+	 * @return
+	 */
+	public static String[] convertStringToArray(String str){
+		String[] arr = str.split(",");
+		return arr;
+	}
+}
+
 
 }

@@ -14,7 +14,6 @@ public class EventDAOImp implements IEventDAO{
 	
 	private static DataBaseHelper dbh;
 	
-	// Table names
 	private static final String EVENT_TABLE_NAME = "SCHEDULE";
 	private static final String KEY_ID = "_id";
 	// Schedule table column names
@@ -223,6 +222,7 @@ public class EventDAOImp implements IEventDAO{
 						cursor.moveToNext();
 					}
 				}
+				cursor.close();
 				db.setTransactionSuccessful();
 			}catch(Exception e){
 				db.endTransaction();

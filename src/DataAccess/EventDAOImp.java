@@ -63,9 +63,7 @@ public class EventDAOImp implements IEventDAO{
 			e.printStackTrace();
 		}
 
-		finally{
-			db.close();
-		}
+		
 		return i;
 	}
 	
@@ -118,7 +116,7 @@ public class EventDAOImp implements IEventDAO{
 		}
 
 		finally{
-			db.close();
+			;
 		}
 		return i;
 	}
@@ -173,7 +171,7 @@ public class EventDAOImp implements IEventDAO{
 		}
 
 		finally{
-			db.close();
+			;
 		}
 
 		return event;
@@ -205,7 +203,7 @@ public class EventDAOImp implements IEventDAO{
 		}
 
 		finally{
-			db.close();
+			;
 		}
 
 		return numRows;
@@ -232,7 +230,7 @@ public class EventDAOImp implements IEventDAO{
 		}
 
 		finally{
-			db.close();
+			;
 		}
 
 		return i;
@@ -268,7 +266,7 @@ public class EventDAOImp implements IEventDAO{
 		}
 
 		finally{
-			db.close();
+			;
 		}
 
 		return exists;

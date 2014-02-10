@@ -124,7 +124,7 @@ public class DataBaseHandler extends SQLiteAssetHelper implements IDataBaseHandl
 		}
 
 		finally{
-			db.close();
+			
 		}
 		return i;
 	}
@@ -169,7 +169,7 @@ public class DataBaseHandler extends SQLiteAssetHelper implements IDataBaseHandl
 		}
 
 		finally{
-			db.close();
+			
 		}
 		return i;
 	}
@@ -209,7 +209,7 @@ public class DataBaseHandler extends SQLiteAssetHelper implements IDataBaseHandl
 		}
 
 		finally{
-			db.close();
+			
 		}
 		return i;
 	}
@@ -250,7 +250,7 @@ public class DataBaseHandler extends SQLiteAssetHelper implements IDataBaseHandl
 		}
 
 		finally{
-			db.close();
+			
 		}
 		return i;
 	}
@@ -301,7 +301,7 @@ public class DataBaseHandler extends SQLiteAssetHelper implements IDataBaseHandl
 		}
 
 		finally{
-			db.close();
+			
 		}
 		return i;
 	}
@@ -343,7 +343,7 @@ public class DataBaseHandler extends SQLiteAssetHelper implements IDataBaseHandl
 		}
 
 		finally{
-			db.close();
+			
 		}
 		return i;
 	}
@@ -381,7 +381,7 @@ public class DataBaseHandler extends SQLiteAssetHelper implements IDataBaseHandl
 		}
 
 		finally{
-			db.close();
+			
 		}
 		return i;
 	}
@@ -422,7 +422,7 @@ public class DataBaseHandler extends SQLiteAssetHelper implements IDataBaseHandl
 		}
 
 		finally{
-			db.close();
+			
 		}
 		return i;
 		
@@ -478,7 +478,7 @@ public class DataBaseHandler extends SQLiteAssetHelper implements IDataBaseHandl
 		}
 
 		finally{
-			db.close();
+			
 		}
 
 		return event;
@@ -521,7 +521,7 @@ public class DataBaseHandler extends SQLiteAssetHelper implements IDataBaseHandl
 		}
 
 		finally{
-			db.close();
+			
 		}
 
 		return speaker;
@@ -562,7 +562,7 @@ public class DataBaseHandler extends SQLiteAssetHelper implements IDataBaseHandl
 		}
 
 		finally{
-			db.close();
+			
 		}
 
 		return track;
@@ -601,7 +601,7 @@ public class DataBaseHandler extends SQLiteAssetHelper implements IDataBaseHandl
 		}
 
 		finally{
-			db.close();
+			
 		}
 
 		return value;
@@ -632,7 +632,7 @@ public class DataBaseHandler extends SQLiteAssetHelper implements IDataBaseHandl
 		}
 
 		finally{
-			db.close();
+			
 		}
 
 		return numRows;
@@ -659,7 +659,7 @@ public class DataBaseHandler extends SQLiteAssetHelper implements IDataBaseHandl
 		}
 
 		finally{
-			db.close();
+			
 		}
 
 		return i;
@@ -695,7 +695,7 @@ public class DataBaseHandler extends SQLiteAssetHelper implements IDataBaseHandl
 		}
 
 		finally{
-			db.close();
+			
 		}
 
 		return exists;
@@ -732,7 +732,7 @@ public class DataBaseHandler extends SQLiteAssetHelper implements IDataBaseHandl
 		}
 
 		finally{
-			db.close();
+			
 		}
 
 		return exists;
@@ -769,7 +769,7 @@ public class DataBaseHandler extends SQLiteAssetHelper implements IDataBaseHandl
 		}
 
 		finally{
-			db.close();
+			
 		}
 
 		return exists;
@@ -806,7 +806,7 @@ public class DataBaseHandler extends SQLiteAssetHelper implements IDataBaseHandl
 		}
 
 		finally{
-			db.close();
+			
 		}
 
 		return exists;

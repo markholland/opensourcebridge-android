@@ -26,6 +26,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import DataAccess.DataBaseHandler;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -1742,7 +1743,7 @@ Speaker sp = new Speaker();
   	
   	public static Event getSchedule(String event_id, Context context){
   		DataBaseHandler db = new DataBaseHandler(context);
-  		return db.getScheduleRow(event_id);
+  		return db.getEventRow(event_id);
   	}
   	
   	public static Speaker getSpeaker(String speaker_id, Context context){

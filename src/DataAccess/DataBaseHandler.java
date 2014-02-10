@@ -1,6 +1,10 @@
-package org.osuosl.ocw;
+package DataAccess;
 
 import java.util.ArrayList;
+
+import org.osuosl.ocw.Event;
+import org.osuosl.ocw.Speaker;
+import org.osuosl.ocw.Track;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -10,7 +14,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
-public class DataBaseHandler extends SQLiteAssetHelper {
+public class DataBaseHandler extends SQLiteAssetHelper implements IDataBaseHandler{
 
 	private static final String DATABASE_NAME = "ocw";     //Name of the .db file stored on the device
 	private static final int DATABASE_VERSION = 1;		   
@@ -431,7 +435,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 	 * @param id row to be retrieved.
 	 * @return Event at row == id.
 	 */
-	public Event getScheduleRow(String id) {
+	public Event getEventRow(String id) {
 		Event event = null;
 		SQLiteDatabase db = null;
 		try {
@@ -635,7 +639,7 @@ public class DataBaseHandler extends SQLiteAssetHelper {
 
 	}
 	
-	public long deleteAllRows(String table_name){
+	public long deleteAllRowsInTable(String table_name){
 		SQLiteDatabase db = null;
 		int i = 0;
 		try {

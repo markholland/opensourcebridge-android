@@ -10,6 +10,5 @@ public interface IEventDAO {
 	public int updateEvents(ArrayList<Event> events);
 	public Event getEventRow(String id);
 	public ArrayList<Event> getAllEvents();
-	public long numRows(String table_name);
 	
 }

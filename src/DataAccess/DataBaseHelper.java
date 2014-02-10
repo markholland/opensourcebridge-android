@@ -1,6 +1,7 @@
 package DataAccess;
 
 import android.content.Context;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
@@ -29,6 +30,32 @@ public class DataBaseHelper extends SQLiteAssetHelper implements IDataBaseHelper
 	}
 
 	
+	/**
+	 * Returns the number of rows a table has.
+	 * @param table_name The table to be queried.
+	 * @return The number of rows that the table "table_name" has.
+	 */
+	public long numRows(String table_name){
+		long numRows = 0l;
+		SQLiteDatabase db = null;
+		try {
+			db = this.getReadableDatabase();
+			db.beginTransaction();
+			try{
+				numRows = DatabaseUtils.queryNumEntries(db, table_name);
+				db.setTransactionSuccessful();
+			} catch (Exception e){
+				db.endTransaction();
+				throw e;
+			}
+			db.endTransaction();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return numRows;
+
+	}
+	
 	public void deleteAllRows(String TABLE_NAME){
 		SQLiteDatabase db = null;
 		try {
@@ -38,6 +65,7 @@ public class DataBaseHelper extends SQLiteAssetHelper implements IDataBaseHelper
 			e.printStackTrace();
 		}
 	}
+	
 
 	
 	

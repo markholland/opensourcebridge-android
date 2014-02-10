@@ -7,7 +7,6 @@ import org.osuosl.ocw.Event;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 
 public class EventDAOImp implements IEventDAO{
@@ -236,34 +235,6 @@ public class EventDAOImp implements IEventDAO{
 
 		return events;
 	}
-	
-	/**
-	 * Returns the number of rows a table has.
-	 * @param table_name The table to be queried.
-	 * @return The number of rows that the table "table_name" has.
-	 */
-	public long numRows(String table_name){
-		long numRows = 0l;
-		SQLiteDatabase db = null;
-		try {
-			db = dbh.getReadableDatabase();
-			db.beginTransaction();
-			try{
-				numRows = DatabaseUtils.queryNumEntries(db, table_name);
-				db.setTransactionSuccessful();
-			} catch (Exception e){
-				db.endTransaction();
-				throw e;
-			}
-			db.endTransaction();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return numRows;
-
-	}
-	
 	
 	/**
 	 * Checks if a row(Event) already exists with event_id == id.

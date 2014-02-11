@@ -223,11 +223,11 @@ public class Schedule extends ActionBarActivity {
         	
         	// Was looking at an event when destroyed so load it.
         	if(mDetail) {
-                if(mTracks.containsKey(mEvent.getTrack_id())) // If referenced track exists
-        			mHeader.setBackgroundColor(mTracks.get(mEvent.getTrack_id()).getColor());
+                if(mTracks.containsKey(mEvent.getId())) // If referenced track exists
+        			mHeader.setBackgroundColor(mTracks.get(mEvent.getId()).getColor());
         		else // Otherwise use default track
         			mHeader.setBackgroundColor(new Track().getColor());
-        		mTitle.setText(mEvent.getEvent_title());
+        		mTitle.setText(mEvent.getTitle());
         		mRoom_title.setText(mEvent.getRoom_title());
         		// Create format for displaying start/end times
         		DateFormat startFormat = new SimpleDateFormat("E, h:mm");

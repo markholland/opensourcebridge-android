@@ -1,6 +1,7 @@
 package org.osuosl.ocw;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.osuosl.ocw.BusinessLogic.Event;
 import org.osuosl.ocw.BusinessLogic.Speaker;
@@ -18,9 +19,9 @@ public class Controller {
 	private Context con;
 
 
-	ArrayList<Event> events;
-	ArrayList<Speaker> speakers;
-	ArrayList<Track> tracks;
+	HashMap<Integer, Event> events;
+	HashMap<Integer, Speaker> speakers;
+	HashMap<Integer, Track> tracks;
 
 
 	private Controller(Context c)  {
@@ -28,9 +29,9 @@ public class Controller {
 		dal = DAL.getSingletonDAL();
 		con = c.getApplicationContext();
 
-		events = new ArrayList<Event>();
-		speakers = new ArrayList<Speaker>();
-		tracks = new ArrayList<Track>();
+		events = new HashMap<Integer, Event>();
+		speakers = new HashMap<Integer, Speaker>();
+		tracks = new HashMap<Integer, Track>();
 
 	}
 
@@ -52,7 +53,7 @@ public class Controller {
 
 			dtt= DTOTracks.get(i);
 
-			tracks.add(new Track(dtt.getId()
+			tracks.put(dtt.getId(), new Track(dtt.getId()
 					, dtt.getTitle()
 					, dtt.getColor()
 					, dtt.getColor_text()
@@ -69,7 +70,7 @@ public class Controller {
 
 			dts = DTOSpeakers.get(i);
 
-			speakers.add(new Speaker(dts.getId()
+			speakers.put(dts.getId(), new Speaker(dts.getId()
 					, dts.getFullname()
 					, dts.getBiography()
 					, dts.getAffiliation()
@@ -90,7 +91,7 @@ public class Controller {
 
 			ets = DTOEvents.get(i);
 
-			events.add(new Event(ets.getId()
+			events.put(ets.getId(), new Event(ets.getId()
 					, ets.getTitle()
 					, ets.getStart_time()
 					, ets.getEnd_time()
@@ -108,7 +109,7 @@ public class Controller {
 			track_events = new ArrayList<Event>();
 			for(int j = 0; j < events.size(); j++) {
 
-				if(events.get(j).getTrack().getId() == tracks.get(i).getId()) {
+				if(events.containsKey(tracks.get(i).getId())) {
 					track_events.add(events.get(j));
 				}
 			}			
@@ -158,7 +159,7 @@ public class Controller {
 				sId = speakerIds.get(j);
 				for(int k = 0; k < speakers.size(); k++) {
 
-					if(speakers.get(k).getId() == sId) {
+					if(speakers.containsKey(sId)) {
 						eventSpeakers.add(speakers.get(k));
 					}
 				}

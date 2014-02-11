@@ -17,20 +17,20 @@ public class Speaker {
 	private ArrayList<Event> events;
 	private ArrayList<Event> is_presenter;
 	
-//	//A default speaker for when an event references a speaker not present locally.
-//	public Speaker(){
-//
-//		this.id = -1;
-//		this.fullname = "Not available"; //Be sure that in strings.xml this is assigned to "not_available"
-//		this.biography = null;
-//		this.affiliation = null;
-//		this.twitter = null;
-//		this.email = null;
-//		this.website = null;
-//		this.blog = null;
-//		this.linkedin = null;
-//
-//	}
+	//	//A default speaker for when an event references a speaker not present locally.
+	//	public Speaker(){
+	//
+	//		this.id = -1;
+	//		this.fullname = "Not available"; //Be sure that in strings.xml this is assigned to "not_available"
+	//		this.biography = null;
+	//		this.affiliation = null;
+	//		this.twitter = null;
+	//		this.email = null;
+	//		this.website = null;
+	//		this.blog = null;
+	//		this.linkedin = null;
+	//
+	//	}
 
 	//Constructor with all parameters as Strings to facilitate when retrieving from the database
 	

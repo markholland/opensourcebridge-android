@@ -43,8 +43,8 @@ public class TrackDAOImp implements ITrackDAO {
 			try{
 				for(int j = 0; j < tracks.size(); j++){
 					ContentValues values = new ContentValues();
-					values.put(KEY_TRACK_ID, tracks.get(j).getTrack_id());
-					values.put(KEY_TRACK_TITLE, tracks.get(j).getTrack_title());
+					values.put(KEY_TRACK_ID, tracks.get(j).getId());
+					values.put(KEY_TRACK_TITLE, tracks.get(j).getTitle());
 					values.put(KEY_COLOR, tracks.get(j).getColor());
 					values.put(KEY_COLOR_TEXT, tracks.get(j).getColor_text());
 
@@ -78,15 +78,15 @@ public class TrackDAOImp implements ITrackDAO {
 			try{
 				for(int j = 0; j < tracks.size(); j++){
 					ContentValues values = new ContentValues();
-					values.put(KEY_TRACK_ID, tracks.get(j).getTrack_id());
-					values.put(KEY_TRACK_TITLE, tracks.get(j).getTrack_title());
+					values.put(KEY_TRACK_ID, tracks.get(j).getId());
+					values.put(KEY_TRACK_TITLE, tracks.get(j).getTitle());
 					values.put(KEY_COLOR, tracks.get(j).getColor());
 					values.put(KEY_COLOR_TEXT, tracks.get(j).getColor_text());
 
 
 					// updating row
 					i = db.update(TRACKS_TABLE_NAME, values, KEY_TRACK_ID + " = ?",
-							new String[] { String.valueOf(tracks.get(j).getTrack_id())});
+							new String[] { String.valueOf(tracks.get(j).getId())});
 				}
 				db.setTransactionSuccessful();
 
@@ -110,8 +110,8 @@ public class TrackDAOImp implements ITrackDAO {
 	 * @param id row of the track to be retrieved.
 	 * @return Track at row == id.
 	 */
-	public Track getTrackRow(String id) {
-		Track track = null;
+	public TrackDTO getTrackRow(String id) {
+		TrackDTO track = null;
 		SQLiteDatabase db = null;
 		try {
 			db = dbh.getReadableDatabase();
@@ -123,8 +123,8 @@ public class TrackDAOImp implements ITrackDAO {
 
 				if (cursor.moveToFirst()){
 					
-					track = new Track(
-							cursor.getString(1), cursor.getString(2), cursor.getInt(3), cursor.getInt(4) 
+					track = new TrackDTO(
+							cursor.getInt(0), cursor.getString(1), cursor.getInt(2), cursor.getInt(3) 
 							);
 					cursor.close();
 				}
@@ -147,9 +147,9 @@ public class TrackDAOImp implements ITrackDAO {
 	 * @param id row of the track to be retrieved.
 	 * @return Track at row == id.
 	 */
-	public ArrayList<Track> getAllTracks() {
-		ArrayList<Track> tracks = new ArrayList<Track>();
-		Track track = null;
+	public ArrayList<TrackDTO> getAllTracks() {
+		ArrayList<TrackDTO> tracks = new ArrayList<TrackDTO>();
+		TrackDTO track = null;
 		SQLiteDatabase db = null;
 		try {
 			db = dbh.getReadableDatabase();
@@ -157,15 +157,15 @@ public class TrackDAOImp implements ITrackDAO {
 			db.beginTransaction();
 			try{
 
-				Cursor cursor = db.rawQuery("SELECT * FROM "+TRACKS_TABLE_NAME, null, null);
+				Cursor cursor = db.rawQuery("SELECT * FROM "+TRACKS_TABLE_NAME, null);
 
 				if (cursor.moveToFirst()){
 
 					while (cursor.isAfterLast() == false) {
 
 
-						track = new Track(
-								cursor.getString(1), cursor.getString(2), cursor.getInt(3), cursor.getInt(4) 
+						track = new TrackDTO(
+								cursor.getInt(0), cursor.getString(1), cursor.getInt(2), cursor.getInt(3) 
 								);
 
 						tracks.add(track);

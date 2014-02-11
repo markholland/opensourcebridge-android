@@ -35,16 +35,28 @@ public class DAL {
   		return (new TrackDAOImp(context)).addTracks(tracks);
   	}
   	
-  	public  Event getSchedule(String event_id, Context context){
+  	public  EventDTO getSchedule(String event_id, Context context){
   		return (new EventDAOImp(context)).getEventRow(event_id);
   	}
   	
-  	public  Speaker getSpeaker(String speaker_id, Context context){
+  	public ArrayList<EventDTO> getAllEvents(Context context) {
+  		return (new EventDAOImp(context)).getAllEvents();
+  	}
+  	
+  	public  SpeakerDTO getSpeaker(String speaker_id, Context context){
   		return (new SpeakerDAOImp(context)).getSpeakerRow(speaker_id);
   	}
+  	
+  	public ArrayList<SpeakerDTO> getAllSpeakers(Context context) {
+  		return (new SpeakerDAOImp(context)).getAllSpeakers();
+  	}
   		
-  	public  Track getTrack(String track_id, Context context){
+  	public  TrackDTO getTrack(String track_id, Context context){
   		return (new TrackDAOImp(context)).getTrackRow(track_id);
+  	}
+  	
+  	public ArrayList<TrackDTO> getAllTracks(Context context) {
+  		return (new TrackDAOImp(context)).getAllTracks();
   	}
   	
   	public  int eventExists(String event_id, Context context){

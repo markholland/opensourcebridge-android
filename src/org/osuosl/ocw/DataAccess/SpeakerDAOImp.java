@@ -12,13 +12,12 @@ import android.database.sqlite.SQLiteDatabase;
 
 public class SpeakerDAOImp implements ISpeakerDAO {
 
-	private static final String SPEAKERS_TABLE_NAME = "SPEAKERS";
+	private static final String SPEAKER_TABLE_NAME = "SPEAKER";
 
 	private static DataBaseHelper dbh;
 
-	private static final String KEY_ID = "_id";
 	// Speakers table column names
-	private static final String KEY_SPEAKER_ID = "speaker_id";
+	private static final String KEY_SPEAKER_ID = "_id";
 	private static final String KEY_NAME = "fullname";
 	private static final String KEY_BIO = "biography";
 	private static final String KEY_AFFILIATION = "affiliation";
@@ -48,7 +47,7 @@ public class SpeakerDAOImp implements ISpeakerDAO {
 
 				for(int j = 0; j < speakers.size(); j++){
 					ContentValues values = new ContentValues();
-					values.put(KEY_SPEAKER_ID, speakers.get(j).getSpeaker_id());
+					values.put(KEY_SPEAKER_ID, speakers.get(j).getId());
 					values.put(KEY_NAME, speakers.get(j).getFullname());
 					values.put(KEY_BIO, speakers.get(j).getBiography());
 					values.put(KEY_AFFILIATION, speakers.get(j).getAffiliation());
@@ -58,7 +57,7 @@ public class SpeakerDAOImp implements ISpeakerDAO {
 					values.put(KEY_BLOG, speakers.get(j).getBlog());
 					values.put(KEY_LINKEDIN, speakers.get(j).getLinkedin());
 					//adding row
-					i = db.insert(SPEAKERS_TABLE_NAME, null, values);
+					i = db.insert(SPEAKER_TABLE_NAME, null, values);
 				}
 
 				db.setTransactionSuccessful();
@@ -87,7 +86,7 @@ public class SpeakerDAOImp implements ISpeakerDAO {
 			try{
 				for(int j = 0; j < speakers.size(); j++){
 					ContentValues values = new ContentValues();
-					values.put(KEY_SPEAKER_ID, speakers.get(j).getSpeaker_id());
+					values.put(KEY_SPEAKER_ID, speakers.get(j).getId());
 					values.put(KEY_NAME, speakers.get(j).getFullname());
 					values.put(KEY_BIO, speakers.get(j).getBiography());
 					values.put(KEY_AFFILIATION, speakers.get(j).getAffiliation());
@@ -98,8 +97,8 @@ public class SpeakerDAOImp implements ISpeakerDAO {
 					values.put(KEY_LINKEDIN, speakers.get(j).getLinkedin());
 
 					// updating row
-					i = db.update(SPEAKERS_TABLE_NAME, values, KEY_SPEAKER_ID + " = ?",
-							new String[] { String.valueOf(speakers.get(j).getSpeaker_id())});
+					i = db.update(SPEAKER_TABLE_NAME, values, KEY_SPEAKER_ID + " = ?",
+							new String[] { String.valueOf(speakers.get(j).getId())});
 				}
 				db.setTransactionSuccessful();
 
@@ -121,8 +120,8 @@ public class SpeakerDAOImp implements ISpeakerDAO {
 	 * @param id row to be retrieved.
 	 * @return Speaker at row == id.
 	 */
-	public Speaker getSpeakerRow(String id) {
-		Speaker speaker = null;
+	public SpeakerDTO getSpeakerRow(String id) {
+		SpeakerDTO speaker = null;
 		SQLiteDatabase db = null;
 		try {
 			db = dbh.getReadableDatabase();
@@ -134,10 +133,10 @@ public class SpeakerDAOImp implements ISpeakerDAO {
 
 				if (cursor.moveToFirst()){
 					
-					speaker = new Speaker(
-							cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), 
-							cursor.getString(5), cursor.getString(6), cursor.getString(7), cursor.getString(8),
-							cursor.getString(9));
+					speaker = new SpeakerDTO(
+							cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), 
+							cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getString(7),
+							cursor.getString(8));
 					cursor.close();
 				}
 				db.setTransactionSuccessful();
@@ -159,9 +158,9 @@ public class SpeakerDAOImp implements ISpeakerDAO {
 	 * @param id row to be retrieved.
 	 * @return Speaker at row == id.
 	 */
-	public ArrayList<Speaker> getAllSpeakers() {
-		ArrayList<Speaker> speakers = new ArrayList<Speaker>();
-		Speaker speaker = null;
+	public ArrayList<SpeakerDTO> getAllSpeakers() {
+		ArrayList<SpeakerDTO> speakers = new ArrayList<SpeakerDTO>();
+		SpeakerDTO speaker = null;
 		SQLiteDatabase db = null;
 		try {
 			db = dbh.getReadableDatabase();
@@ -169,15 +168,15 @@ public class SpeakerDAOImp implements ISpeakerDAO {
 			db.beginTransaction();
 			try{
 
-				Cursor cursor = db.rawQuery("SELECT * FROM "+SPEAKERS_TABLE_NAME, null, null);
+				Cursor cursor = db.rawQuery("SELECT * FROM "+SPEAKER_TABLE_NAME, null);
 				if (cursor.moveToFirst()){
 					
 					while (cursor.isAfterLast() == false) {	
 					
-					speaker = new Speaker(
-							cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), 
-							cursor.getString(5), cursor.getString(6), cursor.getString(7), cursor.getString(8),
-							cursor.getString(9));
+					speaker = new SpeakerDTO(
+							cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), 
+							cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getString(7),
+							cursor.getString(8));
 					
 					speakers.add(speaker);
 					
@@ -236,12 +235,12 @@ public class SpeakerDAOImp implements ISpeakerDAO {
 
 	
 	public long numRows() {
-		return dbh.numRows(SPEAKERS_TABLE_NAME);
+		return dbh.numRows(SPEAKER_TABLE_NAME);
 	}
 
 	
 	public void deleteAllRows() {
-		dbh.deleteAllRows(SPEAKERS_TABLE_NAME);
+		dbh.deleteAllRows(SPEAKER_TABLE_NAME);
 	}
 
 	/**

@@ -9,8 +9,8 @@ public interface ISpeakerDAO {
 
 	public Long addSpeakers(ArrayList<Speaker> mSpeakers);
 	public int updateSpeakers(ArrayList<Speaker> Speakers);
-	public Speaker getSpeakerRow(String id);
-	public ArrayList<Speaker> getAllSpeakers();
+	public SpeakerDTO getSpeakerRow(String id);
+	public ArrayList<SpeakerDTO> getAllSpeakers();
 	public long numRows();
 	public void deleteAllRows();
 }

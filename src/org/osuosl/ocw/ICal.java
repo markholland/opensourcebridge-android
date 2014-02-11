@@ -62,7 +62,7 @@ public class ICal {
 					event.setStart_time((Date)formatter.parse(str));
 				
 				} else if(line.startsWith("SUMMARY:"))  {
-					event.setEvent_title(line.substring(8)
+					event.setTitle(line.substring(8)
 										.replace("\\,", ",")
 										.replace("\\;", ";"));
 				

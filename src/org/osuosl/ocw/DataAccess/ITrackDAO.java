@@ -9,8 +9,8 @@ public interface ITrackDAO {
 
 	public Long addTracks(ArrayList<Track> mTracks);
 	public int updateTracks(ArrayList<Track> Tracks);
-	public Track getTrackRow(String id);
-	public ArrayList<Track> getAllTracks();
+	public TrackDTO getTrackRow(String id);
+	public ArrayList<TrackDTO> getAllTracks();
 	public long numRows();
 	public void deleteAllRows();
 }

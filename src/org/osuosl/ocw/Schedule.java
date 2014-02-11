@@ -28,6 +28,7 @@ import org.json.JSONObject;
 import org.osuosl.ocw.BusinessLogic.Event;
 import org.osuosl.ocw.BusinessLogic.Speaker;
 import org.osuosl.ocw.BusinessLogic.Track;
+import org.osuosl.ocw.DataAccess.DAL;
 import org.osuosl.ocw.DataAccess.EventDAOImp;
 import org.osuosl.ocw.DataAccess.SpeakerDAOImp;
 import org.osuosl.ocw.DataAccess.TrackDAOImp;
@@ -1060,7 +1061,7 @@ public class Schedule extends ActionBarActivity {
 		  		Long size = db.numRows();
 				
 				for(int i = 1; i <= size; i++){
-					speaker = getSpeaker(""+i, getApplicationContext());
+					speaker = DAL.getSingletonDAL().getSpeaker(""+i, getApplicationContext());
 					if(speaker == null)
 						speaker = new Speaker();
 					mSpeakers.put(speaker.getSpeaker_id(), speaker);
@@ -1113,10 +1114,10 @@ public class Schedule extends ActionBarActivity {
 				}
 				
 				if(new SpeakerDAOImp(getApplicationContext()).numRows() == 0l){
-					addSpeakers(speakersList,getApplicationContext());
+					DAL.getSingletonDAL().addSpeakers(speakersList,getApplicationContext());
 				} else {
 					new SpeakerDAOImp(getApplicationContext()).deleteAllRows();
-					addSpeakers(speakersList,getApplicationContext());
+					DAL.getSingletonDAL().addSpeakers(speakersList,getApplicationContext());
 				}
 				
 				putPref(SPEAKERS_UPDATED,""+System.currentTimeMillis());
@@ -1146,7 +1147,7 @@ public class Schedule extends ActionBarActivity {
 				long size = db.numRows();
 				for(int i=1; i<=size; i++){
 					Track track = new Track();
-					track = getTrack(""+i, getApplicationContext());
+					track = DAL.getSingletonDAL().getTrack(""+i, getApplicationContext());
 					
 					mTracks.put(track.getTrack_id(), track);
 				}
@@ -1183,10 +1184,10 @@ public class Schedule extends ActionBarActivity {
 				}
 				
 				if(new TrackDAOImp(getApplicationContext()).numRows() == 0l){
-					addTracks(tracksList,getApplicationContext());
+					DAL.getSingletonDAL().addTracks(tracksList,getApplicationContext());
 				} else {
 					new TrackDAOImp(getApplicationContext()).deleteAllRows();
-					addTracks(tracksList,getApplicationContext());
+					DAL.getSingletonDAL().addTracks(tracksList,getApplicationContext());
 				}
 				
 				putPref(TRACKS_UPDATED, ""+System.currentTimeMillis());
@@ -1320,7 +1321,7 @@ public class Schedule extends ActionBarActivity {
 				EventDAOImp db = new EventDAOImp(getApplicationContext());
 				long size = db.numRows();
 				for(int i=1; i<=size; i++){
-					mEvent = getSchedule(""+i, getApplicationContext());
+					mEvent = DAL.getSingletonDAL().getSchedule(""+i, getApplicationContext());
 					
 					if(mEvent != null){
 						events.add(mEvent);
@@ -1429,10 +1430,10 @@ public class Schedule extends ActionBarActivity {
 				}
 				
 				if(new EventDAOImp(getApplicationContext()).numRows() == 0l){
-					addEvents(events,getApplicationContext());
+					DAL.getSingletonDAL().addEvents(events,getApplicationContext());
 				} else {
 					new EventDAOImp(getApplicationContext()).deleteAllRows();
-					addEvents(events,getApplicationContext());
+					DAL.getSingletonDAL().addEvents(events,getApplicationContext());
 				}
 				
 				putPref(SCHEDULE_UPDATED, ""+System.currentTimeMillis());
@@ -1725,58 +1726,4 @@ public class Schedule extends ActionBarActivity {
         return savedPref;
 	}
 	
-	
-	
-	
-	//																//
-	//						DATABASE HANDLERS						//
-	//																//
-	
-  	
-	public static Long addEvents(ArrayList<Event> events, Context context){
-		EventDAOImp db = new EventDAOImp(context);
-  		return db.addEvents(events);
-  	}
-	
-	public static Long addSpeakers(ArrayList<Speaker> speakersList, Context context){
-		SpeakerDAOImp db = new SpeakerDAOImp(context);
-  		return db.addSpeakers(speakersList);
-  	}
-
-  	public static Long addTracks(ArrayList<Track> tracks, Context context){
-  		TrackDAOImp db = new TrackDAOImp(context);
-  		return db.addTracks(tracks);
-  	}
-  	
-  	public static Event getSchedule(String event_id, Context context){
-  		EventDAOImp db = new EventDAOImp(context);
-  		return db.getEventRow(event_id);
-  	}
-  	
-  	public static Speaker getSpeaker(String speaker_id, Context context){
-  		SpeakerDAOImp db = new SpeakerDAOImp(context);
-  		return db.getSpeakerRow(speaker_id);
-  	}
-  		
-  	public static Track getTrack(String track_id, Context context){
-  		TrackDAOImp db = new TrackDAOImp(context);
-  		return db.getTrackRow(track_id);
-  	}
-  	
-  	public static int eventExists(String event_id, Context context){
-  		EventDAOImp db = new EventDAOImp(context);
-  		return db.existsEvent(event_id);
-  	}
-  	
-  	public static int speakerExists(String speaker_id, Context context){
-  		SpeakerDAOImp db = new SpeakerDAOImp(context);
-  		return db.existsSpeaker(speaker_id);
-  	}
-  	
-  	public static int trackExists(String track_id, Context context){
-  		TrackDAOImp db = new TrackDAOImp(context);
-  		return db.existsTrack(track_id);
-  	}
-	
-
 }

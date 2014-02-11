@@ -1,0 +1,51 @@
+DROP TABLE IF EXISTS SPEAKS_AT;
+DROP TABLE IF EXISTS EVENT;
+DROP TABLE IF EXISTS TRACK;
+DROP TABLE IF EXISTS SPEAKER;
+
+CREATE TABLE EVENT (
+	, _id INT NOT NULL
+	, title CHAR(100) UNIQUE
+	, start_time DATE NOT NULL
+	, end_time DATE NOT NULL
+	, description CHAR(500)
+	, room CHAR(100)
+	, track_id INT NOT NULL
+	, presenter INT
+	, PRIMARY KEY (_id)
+	, CONSTRAINT FK_Event_Track FOREIGN KEY (track_id)
+			REFERENCES TRACK(_id)
+	, CONSTRAINT FK_Event_Speaker FOREIGN KEY (presenter)
+			REFERENCES SPEAKER(_id)
+);
+
+CREATE TABLE SPEAKER (
+	, _id INT NOT NULL
+	, fullname CHAR(100) NOT NULL
+	, biography CHAR(500)
+	, affiliation CHAR(100)
+	, twitter CHAR(50)
+	, email CHAR(50)
+	, website CHAR(50)
+	, blog CHAR(50)
+	, linkedin CHAR(50)
+	, PRIMARY KEY(_id)
+);
+
+CREATE TABLE TRACK (
+	, _id INT NOT NULL
+	, title CHAR(100) UNIQUE
+	, color INT
+	, color_text INT
+	, PRIMARY KEY(_id)
+);
+
+CREATE TABLE SPEAKS_AT (
+	, event_id INT NOT NULL
+	, speaker_id INT NOT NULL
+	, PRIMARY KEY(event_id, speaker_id)
+	, CONSTRAINT FK_Speaks_at_Event FOREIGN KEY (event_id)
+			REFERENCES EVENT (_id)
+	, CONSTRAINT FK_Speaks_at_Speaker FOREIGN KEY (speaker_id)
+			REFERENCES SPEAKER (_id)
+);

@@ -159,7 +159,9 @@ public class Speaker {
 		this.is_presenter.remove(event);
 	}
 
-	
+	public boolean containsEvent(Event event) {
+		return events.contains(event);
+	}
 	
 	
 

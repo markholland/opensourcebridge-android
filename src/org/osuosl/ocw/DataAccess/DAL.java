@@ -70,4 +70,11 @@ public class DAL {
   	public  int trackExists(String track_id, Context context){
   		return (new TrackDAOImp(context)).existsTrack(track_id);
   	}
+  	
+  	public ArrayList<Integer> getSpeaksAt(Context context, int event_id) { 
+  		return (new SpeaksAtDAOImp(context).getAllSpeakers(event_id));
+  	}
+  	
+  	
+  	
 }

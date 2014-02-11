@@ -151,4 +151,13 @@ public class Event {
 		this.presenter = presenter;
 	}
 	    
+	public boolean hasSpeaker(Speaker speaker) {
+		return speakers.contains(speaker);
+	}
+	
+	public boolean isPresenter(Speaker speaker) {
+		
+		return presenter.getId() == speaker.getId();
+	}
+	
 }

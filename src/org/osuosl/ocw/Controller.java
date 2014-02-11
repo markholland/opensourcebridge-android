@@ -103,11 +103,11 @@ public class Controller {
 		//set track events
 
 		ArrayList<Event> track_events = null;
- 		for(int i = 0; i < tracks.size(); i++) {
-			
- 			track_events = new ArrayList<Event>();
+		for(int i = 0; i < tracks.size(); i++) {
+
+			track_events = new ArrayList<Event>();
 			for(int j = 0; j < events.size(); j++) {
-				
+
 				if(events.get(j).getTrack().getId() == tracks.get(i).getId()) {
 					track_events.add(events.get(j));
 				}
@@ -117,39 +117,72 @@ public class Controller {
 
 
 		//set event presenters
+		int presenter_id = -1;
+		for(int i = 0; i < events.size(); i++) {
 
+			presenter_id = DTOEvents.get(i).getPresenter_id();
 
+			events.get(i).setPresenter(speakers.get(presenter_id));
 
-
-
-
-
+		}
 
 		//set speaker presenter events
 
+		ArrayList<Event> isPresenter;
+		for(int i = 0; i < speakers.size(); i++) {
 
+			isPresenter = new ArrayList<Event>();
+			for(int j = 0; j < events.size(); j++) {
 
+				if(events.get(j).isPresenter(speakers.get(i))) {
+					isPresenter.add(events.get(j));
+				}
 
+			}
+			speakers.get(i).setIs_presenter(isPresenter);
 
-
+		}
 
 		//set event speakers
 
+		ArrayList<Speaker> eventSpeakers;
+		ArrayList<Integer> speakerIds;
+		int sId = -1;
+		for(int i = 0; i < events.size(); i++) {
 
+			eventSpeakers = new ArrayList<Speaker>();
+			speakerIds = DAL.getSingletonDAL().getSpeaksAt(con, events.get(i).getId());
 
+			for(int j = 0; j < speakerIds.size(); j++) {
 
+				sId = speakerIds.get(j);
+				for(int k = 0; k < speakers.size(); k++) {
 
+					if(speakers.get(k).getId() == sId) {
+						eventSpeakers.add(speakers.get(k));
+					}
+				}
+			}
+			events.get(i).setSpeakers(eventSpeakers);
+
+		}
 
 		//set speaker events
 
+		ArrayList<Event> speakerEvents;
+		for(int i = 0; i < speakers.size(); i++) {
 
+			speakerEvents = new ArrayList<Event>();
+			sId = speakers.get(i).getId();
+			for(int j = 0; j < events.size(); j++) {
 
+				if(events.get(i).hasSpeaker(speakers.get(i))) {
 
+					speakerEvents.add(events.get(j));
+				}
+			}
 
-
-
-
-
+		}
 
 	}
 

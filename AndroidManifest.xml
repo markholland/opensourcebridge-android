@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest android:versionName="2012.0" xmlns:android="http://schemas.android.com/apk/res/android" package="org.osuosl.ocw" android:versionCode="15">
     <application android:label="ocw-android" android:description="@string/app_description" >
-        <activity android:name="org.osuosl.ocw.Main"
+        <activity android:name="org.osuosl.ocw.MainActivity"
                   android:label="@string/app_name"
                   android:theme="@style/Theme.AppCompat">
             <intent-filter>
@@ -12,6 +12,9 @@
         <activity android:name="org.osuosl.ocw.Schedule"
                   android:label="@string/app_name"
                   android:theme="@style/Theme.AppCompat">
+        </activity>
+        <activity
+            android:name="main.ListViewActivity">
         </activity>
 
     </application>

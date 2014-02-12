@@ -8,7 +8,7 @@ import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
 public class DataBaseHelper extends SQLiteAssetHelper implements IDataBaseHelper {
 
-	private static final String DATABASE_NAME = "ocw";  //Name of the .db file stored on the device
+	private static final String DATABASE_NAME = "test";  //Name of the .db file stored on the device
 	private static final int DATABASE_VERSION = 1;		   
 
 	private static DataBaseHelper mInstance;

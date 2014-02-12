@@ -186,6 +186,10 @@ public class Controller {
 		}
 
 	}
+	
+	public ArrayList<Speaker> getSpeakers() {
+		return new ArrayList<Speaker>(speakers.values());
+	}
 
 
 

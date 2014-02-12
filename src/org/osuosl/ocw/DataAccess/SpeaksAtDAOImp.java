@@ -121,5 +121,14 @@ public class SpeaksAtDAOImp implements ISpeaksAtDAO {
 		return i;
 
 	}
+	
+	
+	public long numRows() {
+		return dbh.numRows(SPEAKS_AT_TABLE_NAME);
+	}
+	
+	public void deleteAllRows() {
+		dbh.deleteAllRows(SPEAKS_AT_TABLE_NAME);
+	}
 
 }

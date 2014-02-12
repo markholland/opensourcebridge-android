@@ -127,8 +127,8 @@ public class Event {
 		this.track = track;
 	}
 
-	public Iterator<Speaker> getSpeakers() {
-		return speakers.iterator();
+	public ArrayList<Speaker> getSpeakers() {
+		return speakers;
 	}
 
 	public void setSpeakers(ArrayList<Speaker> speakers) {

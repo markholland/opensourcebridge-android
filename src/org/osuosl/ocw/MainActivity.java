@@ -78,7 +78,7 @@ public class MainActivity extends Activity {
         protected Integer doInBackground(Void... params) {
                
         	Controller con = Controller.getSingletonController(getApplicationContext());
-            con.initSchedule();
+            con.loadSchedule();
             return 1;
                 
         } 

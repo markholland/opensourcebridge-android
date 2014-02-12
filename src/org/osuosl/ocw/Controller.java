@@ -9,6 +9,7 @@ import org.osuosl.ocw.BusinessLogic.Track;
 import org.osuosl.ocw.DataAccess.DAL;
 import org.osuosl.ocw.DataAccess.EventDTO;
 import org.osuosl.ocw.DataAccess.SpeakerDTO;
+import org.osuosl.ocw.DataAccess.SpeaksAtDTO;
 import org.osuosl.ocw.DataAccess.TrackDTO;
 
 import android.content.Context;
@@ -43,7 +44,7 @@ public class Controller {
 	}
 
 
-	public void initSchedule() {
+	public void loadSchedule() {
 
 		//get all tracks
 		ArrayList<TrackDTO> DTOTracks = DAL.getSingletonDAL(con).getAllTracks();
@@ -186,40 +187,155 @@ public class Controller {
 		}
 
 	}
-	
-	
+
+
 	// methods with dal
-	
-	
-	
-	
-	// methods with speak at
-	
-	public ArrayList<Speaker> getSpeakers() {
-		return new ArrayList<Speaker>(speakers.values());
+
+	public void saveEvents() {
+
+		ArrayList<EventDTO> eventsDTO = new ArrayList<EventDTO>();
+		EventDTO eDTO = null;
+		SpeaksAtDTO saDTO = null;
+		
+		// Add all events
+		for (Event e : events.values()) {
+
+			eDTO = new EventDTO(e.getId()
+					, e.getTitle()
+					, e.getStart_time().toString()
+					, e.getEnd_time().toString()
+					, e.getDescription()
+					, e.getRoom_title()
+					, e.getTrack().getId()
+					, e.getPresenter().getId()
+					);
+			
+			eventsDTO.add(eDTO);
+
+			// Add all speaks at relations for each event
+			for(int i = 0; i < e.getSpeakers().size(); i++){
+
+				saDTO = new SpeaksAtDTO(e.getId(), e.getSpeakers().get(i).getId());
+				dal.addSpeaksAt(saDTO);
+			
+			}
+		}
+		dal.addEvents(eventsDTO);
 	}
+	
+	
+	public void updateSavedEvents() {
+
+		ArrayList<EventDTO> eventsDTO = new ArrayList<EventDTO>();
+		EventDTO eDTO = null;
+		SpeaksAtDTO saDTO = null;
+		
+		// Add all events
+		for (Event e : events.values()) {
+
+			eDTO = new EventDTO(e.getId()
+					, e.getTitle()
+					, e.getStart_time().toString()
+					, e.getEnd_time().toString()
+					, e.getDescription()
+					, e.getRoom_title()
+					, e.getTrack().getId()
+					, e.getPresenter().getId()
+					);
+			
+			eventsDTO.add(eDTO);
+
+			// Add all speaks at relations for each event
+			for(int i = 0; i < e.getSpeakers().size(); i++){
+
+				saDTO = new SpeaksAtDTO(e.getId(), e.getSpeakers().get(i).getId());
+				dal.addSpeaksAt(saDTO);
+			
+			}
+		}
+		dal.updateEvents(eventsDTO);
+	}
+	
+	
+	public void saveSpeakers() {
+		
+		ArrayList<SpeakerDTO> speakersDTO = new ArrayList<SpeakerDTO>();
+		SpeakerDTO sDTO = null;
+		
+		for (Speaker s : speakers.values()) {
+			
+			sDTO = new SpeakerDTO(s.getId()
+					, s.getFullname()
+					, s.getBiography()
+					, s.getAffiliation()
+					, s.getTwitter()
+					, s.getEmail()
+					, s.getWebsite()
+					, s.getBlog()
+					, s.getLinkedin()
+					);
+			
+			speakersDTO.add(sDTO);
+		}
+		dal.addSpeakers(speakersDTO);
+		
+	}
+	
+	
+	public void saveTracks() {
+		
+		ArrayList<TrackDTO> tracksDTO = new ArrayList<TrackDTO>();
+		TrackDTO tDTO = null;
+		
+		for (Track t : tracks.values()) {
+			
+			tDTO = new TrackDTO(t.getId()
+					, t.getTitle()
+					, t.getColor()
+					, t.getColor_text()
+					);
+			
+			tracksDTO.add(tDTO);
+		}
+		dal.addTracks(tracksDTO);
+	}
+	
+	public void deleteAllData() {
+		events = new HashMap<Integer, Event>();
+		speakers = new HashMap<Integer, Speaker>();
+		tracks = new HashMap<Integer, Track>();
+		
+		dal.deleteAll(con);
+
+		
+	}
+	
 
 	public HashMap<Integer, Event> getEvents() {
 		return events;
 	}
 
-	public void setEvents(HashMap<Integer, Event> events) {
-		this.events = events;
+	public void addEvent(Event e) {
+		this.events.put(e.getId(), e);
+	}
+	
+	public ArrayList<Speaker> getSpeakers() {
+		return new ArrayList<Speaker>(speakers.values());
+	}
+	
+	public void addSpeaker(Speaker sp) { 
+		this.speakers.put(sp.getId(), sp);
 	}
 
 	public HashMap<Integer, Track> getTracks() {
 		return tracks;
 	}
 
-	public void setTracks(HashMap<Integer, Track> tracks) {
-		this.tracks = tracks;
+	public void addTrack(Track tr) {
+		this.tracks.put(tr.getId(), tr);
 	}
 
-	public void setSpeakers(HashMap<Integer, Speaker> speakers) {
-		this.speakers = speakers;
-	}
-	
-	
+
 
 
 

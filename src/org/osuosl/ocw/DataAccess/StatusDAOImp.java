@@ -173,6 +173,16 @@ public class StatusDAOImp implements IStatusDAO {
 		return exists;
 	}
 
+	
+	public long numRows() {
+		return dbh.numRows(STATUS_TABLE_NAME);
+	}
+	
+	public void deleteAllRows() {
+		dbh.deleteAllRows(STATUS_TABLE_NAME);
+	}
+	
+	
 	/**
 	 * Converts an array of Strings to a comma separated string
 	 * @param array

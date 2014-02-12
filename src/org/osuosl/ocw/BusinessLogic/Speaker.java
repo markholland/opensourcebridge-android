@@ -127,8 +127,8 @@ public class Speaker {
 		this.linkedin = linkedin;
 	}
 
-	public Iterator<Event> getEvents() {
-		return events.iterator();
+	public ArrayList<Event> getEvents() {
+		return events;
 	}
 
 	public void setEvents(ArrayList<Event> events) {

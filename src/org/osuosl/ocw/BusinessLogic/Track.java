@@ -63,8 +63,8 @@ public class Track {
 		this.color_text = color_text;
 	}
 
-	public Iterator<Event> getEvents() {
-		return events.iterator();
+	public ArrayList<Event> getEvents() {
+		return events;
 	}
 
 	public void setEvents(ArrayList<Event> events) {

@@ -25,7 +25,7 @@ public class DataBaseHelper extends SQLiteAssetHelper implements IDataBaseHelper
 		return mInstance;
 	}
 
-	public DataBaseHelper(Context context) {
+	private DataBaseHelper(Context context) {
 		super(context.getApplicationContext(), DATABASE_NAME, null, DATABASE_VERSION);
 	}
 

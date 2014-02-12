@@ -26,7 +26,7 @@ public class Controller {
 
 	private Controller(Context c)  {
 
-		dal = DAL.getSingletonDAL();
+		dal = DAL.getSingletonDAL(c);
 		con = c.getApplicationContext();
 
 		events = new HashMap<Integer, Event>();
@@ -46,7 +46,7 @@ public class Controller {
 	public void initSchedule() {
 
 		//get all tracks
-		ArrayList<TrackDTO> DTOTracks = DAL.getSingletonDAL().getAllTracks(con);
+		ArrayList<TrackDTO> DTOTracks = DAL.getSingletonDAL(con).getAllTracks();
 
 		TrackDTO dtt = null;
 		for(int i = 0; i < DTOTracks.size(); i++) {
@@ -63,7 +63,7 @@ public class Controller {
 
 
 		//get all speakers
-		ArrayList<SpeakerDTO> DTOSpeakers = DAL.getSingletonDAL().getAllSpeakers(con);
+		ArrayList<SpeakerDTO> DTOSpeakers = DAL.getSingletonDAL(con).getAllSpeakers();
 
 		SpeakerDTO dts = null;
 		for(int i = 0; i < DTOSpeakers.size(); i++) {
@@ -84,7 +84,7 @@ public class Controller {
 		}
 
 		//get all events
-		ArrayList<EventDTO> DTOEvents = DAL.getSingletonDAL().getAllEvents(con);
+		ArrayList<EventDTO> DTOEvents = DAL.getSingletonDAL(con).getAllEvents();
 
 		EventDTO ets = null;
 		for(int i = 0; i < DTOEvents.size(); i++) {
@@ -152,7 +152,7 @@ public class Controller {
 		for(int i = 0; i < events.size(); i++) {
 
 			eventSpeakers = new ArrayList<Speaker>();
-			speakerIds = DAL.getSingletonDAL().getSpeaksAt(con, events.get(i).getId());
+			speakerIds = DAL.getSingletonDAL(con).getSpeaksAt(events.get(i).getId());
 
 			for(int j = 0; j < speakerIds.size(); j++) {
 
@@ -187,9 +187,39 @@ public class Controller {
 
 	}
 	
+	
+	// methods with dal
+	
+	
+	
+	
+	// methods with speak at
+	
 	public ArrayList<Speaker> getSpeakers() {
 		return new ArrayList<Speaker>(speakers.values());
 	}
+
+	public HashMap<Integer, Event> getEvents() {
+		return events;
+	}
+
+	public void setEvents(HashMap<Integer, Event> events) {
+		this.events = events;
+	}
+
+	public HashMap<Integer, Track> getTracks() {
+		return tracks;
+	}
+
+	public void setTracks(HashMap<Integer, Track> tracks) {
+		this.tracks = tracks;
+	}
+
+	public void setSpeakers(HashMap<Integer, Speaker> speakers) {
+		this.speakers = speakers;
+	}
+	
+	
 
 
 

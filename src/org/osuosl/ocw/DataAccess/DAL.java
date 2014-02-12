@@ -11,11 +11,14 @@ import android.content.Context;
 public class DAL {
 	
 	private static DAL dal = null;
+	private static Context context = null;
 
     // Singleton pattern
-    public static DAL getSingletonDAL() {
-        if(dal==null)
-            dal = new DAL(); return dal;
+    public static DAL getSingletonDAL(Context ctx) {
+        if(dal==null) 
+            dal = new DAL(); 
+        context = ctx;
+        return dal;
     }
 
     private DAL()
@@ -23,55 +26,55 @@ public class DAL {
         // empty and private constructor
     }
 
-	public  Long addEvents(ArrayList<Event> events, Context context){
+	public  Long addEvents(ArrayList<EventDTO> events){
 		return (new EventDAOImp(context)).addEvents(events);
   	}
 	
-	public  Long addSpeakers(ArrayList<Speaker> speakersList, Context context){
+	public  Long addSpeakers(ArrayList<SpeakerDTO> speakersList){
 		return (new SpeakerDAOImp(context)).addSpeakers(speakersList);
   	}
 
-  	public  Long addTracks(ArrayList<Track> tracks, Context context){
+  	public  Long addTracks(ArrayList<TrackDTO> tracks){
   		return (new TrackDAOImp(context)).addTracks(tracks);
   	}
   	
-  	public  EventDTO getSchedule(String event_id, Context context){
+  	public  EventDTO getSchedule(String event_id){
   		return (new EventDAOImp(context)).getEventRow(event_id);
   	}
   	
-  	public ArrayList<EventDTO> getAllEvents(Context context) {
+  	public ArrayList<EventDTO> getAllEvents() {
   		return (new EventDAOImp(context)).getAllEvents();
   	}
   	
-  	public  SpeakerDTO getSpeaker(String speaker_id, Context context){
+  	public  SpeakerDTO getSpeaker(String speaker_id){
   		return (new SpeakerDAOImp(context)).getSpeakerRow(speaker_id);
   	}
   	
-  	public ArrayList<SpeakerDTO> getAllSpeakers(Context context) {
+  	public ArrayList<SpeakerDTO> getAllSpeakers() {
   		return (new SpeakerDAOImp(context)).getAllSpeakers();
   	}
   		
-  	public  TrackDTO getTrack(String track_id, Context context){
+  	public  TrackDTO getTrack(String track_id){
   		return (new TrackDAOImp(context)).getTrackRow(track_id);
   	}
   	
-  	public ArrayList<TrackDTO> getAllTracks(Context context) {
+  	public ArrayList<TrackDTO> getAllTracks() {
   		return (new TrackDAOImp(context)).getAllTracks();
   	}
   	
-  	public  int eventExists(String event_id, Context context){
+  	public  int eventExists(String event_id){
   		return (new EventDAOImp(context)).existsEvent(event_id);
   	}
   	
-  	public  int speakerExists(String speaker_id, Context context){
+  	public  int speakerExists(String speaker_id){
   		return (new SpeakerDAOImp(context)).existsSpeaker(speaker_id);
   	}
   	
-  	public  int trackExists(String track_id, Context context){
+  	public  int trackExists(String track_id){
   		return (new TrackDAOImp(context)).existsTrack(track_id);
   	}
   	
-  	public ArrayList<Integer> getSpeaksAt(Context context, int event_id) { 
+  	public ArrayList<Integer> getSpeaksAt(int event_id) { 
   		return (new SpeaksAtDAOImp(context).getAllSpeakers(event_id));
   	}
   	

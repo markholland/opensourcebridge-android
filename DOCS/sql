@@ -42,7 +42,7 @@ CREATE TABLE TRACK (
 );
 
 CREATE TABLE SPEAKS_AT (
-	  event_id INT NOT NULL
+	  _id INT NOT NULL
 	, speaker_id INT NOT NULL
 	, PRIMARY KEY(event_id, speaker_id)
 	, CONSTRAINT FK_Speaks_at_Event FOREIGN KEY (event_id)

@@ -2,8 +2,6 @@ package org.osuosl.ocw.DataAccess;
 
 import java.util.ArrayList;
 
-import org.osuosl.ocw.BusinessLogic.Track;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -31,7 +29,7 @@ public class TrackDAOImp implements ITrackDAO {
 
 	
 
-	public Long addTracks(ArrayList<Track> tracks) {
+	public Long addTracks(ArrayList<TrackDTO> tracks) {
 		SQLiteDatabase db = null;
 		Long i = 0l;
 
@@ -68,7 +66,7 @@ public class TrackDAOImp implements ITrackDAO {
 
 	
 
-	public int updateTracks(ArrayList<Track> tracks) {
+	public int updateTracks(ArrayList<TrackDTO> tracks) {
 		SQLiteDatabase db = null;
 		int i = 0;
 

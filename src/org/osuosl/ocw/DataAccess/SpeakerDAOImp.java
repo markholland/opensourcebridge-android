@@ -35,7 +35,7 @@ public class SpeakerDAOImp implements ISpeakerDAO {
 
 
 
-	public Long addSpeakers(ArrayList<Speaker> speakers) {
+	public Long addSpeakers(ArrayList<SpeakerDTO> speakers) {
 		SQLiteDatabase db = null;
 		Long i = 0l;
 
@@ -76,7 +76,7 @@ public class SpeakerDAOImp implements ISpeakerDAO {
 
 
 
-	public int updateSpeakers(ArrayList<Speaker> speakers) {
+	public int updateSpeakers(ArrayList<SpeakerDTO> speakers) {
 		SQLiteDatabase db = null;
 		int i = 0;
 

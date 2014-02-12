@@ -1,15 +1,9 @@
 package org.osuosl.ocw.DataAccess;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 
-import org.osuosl.ocw.BusinessLogic.Event;
 import org.osuosl.ocw.BusinessLogic.Speaker;
-import org.osuosl.ocw.BusinessLogic.Track;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -46,7 +40,7 @@ public class EventDAOImp implements IEventDAO{
 	}
 	
 	
-	public Long addEvents(ArrayList<Event> events){
+	public Long addEvents(ArrayList<EventDTO> events){
 		SQLiteDatabase db = null;
 		Long i = 0l;
 
@@ -63,24 +57,24 @@ public class EventDAOImp implements IEventDAO{
 					values.put(KEY_END, events.get(j).getEnd_time().toString());
 					values.put(KEY_DESCRIPTION, events.get(j).getDescription());
 					values.put(KEY_ROOM_TITLE, events.get(j).getRoom_title());
-					values.put(KEY_TRACK_ID, events.get(j).getTrack().getId());
+					values.put(KEY_TRACK_ID, events.get(j).getTrack_id());
 
-					values.put(KEY_PRESENTER, events.get(j).getPresenter().getId());
+					values.put(KEY_PRESENTER, events.get(j).getPresenter_id());
 
 					// adding row
 					i = db.insert(EVENT_TABLE_NAME, null, values);
 					
-					Iterator<Speaker> speakers = events.get(j).getSpeakers();
-					ContentValues speakersValues = new ContentValues();
-					//for each speaker at this event
-					while(speakers.hasNext()) {
-						
-						speakersValues.put(KEY_EVENT_ID, events.get(j).getId());
-						speakersValues.put(KEY_SPEAKER_ID, speakers.next().getId());
-						
-						i = db.insert(SPEAKS_AT_TABLE_NAME, null, values);
-						
-					}
+//					Iterator<Speaker> speakers = events.get(j).getSpeakers();
+//					ContentValues speakersValues = new ContentValues();
+//					//for each speaker at this event
+//					while(speakers.hasNext()) {
+//						
+//						speakersValues.put(KEY_EVENT_ID, events.get(j).getId());
+//						speakersValues.put(KEY_SPEAKER_ID, speakers.next().getId());
+//						
+//						i = db.insert(SPEAKS_AT_TABLE_NAME, null, values);
+//						
+//					}
 
 					
 				}
@@ -103,7 +97,7 @@ public class EventDAOImp implements IEventDAO{
 	
 	
 	
-	public int updateEvents(ArrayList<Event> events){
+	public int updateEvents(ArrayList<EventDTO> events){
 		SQLiteDatabase db = null;
 		int i = 0;
 
@@ -120,27 +114,27 @@ public class EventDAOImp implements IEventDAO{
 					values.put(KEY_END, events.get(j).getEnd_time().toString());
 					values.put(KEY_DESCRIPTION, events.get(j).getDescription());
 					values.put(KEY_ROOM_TITLE, events.get(j).getRoom_title());
-					values.put(KEY_TRACK_ID, events.get(j).getTrack().getId());
+					values.put(KEY_TRACK_ID, events.get(j).getTrack_id());
 
-					values.put(KEY_PRESENTER, events.get(j).getPresenter().getId());
+					values.put(KEY_PRESENTER, events.get(j).getPresenter_id());
 
 					// updating row
 					i = db.update(EVENT_TABLE_NAME, values, KEY_EVENT_ID + " = ?",
 							new String[] { String.valueOf(events.get(j).getId())});
 					
 					
-					Iterator<Speaker> speakers = events.get(j).getSpeakers();
-					ContentValues speakersValues = new ContentValues();
-					//for each speaker at this event
-					while(speakers.hasNext()) {
-						
-						speakersValues.put(KEY_EVENT_ID, events.get(j).getId());
-						speakersValues.put(KEY_SPEAKER_ID, speakers.next().getId());
-						
-						i = db.update(SPEAKS_AT_TABLE_NAME, speakersValues, KEY_EVENT_ID + " = ?",
-								new String[] { String.valueOf(events.get(j).getId())});
-						
-					}
+//					Iterator<Speaker> speakers = events.get(j).getSpeakers();
+//					ContentValues speakersValues = new ContentValues();
+//					//for each speaker at this event
+//					while(speakers.hasNext()) {
+//						
+//						speakersValues.put(KEY_EVENT_ID, events.get(j).getId());
+//						speakersValues.put(KEY_SPEAKER_ID, speakers.next().getId());
+//						
+//						i = db.update(SPEAKS_AT_TABLE_NAME, speakersValues, KEY_EVENT_ID + " = ?",
+//								new String[] { String.valueOf(events.get(j).getId())});
+//						
+//					}
 				}
 				db.setTransactionSuccessful();
 

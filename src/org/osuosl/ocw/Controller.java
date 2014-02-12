@@ -306,8 +306,7 @@ public class Controller {
 		tracks = new HashMap<Integer, Track>();
 		
 		dal.deleteAll(con);
-
-		
+	
 	}
 	
 
@@ -319,12 +318,20 @@ public class Controller {
 		this.events.put(e.getId(), e);
 	}
 	
+	public Event getEvent(int key) {
+		return events.get(key);
+	}
+	
 	public ArrayList<Speaker> getSpeakers() {
 		return new ArrayList<Speaker>(speakers.values());
 	}
 	
 	public void addSpeaker(Speaker sp) { 
 		this.speakers.put(sp.getId(), sp);
+	}
+	
+	public Speaker getSpeaker(int key) {
+		return speakers.get(key);
 	}
 
 	public HashMap<Integer, Track> getTracks() {
@@ -334,8 +341,10 @@ public class Controller {
 	public void addTrack(Track tr) {
 		this.tracks.put(tr.getId(), tr);
 	}
-
-
+	
+	public Track getTrack(int key) {
+		return tracks.get(key);
+	}
 
 
 
